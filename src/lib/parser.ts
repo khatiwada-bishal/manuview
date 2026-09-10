@@ -2,32 +2,100 @@ import mammoth from "mammoth";
 import { ParsedManuscript, DocumentClassification, DocumentCategory } from "./types";
 import { extractReferencesFromText } from "./utils";
 
+import zlib from "zlib";
+
 export async function parseDocxBuffer(buffer: Buffer): Promise<string> {
   const result = await mammoth.extractRawText({ buffer });
   return result.value;
 }
 
+/**
+ * Native PDF stream text extraction fallback.
+ * Decompresses FlateDecode and raw text streams directly using zlib,
+ * extracting text tokens (Tj, TJ, ', ") without depending on external PDF workers.
+ */
+export function fallbackExtractPdfText(buffer: Buffer): string {
+  const binaryString = buffer.toString("binary");
+  const streamRegex = /stream[\r\n]+([\s\S]*?)[\r\n]+endstream/g;
+  let match: RegExpExecArray | null;
+  const chunks: string[] = [];
+
+  while ((match = streamRegex.exec(binaryString)) !== null) {
+    const rawStream = Buffer.from(match[1], "binary");
+    let decompressed: string | null = null;
+
+    try {
+      decompressed = zlib.inflateSync(rawStream).toString("utf-8");
+    } catch {
+      try {
+        decompressed = zlib.inflateRawSync(rawStream).toString("utf-8");
+      } catch {
+        // Maybe uncompressed ASCII stream
+        decompressed = rawStream.toString("utf-8");
+      }
+    }
+
+    if (decompressed) {
+      // 1. Extract (Text) Tj, ', "
+      const tjMatches = decompressed.match(/\(([^)]+)\)\s*(?:Tj|'|")/g);
+      if (tjMatches) {
+        for (const m of tjMatches) {
+          const text = m.replace(/^\(/, "").replace(/\)\s*(?:Tj|'|")$/, "");
+          if (text.trim()) chunks.push(text);
+        }
+      }
+
+      // 2. Extract [(T) 10 (e) 20 (x) (t)] TJ
+      const bigTjMatches = decompressed.match(/\[([^\]]+)\]\s*TJ/g);
+      if (bigTjMatches) {
+        for (const m of bigTjMatches) {
+          const inner = m.replace(/^\[/, "").replace(/\]\s*TJ$/, "");
+          const subMatches = inner.match(/\(([^)]+)\)/g);
+          if (subMatches) {
+            const combined = subMatches.map((s) => s.slice(1, -1)).join("");
+            if (combined.trim()) chunks.push(combined);
+          }
+        }
+      }
+    }
+  }
+
+  // Join lines and clean up excessive whitespace
+  return chunks.join(" ").replace(/\s{2,}/g, " ").trim();
+}
+
 export async function parsePdfBuffer(buffer: Buffer): Promise<string> {
+  const uint8Data = new Uint8Array(buffer.buffer, buffer.byteOffset, buffer.byteLength);
+
+  // 1. Try standard pdf-parse with safe Uint8Array
   try {
     const { PDFParse } = await import("pdf-parse");
-    const parser = new PDFParse({ data: buffer });
+    const parser = new PDFParse({ data: uint8Data });
     const textResult = await parser.getText({ pageJoiner: "\n\n" });
     const cleanText = textResult.pages?.map((p: any) => p.text).filter(Boolean).join("\n\n") || textResult.text || "";
     await parser.destroy();
 
-    if (!cleanText.trim() || cleanText.trim().length < 15) {
-      throw new Error(
-        "The uploaded PDF does not contain extractable text. It may be an image-only scan or password-protected. Please upload a PDF with a selectable text layer, a Word document (.docx), or paste the text directly."
-      );
+    if (cleanText.trim().length >= 20) {
+      return cleanText;
     }
-
-    return cleanText;
-  } catch (err: any) {
-    if (err.message && err.message.includes("extractable text")) {
-      throw err;
-    }
-    throw new Error(`Failed to parse PDF document: ${err.message || "Unknown PDF parsing error"}`);
+  } catch (primaryErr: any) {
+    console.warn("Primary PDF parser encountered an issue, falling back to native stream extraction:", primaryErr?.message);
   }
+
+  // 2. Resilient native PDF stream fallback
+  try {
+    const fallbackText = fallbackExtractPdfText(buffer);
+    if (fallbackText.trim().length >= 20) {
+      return fallbackText;
+    }
+  } catch (fallbackErr: any) {
+    console.warn("Fallback PDF stream extraction failed:", fallbackErr?.message);
+  }
+
+  // 3. Informative error if no extractable text is present
+  throw new Error(
+    "The uploaded PDF does not contain extractable text. It may be an image-only scan or password-protected. Please upload a PDF with a selectable text layer, a Word document (.docx), or paste the text directly."
+  );
 }
 
 /**
