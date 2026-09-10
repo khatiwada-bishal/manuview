@@ -32,12 +32,14 @@ import {
   Check,
   ChevronDown,
   Download,
-  Printer
+  Printer,
+  Globe
 } from "lucide-react";
 import { FullReviewReport, BriefJournalFitReport, ReviewReport, PriorityIssue, ReviewerPersonaFeedback, ProviderConfig, AvailableModel } from "@/lib/types";
 import { ProviderSettingsModal } from "@/components/ProviderSettingsModal";
 import JournalCombobox from "@/components/JournalCombobox";
 import { BriefJournalFitView, BriefJournalFitPrintView } from "@/components/BriefJournalFitView";
+import { exportInteractiveHtmlReport, exportWordDocReport } from "@/lib/export-generator";
 
 // Sample preprint for instant one-click testing
 const SAMPLE_PREPRINT_TITLE = "Single-cell transcriptional profiling of DLL3 activation in neuroendocrine lung carcinoma";
@@ -237,6 +239,16 @@ export default function ScanPage() {
     setTimeout(() => {
       document.title = originalTitle;
     }, 1500);
+  };
+
+  const handleExportHTML = () => {
+    if (!report) return;
+    exportInteractiveHtmlReport(report);
+  };
+
+  const handleExportWord = () => {
+    if (!report) return;
+    exportWordDocReport(report);
   };
 
   const handleSelectModel = (newModel: string) => {
@@ -833,11 +845,31 @@ export default function ScanPage() {
                 <span>Back to Input</span>
               </button>
 
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2 text-xs text-[#787774]">
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="hidden md:flex items-center gap-2 text-xs text-[#787774] mr-1">
                   <span>Target:</span>
                   <span className="text-[#2F3437] font-medium bg-[#F7F7F5] px-2 py-0.5 rounded border border-[#EBEBEA]">{report.targetJournal || "General High Impact"}</span>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={handleExportHTML}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-[#2F3437] hover:bg-[#F7F7F5] border border-[#D0D5DD] transition shadow-2xs cursor-pointer"
+                  title="Export self-contained Interactive Web Report (.html) for offline viewing and sharing"
+                >
+                  <Globe className="w-3.5 h-3.5 text-blue-600" />
+                  <span>Interactive HTML</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleExportWord}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-[#2F3437] hover:bg-[#F7F7F5] border border-[#D0D5DD] transition shadow-2xs cursor-pointer"
+                  title="Export Diagnostic Report as Microsoft Word Document (.doc / .docx)"
+                >
+                  <FileText className="w-3.5 h-3.5 text-[#18569C]" />
+                  <span>Word (.docx)</span>
+                </button>
 
                 <button
                   type="button"
@@ -846,7 +878,7 @@ export default function ScanPage() {
                   title="Download / Save as PDF Diagnostic Report"
                 >
                   <Download className="w-3.5 h-3.5" />
-                  <span>Download PDF Report</span>
+                  <span>PDF Report</span>
                 </button>
               </div>
             </div>

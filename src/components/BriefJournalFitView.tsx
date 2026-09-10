@@ -18,7 +18,9 @@ import {
   Lightbulb,
   ShieldAlert,
   ArrowRight,
+  Globe,
 } from "lucide-react";
+import { exportInteractiveHtmlReport, exportWordDocReport } from "@/lib/export-generator";
 
 interface Props {
   report: BriefJournalFitReport;
@@ -95,6 +97,26 @@ export function BriefJournalFitView({
 
           <button
             type="button"
+            onClick={() => exportInteractiveHtmlReport(report)}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-[#2F3437] hover:bg-[#F7F7F5] border border-[#D0D5DD] transition shadow-2xs cursor-pointer"
+            title="Export self-contained Interactive Web Report (.html) for offline viewing and sharing"
+          >
+            <Globe className="w-3.5 h-3.5 text-blue-600" />
+            <span className="hidden sm:inline">Interactive HTML</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => exportWordDocReport(report)}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-[#2F3437] hover:bg-[#F7F7F5] border border-[#D0D5DD] transition shadow-2xs cursor-pointer"
+            title="Export Scope Fit Report as Microsoft Word Document (.doc / .docx)"
+          >
+            <FileText className="w-3.5 h-3.5 text-[#18569C]" />
+            <span className="hidden sm:inline">Word (.docx)</span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => window.print()}
             className="p-1.5 rounded-lg border border-[#EBEBEA] hover:bg-[#F7F7F5] text-[#787774] transition"
             title="Print Brief Report"
@@ -108,7 +130,7 @@ export function BriefJournalFitView({
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#2F3437] text-white hover:bg-black transition shadow-xs cursor-pointer"
           >
             <Download className="w-3.5 h-3.5" />
-            <span>Download PDF Report</span>
+            <span>PDF Report</span>
           </button>
         </div>
       </div>
