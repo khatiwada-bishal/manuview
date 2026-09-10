@@ -144,8 +144,8 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
               >
                 <Key className="w-4 h-4 text-purple-400" />
                 <div className="text-left">
-                  <div className="leading-tight font-semibold">OpenAI</div>
-                  <div className="text-[10px] text-purple-400">GPT-4o-mini</div>
+                  <div className="leading-tight font-semibold">OpenAI / Custom</div>
+                  <div className="text-[10px] text-purple-400">GPT-4o &amp; ai.psu.blue</div>
                 </div>
               </button>
 
