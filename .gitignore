@@ -87,6 +87,8 @@ uploads/
 temp/
 scratch/
 *.pdf
-*.docx
 !examples/**/*.pdf
 !examples/**/*.docx
+
+# Desktop App Staged Folder (migrating to separate repo)
+manuview-desktop/

@@ -26,10 +26,6 @@ export function Navbar() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  if (pathname?.startsWith("/desktop")) {
-    return null;
-  }
-
   const handleMouseEnter = () => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
