@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { 
   FileSearch, 
@@ -13,13 +13,34 @@ import {
   FileText,
   Sliders,
   ExternalLink,
-  ChevronRight
+  ChevronRight,
+  Users
 } from "lucide-react";
 import { ProviderSettingsModal } from "./ProviderSettingsModal";
 
 export function Navbar() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [toolsDropdown, setToolsDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setToolsDropdown(false);
+      }
+    }
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setToolsDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   return (
     <>
@@ -62,74 +83,139 @@ export function Navbar() {
               </Link>
 
               {/* Tools Dropdown */}
-              <div className="relative" onMouseLeave={() => setToolsDropdown(false)}>
+              <div 
+                ref={dropdownRef} 
+                className="relative" 
+                onMouseLeave={() => setToolsDropdown(false)}
+              >
                 <button
+                  type="button"
                   onClick={() => setToolsDropdown(!toolsDropdown)}
                   onMouseEnter={() => setToolsDropdown(true)}
-                  className="flex items-center gap-1 px-3 py-1.5 rounded-md hover:text-white hover:bg-white/[0.08] transition"
+                  aria-expanded={toolsDropdown}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition ${
+                    toolsDropdown 
+                      ? "text-white bg-white/[0.1]" 
+                      : "hover:text-white hover:bg-white/[0.08]"
+                  }`}
                 >
                   <span>Research Tools</span>
-                  <ChevronDown className="w-3.5 h-3.5 text-neutral-400" />
+                  <ChevronDown className={`w-3.5 h-3.5 text-neutral-400 transition-transform duration-150 ${toolsDropdown ? "rotate-180 text-white" : ""}`} />
                 </button>
 
                 {toolsDropdown && (
-                  <div className="absolute top-full -left-2 w-76 rounded-2xl bg-[#11141D]/95 backdrop-blur-2xl border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.6)] p-2 z-50 text-xs animate-fade-in text-neutral-200">
-                    <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-neutral-400 font-semibold">
-                      Diagnostic Modules
+                  <div className="absolute top-full -left-6 sm:-left-12 mt-2 w-[92vw] max-w-[580px] sm:w-[580px] rounded-2xl bg-[#0F121C]/95 backdrop-blur-2xl border border-white/15 shadow-[0_24px_60px_rgba(0,0,0,0.7)] p-4 z-50 text-xs animate-fade-in text-neutral-200">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {/* Column 1: Diagnostic & Verification */}
+                      <div className="space-y-1">
+                        <div className="px-2 py-1 text-[10px] font-mono uppercase tracking-wider text-neutral-400 font-semibold">
+                          Auditing &amp; Verification
+                        </div>
+
+                        <Link
+                          href="/tools/journal-fit"
+                          onClick={() => setToolsDropdown(false)}
+                          className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-white/10 text-neutral-300 hover:text-white transition group"
+                        >
+                          <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 group-hover:bg-emerald-500/20 transition flex-shrink-0 mt-0.5">
+                            <BookOpen className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <div className="font-semibold text-neutral-100 text-xs">Journal Fit Predictor</div>
+                            <div className="text-[11px] text-neutral-400 leading-normal mt-0.5">Match against 1,300+ venues</div>
+                          </div>
+                        </Link>
+
+                        <Link
+                          href="/tools/reference-checker"
+                          onClick={() => setToolsDropdown(false)}
+                          className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-white/10 text-neutral-300 hover:text-white transition group"
+                        >
+                          <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400 group-hover:bg-blue-500/20 transition flex-shrink-0 mt-0.5">
+                            <CheckCircle2 className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <div className="font-semibold text-neutral-100 text-xs">Reference Integrity Audit</div>
+                            <div className="text-[11px] text-neutral-400 leading-normal mt-0.5">Crossref &amp; Retraction Watch check</div>
+                          </div>
+                        </Link>
+
+                        <Link
+                          href="/tools/citation-claim"
+                          onClick={() => setToolsDropdown(false)}
+                          className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-white/10 text-neutral-300 hover:text-white transition group"
+                        >
+                          <div className="p-1.5 rounded-lg bg-amber-500/10 text-amber-400 group-hover:bg-amber-500/20 transition flex-shrink-0 mt-0.5">
+                            <Sparkles className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <div className="font-semibold text-neutral-100 text-xs">Citation Claim Validator</div>
+                            <div className="text-[11px] text-neutral-400 leading-normal mt-0.5">Audit if cited paper supports claim</div>
+                          </div>
+                        </Link>
+                      </div>
+
+                      {/* Column 2: Submission & Rebuttal */}
+                      <div className="space-y-1">
+                        <div className="px-2 py-1 text-[10px] font-mono uppercase tracking-wider text-neutral-400 font-semibold">
+                          Submission &amp; Rebuttal
+                        </div>
+
+                        <Link
+                          href="/tools/prisma"
+                          onClick={() => setToolsDropdown(false)}
+                          className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-white/10 text-neutral-300 hover:text-white transition group"
+                        >
+                          <div className="p-1.5 rounded-lg bg-purple-500/10 text-purple-400 group-hover:bg-purple-500/20 transition flex-shrink-0 mt-0.5">
+                            <Layers className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <div className="font-semibold text-neutral-100 text-xs">PRISMA Flow Diagram</div>
+                            <div className="text-[11px] text-neutral-400 leading-normal mt-0.5">Reconcile counts &amp; export SVG</div>
+                          </div>
+                        </Link>
+
+                        <Link
+                          href="/tools/cover-letter"
+                          onClick={() => setToolsDropdown(false)}
+                          className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-white/10 text-neutral-300 hover:text-white transition group"
+                        >
+                          <div className="p-1.5 rounded-lg bg-teal-500/10 text-teal-400 group-hover:bg-teal-500/20 transition flex-shrink-0 mt-0.5">
+                            <FileText className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <div className="font-semibold text-neutral-100 text-xs">Journal Cover Letter</div>
+                            <div className="text-[11px] text-neutral-400 leading-normal mt-0.5">Editor-calibrated formal letter</div>
+                          </div>
+                        </Link>
+
+                        <Link
+                          href="/tools/response-builder"
+                          onClick={() => setToolsDropdown(false)}
+                          className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-white/10 text-neutral-300 hover:text-white transition group"
+                        >
+                          <div className="p-1.5 rounded-lg bg-rose-500/10 text-rose-400 group-hover:bg-rose-500/20 transition flex-shrink-0 mt-0.5">
+                            <Users className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <div className="font-semibold text-neutral-100 text-xs">Response to Reviewers</div>
+                            <div className="text-[11px] text-neutral-400 leading-normal mt-0.5">Rebuttal matrix &amp; revision checklist</div>
+                          </div>
+                        </Link>
+                      </div>
                     </div>
-                    <Link
-                      href="/tools/journal-fit"
-                      className="flex items-start gap-2.5 p-2.5 rounded-xl hover:bg-white/10 text-neutral-300 hover:text-white transition"
-                    >
-                      <BookOpen className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
-                      <div>
-                        <div className="font-medium text-neutral-100">Journal Fit Predictor</div>
-                        <div className="text-[11px] text-neutral-400">Match manuscript against 1,300+ venues</div>
-                      </div>
-                    </Link>
 
-                    <Link
-                      href="/tools/reference-checker"
-                      className="flex items-start gap-2.5 p-2.5 rounded-xl hover:bg-white/10 text-neutral-300 hover:text-white transition"
-                    >
-                      <CheckCircle2 className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
-                      <div>
-                        <div className="font-medium text-neutral-100">Reference Integrity Audit</div>
-                        <div className="text-[11px] text-neutral-400">Crossref &amp; Retraction Watch verification</div>
-                      </div>
-                    </Link>
-
-                    <Link
-                      href="/tools/citation-claim"
-                      className="flex items-start gap-2.5 p-2.5 rounded-xl hover:bg-white/10 text-neutral-300 hover:text-white transition"
-                    >
-                      <Sparkles className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0" />
-                      <div>
-                        <div className="font-medium text-neutral-100">Citation Claim Validator</div>
-                        <div className="text-[11px] text-neutral-400">Audit if cited study supports statement</div>
-                      </div>
-                    </Link>
-
-                    <Link
-                      href="/tools/prisma"
-                      className="flex items-start gap-2.5 p-2.5 rounded-xl hover:bg-white/10 text-neutral-300 hover:text-white transition"
-                    >
-                      <Layers className="w-4 h-4 text-purple-400 mt-0.5 flex-shrink-0" />
-                      <div>
-                        <div className="font-medium text-neutral-100">PRISMA Flow Diagram</div>
-                        <div className="text-[11px] text-neutral-400">Reconcile screening counts &amp; export SVG</div>
-                      </div>
-                    </Link>
-
-                    <div className="my-1.5 border-t border-white/10" />
-
-                    <Link
-                      href="/tools"
-                      className="flex items-center justify-between px-3 py-2 rounded-xl hover:bg-white/10 text-blue-400 hover:text-blue-300 text-xs font-semibold transition"
-                    >
-                      <span>View all 8 tools</span>
-                      <ChevronRight className="w-3.5 h-3.5" />
-                    </Link>
+                    <div className="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-between px-2">
+                      <span className="text-[11px] text-neutral-400">All tools 100% free • Client-side privacy</span>
+                      <Link
+                        href="/tools"
+                        onClick={() => setToolsDropdown(false)}
+                        className="flex items-center gap-1.5 text-blue-400 hover:text-blue-300 text-xs font-semibold transition"
+                      >
+                        <span>Explore all research tools</span>
+                        <ChevronRight className="w-3.5 h-3.5" />
+                      </Link>
+                    </div>
                   </div>
                 )}
               </div>
