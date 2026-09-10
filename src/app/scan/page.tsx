@@ -625,17 +625,19 @@ export default function ScanPage() {
                   {/* File Upload Box */}
                   <div>
                     <label className="text-xs text-[#787774] mb-1.5 block font-medium">
-                      Upload Document (.docx, .txt)
+                      Upload Document (.pdf, .docx, .txt)
                     </label>
                     <label className="flex flex-col items-center justify-center border border-dashed border-[#d0d0d0] hover:border-[#0A85EA] rounded-xl p-6 bg-white hover:bg-[#EBF3FB]/20 cursor-pointer transition group">
                       <Upload className="w-6 h-6 text-[#9B9A97] group-hover:text-[#18569C] transition mb-2" />
-                      <span className="text-xs text-[#787774] font-medium text-center truncate max-w-full px-2">
+                      <span className="text-xs text-[#2F3437] font-semibold text-center truncate max-w-full px-2">
                         {file ? file.name : "Click to choose file or drag & drop"}
                       </span>
-                      <span className="text-[11px] text-[#787774] mt-1">Word (.docx) or Text file</span>
+                      <span className="text-[11px] text-[#787774] mt-1">
+                        {file ? `${(file.size / 1024).toFixed(1)} KB • Click to change file` : "PDF (.pdf), Word (.docx), or Text file"}
+                      </span>
                       <input
                         type="file"
-                        accept=".docx,.txt"
+                        accept=".pdf,.docx,.txt,application/pdf"
                         onChange={handleFileChange}
                         className="hidden"
                       />
@@ -928,7 +930,7 @@ export default function ScanPage() {
                       onClick={() => setReport(null)}
                       className="w-full sm:w-auto px-4 py-2 rounded-lg bg-white hover:bg-[#F7F7F5] text-[#787774] hover:text-[#2F3437] border border-[#EBEBEA] text-xs font-medium transition"
                     >
-                      Upload a Research Paper (.docx / text)
+                      Upload a Research Paper (.pdf / .docx / text)
                     </button>
                   </div>
                 </div>

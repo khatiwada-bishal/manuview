@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { parseManuscriptText, parseDocxBuffer } from "@/lib/parser";
+import { parseManuscriptText, parseDocxBuffer, parsePdfBuffer } from "@/lib/parser";
 import { runManuscriptDiagnostic } from "@/lib/diagnostic-engine";
 import { ProviderConfig } from "@/lib/types";
 
@@ -29,10 +29,13 @@ export async function POST(req: NextRequest) {
       if (file && file.size > 0) {
         fileName = file.name;
         const buffer = Buffer.from(await file.arrayBuffer());
-        if (file.name.endsWith(".docx")) {
+        const lowerName = file.name.toLowerCase();
+        if (lowerName.endsWith(".docx")) {
           manuscriptText = await parseDocxBuffer(buffer);
+        } else if (lowerName.endsWith(".pdf") || file.type === "application/pdf") {
+          manuscriptText = await parsePdfBuffer(buffer);
         } else {
-          // If plain text or pdf
+          // Plain text or other document formats
           manuscriptText = buffer.toString("utf-8");
         }
       } else if (textInput) {

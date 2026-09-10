@@ -7,6 +7,29 @@ export async function parseDocxBuffer(buffer: Buffer): Promise<string> {
   return result.value;
 }
 
+export async function parsePdfBuffer(buffer: Buffer): Promise<string> {
+  try {
+    const { PDFParse } = await import("pdf-parse");
+    const parser = new PDFParse({ data: buffer });
+    const textResult = await parser.getText({ pageJoiner: "\n\n" });
+    const cleanText = textResult.pages?.map((p: any) => p.text).filter(Boolean).join("\n\n") || textResult.text || "";
+    await parser.destroy();
+
+    if (!cleanText.trim() || cleanText.trim().length < 15) {
+      throw new Error(
+        "The uploaded PDF does not contain extractable text. It may be an image-only scan or password-protected. Please upload a PDF with a selectable text layer, a Word document (.docx), or paste the text directly."
+      );
+    }
+
+    return cleanText;
+  } catch (err: any) {
+    if (err.message && err.message.includes("extractable text")) {
+      throw err;
+    }
+    throw new Error(`Failed to parse PDF document: ${err.message || "Unknown PDF parsing error"}`);
+  }
+}
+
 /**
  * Heuristically classifies uploaded/pasted text into document categories
  * to distinguish authentic academic manuscripts from code, resumes, proposals, or random files.
@@ -199,8 +222,26 @@ export function parseManuscriptText(rawText: string, filename?: string): ParsedM
   // 1. Classify document type
   const classification = classifyDocument(rawText, filename);
 
-  // 2. Detect Title (typically first non-empty line or largest text)
-  const title = lines.length > 0 ? lines[0] : "Untitled Document";
+  // 2. Detect Title (typically first substantive non-header line)
+  let title = "Untitled Document";
+  for (let i = 0; i < Math.min(lines.length, 8); i++) {
+    const candidate = lines[i];
+    // Skip running headers, preprint servers, and DOI watermarks common in PDF exports
+    if (/^(?:biorxiv|medrxiv|arxiv|springer|nature|elsevier|ieee|cell|wiley|plos|doi:|https?:|page\s+\d+|article\b|review\b|vol\.\s*\d+|open\s+access|peer-reviewed)/i.test(candidate)) {
+      continue;
+    }
+    // Skip lines that are just dates or volume numbers
+    if (/^\d{1,4}[-/.]\d{1,2}[-/.]\d{1,4}$/.test(candidate) || /^\d+$/.test(candidate)) {
+      continue;
+    }
+    if (candidate.length > 12) {
+      title = candidate;
+      break;
+    }
+  }
+  if (title === "Untitled Document" && lines.length > 0) {
+    title = lines[0];
+  }
 
   // 3. Detect Abstract
   let abstract = "";
