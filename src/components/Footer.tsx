@@ -1,8 +1,16 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Heart, ShieldCheck, FileSearch } from "lucide-react";
 
 export function Footer() {
+  const pathname = usePathname();
+
+  if (pathname?.startsWith("/desktop")) {
+    return null;
+  }
   return (
     <footer className="border-t border-white/10 bg-[#0A0B0E] text-neutral-400 text-xs py-14">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">

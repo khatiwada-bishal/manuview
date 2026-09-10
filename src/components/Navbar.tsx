@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { 
   FileSearch, 
   Settings, 
@@ -19,10 +20,15 @@ import {
 import { ProviderSettingsModal } from "./ProviderSettingsModal";
 
 export function Navbar() {
+  const pathname = usePathname();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [toolsDropdown, setToolsDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  if (pathname?.startsWith("/desktop")) {
+    return null;
+  }
 
   const handleMouseEnter = () => {
     if (timeoutRef.current) {

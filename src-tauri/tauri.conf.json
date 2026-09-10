@@ -5,7 +5,7 @@
   "identifier": "com.manuview.desktop",
   "build": {
     "frontendDist": "../out",
-    "devUrl": "http://localhost:3000",
+    "devUrl": "http://localhost:3000/desktop",
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build"
   },
@@ -18,7 +18,9 @@
         "minWidth": 1024,
         "minHeight": 700,
         "resizable": true,
-        "fullscreen": false
+        "fullscreen": false,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true
       }
     ],
     "security": {
