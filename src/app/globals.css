@@ -3,14 +3,14 @@
 @tailwind utilities;
 
 :root {
-  --background: #191919;
-  --foreground: #e6e6e6;
+  --background: #ffffff;
+  --foreground: #111111;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, "Apple Color Emoji", Arial, sans-serif;
   overflow-x: hidden;
   letter-spacing: -0.011em;
 }
@@ -21,18 +21,18 @@ body {
   height: 7px;
 }
 ::-webkit-scrollbar-track {
-  background: #191919;
+  background: #ffffff;
 }
 ::-webkit-scrollbar-thumb {
-  background: #2e2e2e;
+  background: #d8d8d6;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #404040;
+  background: #b0b0ad;
 }
 
 /* Notion-style subtle focus rings */
 *:focus-visible {
-  outline: 1px solid rgba(255, 255, 255, 0.2);
+  outline: 2px solid rgba(0, 117, 235, 0.4);
   outline-offset: 1px;
 }

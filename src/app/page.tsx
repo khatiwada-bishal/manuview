@@ -1,404 +1,680 @@
 import React from "react";
 import Link from "next/link";
 import { 
-  FileSearch, 
-  ShieldCheck, 
   Sparkles, 
-  Cpu, 
   ArrowRight, 
   CheckCircle2, 
   AlertTriangle, 
   Users, 
-  Scale, 
-  Search, 
   BarChart3, 
   BookOpen, 
-  Layers 
+  Layers, 
+  Check, 
+  Search, 
+  ShieldCheck, 
+  SlidersHorizontal,
+  ChevronRight,
+  RefreshCw,
+  ExternalLink,
+  MessageSquare,
+  FileText,
+  Tag,
+  FlaskConical,
+  GraduationCap
 } from "lucide-react";
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col bg-[#191919] text-[#e6e6e6]">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden pt-16 pb-24 border-b border-[#2e2e2e]">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 relative z-10 text-center">
-          {/* Notion Page Icon & Mission Tag */}
-          <div className="text-4xl mb-4 select-none">🔬</div>
-          
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-normal bg-[#222222] text-[#9b9a97] border border-[#333333] mb-6">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            <span>Open Source &bull; Education &amp; Science Belong to Everyone</span>
-          </div>
-
-          <h1 className="text-3xl sm:text-5xl font-serif font-bold text-white mb-5 leading-tight tracking-tight">
-            Catch what peer reviewers will, <br />
-            <span className="text-emerald-400">
-              before you submit.
-            </span>
+    <div className="flex flex-col bg-white text-[#111111]">
+      {/* ------------------------------------------------------------- */}
+      {/* 1. HERO SECTION                                               */}
+      {/* ------------------------------------------------------------- */}
+      <section className="relative pt-12 sm:pt-20 pb-16 sm:pb-24 px-4 sm:px-6 overflow-hidden">
+        <div className="mx-auto max-w-5xl text-center">
+          {/* Main Headline with Iconic Inline Yellow Pill */}
+          <h1 className="text-4xl sm:text-6xl md:text-[68px] font-bold text-[#111111] tracking-[-0.03em] leading-[1.08] mb-6">
+            Where researchers and <br />
+            agents{" "}
+            <span className="inline-flex items-center gap-2 px-3.5 py-1 sm:px-4 sm:py-1.5 rounded-full bg-[#fcedd7] text-[#915809] border border-[#f5dcb7] font-semibold text-2xl sm:text-4xl md:text-5xl align-middle mx-1 sm:mx-2 shadow-xs select-none">
+              <span className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full bg-[#e38817] inline-block" />
+              Review
+            </span>{" "}
+            together.
           </h1>
 
-          <p className="text-sm sm:text-base text-[#9b9a97] mb-8 leading-relaxed max-w-xl mx-auto font-light">
-            Stop paying commercial services $39 to $1,800 for surface-level manuscript reviews. ManuView applies an authentic top-journal peer-review rubric to diagnose desk-rejection hazards, causal overclaims, and citation bugs—for free.
+          {/* Subtitle */}
+          <p className="text-base sm:text-lg text-[#555555] mb-8 max-w-2xl mx-auto leading-relaxed font-normal">
+            Catch desk-reject flaws, citation hallucinations, and causal overclaims before submitting to top journals. A free, open-source editorial diagnostic for science.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          {/* Action Buttons */}
+          <div className="flex flex-wrap items-center justify-center gap-3.5 mb-14 sm:mb-18">
             <Link
               href="/scan"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-md bg-[#252525] hover:bg-[#2d2d2d] text-white font-medium text-xs sm:text-sm border border-[#3d3d3d] hover:border-[#555555] active:scale-95 transition"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-md bg-[#0075eb] hover:bg-[#0066cc] text-white font-medium text-sm shadow-xs transition active:scale-[0.98]"
             >
-              <Sparkles className="w-4 h-4 text-emerald-400" />
-              <span>Run Free Manuscript Scan</span>
-              <ArrowRight className="w-3.5 h-3.5 text-[#8a8a86]" />
+              <span>Try ManuView free</span>
             </Link>
 
             <Link
               href="/tools"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-md bg-transparent hover:bg-[#222222] text-[#9b9a97] hover:text-[#e6e6e6] border border-[#2e2e2e] font-normal text-xs sm:text-sm transition"
+              className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-md text-[#111111] hover:text-[#0075eb] hover:bg-[#f5f5f4] font-medium text-sm transition"
             >
-              Explore 8 Research Tools
+              <span>Explore Research Tools</span>
+              <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
-          {/* Quick stats in Notion metadata style */}
-          <div className="mt-12 grid grid-cols-3 gap-3 border-t border-[#2e2e2e] pt-6 text-left max-w-md mx-auto">
-            <div className="p-2.5 rounded-lg bg-[#202020] border border-[#2e2e2e]">
-              <div className="text-lg font-serif font-bold text-white">6-Dim</div>
-              <div className="text-[11px] text-[#8a8a86]">Editorial Rubric</div>
+          {/* --------------------------------------------------------- */}
+          {/* Hero App Window Mockup with Notion Hand-Drawn Characters */}
+          {/* --------------------------------------------------------- */}
+          <div className="relative mx-auto max-w-4xl text-left">
+            {/* Peeking Notion Character 1 (Left Side - Girl with Bun) */}
+            <div className="absolute -left-10 sm:-left-16 top-16 sm:top-24 w-16 sm:w-24 z-20 pointer-events-none select-none">
+              <svg viewBox="0 0 100 160" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full drop-shadow-sm">
+                {/* Hair bun */}
+                <ellipse cx="42" cy="22" rx="14" ry="14" fill="white" stroke="#111111" strokeWidth="2.5" />
+                <path d="M35 15 C45 10, 50 25, 42 32" stroke="#111111" strokeWidth="2" strokeLinecap="round" />
+                {/* Head */}
+                <ellipse cx="50" cy="50" rx="26" ry="28" fill="white" stroke="#111111" strokeWidth="2.5" />
+                {/* Hair front */}
+                <path d="M26 40 C35 28, 65 30, 74 46" fill="#111111" />
+                {/* Eyebrows */}
+                <path d="M36 42 Q42 39 48 42" stroke="#111111" strokeWidth="2" strokeLinecap="round" />
+                <path d="M56 42 Q62 39 68 42" stroke="#111111" strokeWidth="2" strokeLinecap="round" />
+                {/* Eyes */}
+                <ellipse cx="43" cy="50" rx="3.5" ry="4" fill="#111111" />
+                <ellipse cx="63" cy="50" rx="3.5" ry="4" fill="#111111" />
+                {/* Nose */}
+                <path d="M53 50 L50 58 L55 59" stroke="#111111" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                {/* Smile */}
+                <path d="M46 66 Q53 72 60 66" stroke="#111111" strokeWidth="2" strokeLinecap="round" />
+                {/* Cheeks */}
+                <circle cx="37" cy="58" r="3" fill="#ffb4b4" opacity="0.6" />
+                <circle cx="69" cy="58" r="3" fill="#ffb4b4" opacity="0.6" />
+                {/* Neck & Body */}
+                <path d="M44 78 L44 95 L20 150 L90 150 L64 95 L64 78" fill="white" stroke="#111111" strokeWidth="2.5" />
+                {/* Collar */}
+                <path d="M44 95 Q54 104 64 95" stroke="#111111" strokeWidth="2" />
+                {/* Hands grasping the window edge */}
+                <ellipse cx="86" cy="92" rx="7" ry="11" fill="white" stroke="#111111" strokeWidth="2.5" />
+                <ellipse cx="92" cy="105" rx="6" ry="9" fill="white" stroke="#111111" strokeWidth="2.5" />
+              </svg>
             </div>
-            <div className="p-2.5 rounded-lg bg-[#202020] border border-[#2e2e2e]">
-              <div className="text-lg font-serif font-bold text-emerald-400">100% Free</div>
-              <div className="text-[11px] text-[#8a8a86]">Zero Paywalls</div>
+
+            {/* Peeking Notion Character 2 (Top Right - Researcher with Glasses) */}
+            <div className="absolute -right-8 sm:-right-12 -top-12 sm:-top-16 w-20 sm:w-28 z-20 pointer-events-none select-none">
+              <svg viewBox="0 0 120 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full drop-shadow-sm">
+                {/* Head */}
+                <path d="M25 70 C20 40, 40 15, 75 15 C105 15, 115 45, 110 70 Z" fill="white" stroke="#111111" strokeWidth="2.5" />
+                {/* Hair tufts */}
+                <path d="M45 15 C40 8, 30 10, 32 18" stroke="#111111" strokeWidth="2.5" strokeLinecap="round" />
+                <path d="M70 15 C75 5, 88 8, 82 18" stroke="#111111" strokeWidth="2.5" strokeLinecap="round" />
+                {/* Pencil behind ear */}
+                <rect x="92" y="10" width="6" height="28" transform="rotate(35 92 10)" fill="#f1a23a" stroke="#111111" strokeWidth="2" />
+                {/* Round Glasses */}
+                <circle cx="52" cy="46" r="14" fill="white" stroke="#111111" strokeWidth="2.5" />
+                <circle cx="85" cy="46" r="14" fill="white" stroke="#111111" strokeWidth="2.5" />
+                <path d="M66 46 L71 46" stroke="#111111" strokeWidth="2.5" />
+                <path d="M38 46 L28 44" stroke="#111111" strokeWidth="2" />
+                <path d="M99 46 L108 44" stroke="#111111" strokeWidth="2" />
+                {/* Eyes behind glasses */}
+                <circle cx="52" cy="46" r="3" fill="#111111" />
+                <circle cx="85" cy="46" r="3" fill="#111111" />
+                {/* Nose */}
+                <path d="M68 50 Q72 58 66 61" stroke="#111111" strokeWidth="2" strokeLinecap="round" />
+                {/* Hands resting on top edge */}
+                <ellipse cx="40" cy="74" rx="10" ry="7" fill="white" stroke="#111111" strokeWidth="2.5" />
+                <ellipse cx="88" cy="74" rx="10" ry="7" fill="white" stroke="#111111" strokeWidth="2.5" />
+              </svg>
             </div>
-            <div className="p-2.5 rounded-lg bg-[#202020] border border-[#2e2e2e]">
-              <div className="text-lg font-serif font-bold text-blue-400">Local AI</div>
-              <div className="text-[11px] text-[#8a8a86]">Ollama Offline</div>
+
+            {/* Window Container */}
+            <div className="rounded-2xl border border-[#e5e5e5] bg-white shadow-[0_20px_70px_rgba(0,0,0,0.08)] overflow-hidden">
+              {/* macOS Window Titlebar */}
+              <div className="flex items-center justify-between px-4 py-3 border-b border-[#f0f0ee] bg-[#fafafa] select-none text-xs">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-[#ff5f57] border border-[#e0443e]" />
+                  <div className="w-3 h-3 rounded-full bg-[#febc2e] border border-[#d89e24]" />
+                  <div className="w-3 h-3 rounded-full bg-[#28c840] border border-[#1aab29]" />
+                </div>
+                <div className="text-[11px] text-[#777777] font-medium flex items-center gap-1.5">
+                  <span>🔬 Oncology Institute</span>
+                  <span className="text-[#cccccc]">/</span>
+                  <span className="text-[#111111]">📄 DLL3 SCLC Nature Pre-Submission</span>
+                </div>
+                <div className="flex items-center gap-2 text-[11px] text-[#777777]">
+                  <span className="px-2 py-0.5 rounded bg-[#eef5fd] text-[#0075eb] font-semibold">Active</span>
+                </div>
+              </div>
+
+              {/* Window Interior: Notion Layout */}
+              <div className="grid grid-cols-1 md:grid-cols-12 min-h-[460px]">
+                {/* Left Notion Sidebar */}
+                <div className="hidden md:block md:col-span-3 border-r border-[#f0f0ee] bg-[#fbfbfa] p-3 text-xs space-y-4">
+                  <div className="flex items-center gap-2 px-2 py-1 font-semibold text-[#111111]">
+                    <div className="w-4 h-4 rounded bg-black text-white flex items-center justify-center text-[10px] font-serif">M</div>
+                    <span>Cancer Genomics</span>
+                  </div>
+
+                  <div className="space-y-0.5 text-[#666666]">
+                    <div className="px-2 py-1 rounded hover:bg-[#f0f0ee] cursor-pointer flex items-center gap-2 text-[#111111] font-medium">
+                      <Search className="w-3.5 h-3.5 text-[#888888]" />
+                      <span>Search</span>
+                    </div>
+                    <div className="px-2 py-1 rounded hover:bg-[#f0f0ee] cursor-pointer flex items-center gap-2">
+                      <Sparkles className="w-3.5 h-3.5 text-[#0075eb]" />
+                      <span>Notion AI Review</span>
+                    </div>
+                    <div className="px-2 py-1 rounded hover:bg-[#f0f0ee] cursor-pointer flex items-center gap-2">
+                      <SlidersHorizontal className="w-3.5 h-3.5 text-[#888888]" />
+                      <span>AI Settings</span>
+                    </div>
+                  </div>
+
+                  <div className="pt-2">
+                    <div className="px-2 pb-1 text-[10px] font-semibold text-[#999999] uppercase tracking-wider">
+                      Workspaces
+                    </div>
+                    <div className="space-y-0.5">
+                      <div className="px-2 py-1.5 rounded bg-[#f0f0ee] text-[#111111] font-medium flex items-center gap-2">
+                        <span>📄</span>
+                        <span className="truncate">DLL3 Activation Paper</span>
+                      </div>
+                      <div className="px-2 py-1.5 rounded hover:bg-[#f0f0ee] text-[#666666] flex items-center gap-2">
+                        <span>👥</span>
+                        <span className="truncate">4-Persona Reviews</span>
+                      </div>
+                      <div className="px-2 py-1.5 rounded hover:bg-[#f0f0ee] text-[#666666] flex items-center gap-2">
+                        <span>✅</span>
+                        <span className="truncate">CrossRef Audit</span>
+                      </div>
+                      <div className="px-2 py-1.5 rounded hover:bg-[#f0f0ee] text-[#666666] flex items-center gap-2">
+                        <span>📑</span>
+                        <span className="truncate">Nature Recommendations</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Document Canvas */}
+                <div className="p-6 md:p-8 md:col-span-9 bg-white space-y-6">
+                  {/* Notion Page Icon & Title */}
+                  <div>
+                    <div className="text-3xl mb-2 select-none">🧬</div>
+                    <h2 className="text-2xl sm:text-3xl font-bold text-[#111111] tracking-tight">
+                      Nature Communications Pre-Submission
+                    </h2>
+                  </div>
+
+                  {/* Notion Database Property Rows */}
+                  <div className="rounded-lg border border-[#e8e8e6] bg-[#fafafa] p-3 text-xs divide-y divide-[#ecece9]">
+                    <div className="flex items-center py-1.5 px-1">
+                      <span className="w-32 text-[#787774] flex items-center gap-1.5">
+                        <Tag className="w-3.5 h-3.5" /> Target Journal
+                      </span>
+                      <span className="px-2 py-0.5 rounded bg-[#faecd7] text-[#915809] font-medium">
+                        Nature Communications
+                      </span>
+                    </div>
+
+                    <div className="flex items-center py-1.5 px-1">
+                      <span className="w-32 text-[#787774] flex items-center gap-1.5">
+                        <SlidersHorizontal className="w-3.5 h-3.5" /> AI Engine
+                      </span>
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#eefaf3] text-[#2b7a4b] font-medium border border-[#c6e8d2]">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#2b7a4b]" />
+                        GEMINI 1.5 FLASH (⚡ 184ms)
+                      </span>
+                    </div>
+
+                    <div className="flex items-center py-1.5 px-1">
+                      <span className="w-32 text-[#787774] flex items-center gap-1.5">
+                        <ShieldCheck className="w-3.5 h-3.5" /> Triage Readiness
+                      </span>
+                      <span className="font-semibold text-[#111111]">
+                        78 / 100 &bull; <span className="text-[#e38817]">Major Revision Recommended</span>
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Notion Kanban / Card Columns */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                    {/* Column 1 */}
+                    <div className="p-3 rounded-xl border border-[#eaeaea] bg-white shadow-xs space-y-2">
+                      <div className="flex items-center justify-between text-xs font-semibold text-[#111111]">
+                        <span>Triage Vulnerabilities</span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#f5f5f4] text-[#777777]">2</span>
+                      </div>
+                      <div className="p-2.5 rounded-lg border border-[#f0f0ee] bg-[#fbfbfa] text-xs space-y-1">
+                        <div className="font-semibold text-[#c52b2b] flex items-center gap-1">
+                          <AlertTriangle className="w-3 h-3" /> Causal Overclaim
+                        </div>
+                        <p className="text-[11px] text-[#666666] leading-snug">
+                          Abstract claims POU2F1 proves DLL3 expression without rescue control.
+                        </p>
+                      </div>
+                      <div className="p-2.5 rounded-lg border border-[#f0f0ee] bg-[#fbfbfa] text-xs space-y-1">
+                        <div className="font-semibold text-[#d48816] flex items-center gap-1">
+                          <AlertTriangle className="w-3 h-3" /> Sample Size Power
+                        </div>
+                        <p className="text-[11px] text-[#666666] leading-snug">
+                          Cohort n=8 lacks a priori statistical power calculation.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Column 2 */}
+                    <div className="p-3 rounded-xl border border-[#eaeaea] bg-white shadow-xs space-y-2">
+                      <div className="flex items-center justify-between text-xs font-semibold text-[#111111]">
+                        <span>4-Persona Reviews</span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#f5f5f4] text-[#777777]">4</span>
+                      </div>
+                      <div className="p-2.5 rounded-lg border border-[#f0f0ee] bg-[#fbfbfa] text-xs space-y-1">
+                        <div className="font-semibold text-[#111111] flex items-center justify-between">
+                          <span>Dr. Vance (Methods)</span>
+                          <span className="text-[10px] px-1.5 rounded bg-[#faecd7] text-[#915809]">Major</span>
+                        </div>
+                        <p className="text-[11px] text-[#666666] leading-snug">
+                          &ldquo;sgRNA library coverage depth must be confirmed in organoids.&rdquo;
+                        </p>
+                      </div>
+                      <div className="p-2.5 rounded-lg border border-[#f0f0ee] bg-[#fbfbfa] text-xs space-y-1">
+                        <div className="font-semibold text-[#111111] flex items-center justify-between">
+                          <span>Dr. Sorkin (Stats)</span>
+                          <span className="text-[10px] px-1.5 rounded bg-[#faecd7] text-[#915809]">Major</span>
+                        </div>
+                        <p className="text-[11px] text-[#666666] leading-snug">
+                          &ldquo;Parametric t-test used on small sample size without normality test.&rdquo;
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Column 3 */}
+                    <div className="p-3 rounded-xl border border-[#eaeaea] bg-white shadow-xs space-y-2">
+                      <div className="flex items-center justify-between text-xs font-semibold text-[#111111]">
+                        <span>Citation Audit</span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#eefaf3] text-[#2b7a4b]">Live</span>
+                      </div>
+                      <div className="p-2.5 rounded-lg border border-[#c6e8d2] bg-[#f3fbf6] text-xs space-y-1">
+                        <div className="font-semibold text-[#2b7a4b] flex items-center gap-1">
+                          <CheckCircle2 className="w-3 h-3" /> CrossRef Verified
+                        </div>
+                        <p className="text-[11px] text-[#337a50] leading-snug">
+                          15 / 15 cited DOIs resolved with confirmed metadata.
+                        </p>
+                      </div>
+                      <div className="p-2.5 rounded-lg border border-[#c6e8d2] bg-[#f3fbf6] text-xs space-y-1">
+                        <div className="font-semibold text-[#2b7a4b] flex items-center gap-1">
+                          <CheckCircle2 className="w-3 h-3" /> Retraction Watch Clear
+                        </div>
+                        <p className="text-[11px] text-[#337a50] leading-snug">
+                          Zero retracted references flagged in manuscript bibliography.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Philosophy / Differentiation Table (Notion Database Table style) */}
-      <section className="py-16 border-b border-[#2e2e2e]">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6">
-          <div className="text-center max-w-xl mx-auto mb-10">
-            <div className="text-xs font-medium uppercase tracking-widest text-[#8a8a86] mb-1.5">
-              The Peer-Review Philosophy
-            </div>
-            <h2 className="text-2xl font-serif font-bold text-white mb-2">
-              Scientific critique is not grammar polishing.
-            </h2>
-            <p className="text-xs text-[#9b9a97]">
-              Generic LLMs are flattering, and grammar checkers only see commas. Editors desk-reject on methodology and overclaims.
-            </p>
-          </div>
-
-          <div className="overflow-x-auto rounded-lg border border-[#2e2e2e] bg-[#202020]">
-            <table className="w-full border-collapse text-left text-xs">
-              <thead>
-                <tr className="border-b border-[#2e2e2e] bg-[#1a1a1a] text-[11px] font-medium uppercase tracking-wider text-[#8a8a86]">
-                  <th className="p-3.5">Dimension</th>
-                  <th className="p-3.5">Grammar Checkers</th>
-                  <th className="p-3.5">Generic LLMs</th>
-                  <th className="p-3.5 text-emerald-400 bg-[#1c2e24]">ManuView (Open Source)</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#2a2a2a] text-[#cccccc]">
-                <tr>
-                  <td className="p-3.5 font-medium text-white">Focus Level</td>
-                  <td className="p-3.5 text-[#8a8a86]">Sentence level (typos, passive voice)</td>
-                  <td className="p-3.5 text-[#8a8a86]">Conversational summaries &amp; rewriting</td>
-                  <td className="p-3.5 font-medium text-[#4dab83] bg-[#1c2e24]/40">Manuscript-level scientific critique</td>
-                </tr>
-                <tr>
-                  <td className="p-3.5 font-medium text-white">Reviewer Posture</td>
-                  <td className="p-3.5 text-[#8a8a86]">Mechanical spelling correction</td>
-                  <td className="p-3.5 text-[#8a8a86]">Agreeable / flattering bias</td>
-                  <td className="p-3.5 font-medium text-[#4dab83] bg-[#1c2e24]/40">Top-journal editorial skepticism</td>
-                </tr>
-                <tr>
-                  <td className="p-3.5 font-medium text-white">Critical Detection</td>
-                  <td className="p-3.5 text-[#8a8a86]">Grammar &amp; word choice</td>
-                  <td className="p-3.5 text-[#8a8a86]">Misses unsupported causal links</td>
-                  <td className="p-3.5 font-medium text-[#4dab83] bg-[#1c2e24]/40">Causal overclaims, missing controls, power gaps</td>
-                </tr>
-                <tr>
-                  <td className="p-3.5 font-medium text-white">Citation Integrity</td>
-                  <td className="p-3.5 text-[#8a8a86]">Formatting style only</td>
-                  <td className="p-3.5 text-[#8a8a86]">Frequently hallucinates fake papers</td>
-                  <td className="p-3.5 font-medium text-[#4dab83] bg-[#1c2e24]/40">Live Crossref &amp; Retraction Watch verification</td>
-                </tr>
-                <tr>
-                  <td className="p-3.5 font-medium text-white">Cost &amp; Access</td>
-                  <td className="p-3.5 text-[#8a8a86]">$20 - $30 / month</td>
-                  <td className="p-3.5 text-[#8a8a86]">$20 / month + cloud logging</td>
-                  <td className="p-3.5 font-medium text-[#4dab83] bg-[#1c2e24]/60">100% Free &amp; Run Offline via Ollama</td>
-                </tr>
-              </tbody>
-            </table>
+      {/* ------------------------------------------------------------- */}
+      {/* 2. LOGO BAR (Scholarly Publisher Venues)                      */}
+      {/* ------------------------------------------------------------- */}
+      <section className="py-10 border-y border-[#eaeaea] bg-[#fafafa]">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 text-center">
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-[#888888] mb-6">
+            Empowering authors publishing in premier scientific journals worldwide
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-14 text-sm sm:text-base font-serif font-bold text-[#888888] tracking-wider">
+            <span className="hover:text-[#111111] transition">NATURE</span>
+            <span className="hover:text-[#111111] transition">SCIENCE</span>
+            <span className="hover:text-[#111111] transition">CELL</span>
+            <span className="hover:text-[#111111] transition">THE LANCET</span>
+            <span className="hover:text-[#111111] transition">PNAS</span>
+            <span className="hover:text-[#111111] transition">PLOS ONE</span>
+            <span className="hover:text-[#111111] transition">IEEE TPAMI</span>
           </div>
         </div>
       </section>
 
-      {/* The 6 Scoring Dimensions */}
-      <section className="py-16 border-b border-[#2e2e2e]">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6">
-          <div className="text-center max-w-xl mx-auto mb-10">
-            <div className="text-xs font-medium uppercase tracking-widest text-[#8a8a86] mb-1.5">
-              The Peer-Review Rubric
-            </div>
-            <h2 className="text-2xl font-serif font-bold text-white mb-2">
-              The 6 dimensions journal editors screen in triage
-            </h2>
-            <p className="text-xs text-[#9b9a97]">
-              Each dimension is scored 1 to 5, calibrated against high-impact publication expectations.
-            </p>
-          </div>
+      {/* ------------------------------------------------------------- */}
+      {/* 3. BENTO GRID SECTION: "AI where your research works."        */}
+      {/* ------------------------------------------------------------- */}
+      <section className="py-20 px-4 sm:px-6 bg-white">
+        <div className="mx-auto max-w-5xl">
+          <h2 className="text-3xl sm:text-5xl font-bold text-[#111111] tracking-tight mb-12">
+            AI where your research works.
+          </h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {/* Dim 1 */}
-            <div className="p-4 rounded-lg bg-[#202020] border border-[#2e2e2e] hover:border-[#383838] transition">
-              <div className="w-7 h-7 rounded bg-[#2a2a2a] text-white flex items-center justify-center font-bold text-xs mb-3">
-                1
-              </div>
-              <h3 className="text-sm font-semibold text-white mb-1.5">Originality &amp; Novelty</h3>
-              <p className="text-xs text-[#9b9a97] leading-relaxed mb-3">
-                Does the draft introduce a genuinely new finding, mechanism, or algorithm? Flags incremental-only advances.
-              </p>
-              <div className="text-[11px] text-[#4dab83] bg-[#1c2e24] p-2 rounded border border-[#284a36]">
-                Catches: &ldquo;Incremental delta without paradigm improvement.&rdquo;
-              </div>
-            </div>
-
-            {/* Dim 2 */}
-            <div className="p-4 rounded-lg bg-[#202020] border border-[#2e2e2e] hover:border-[#383838] transition">
-              <div className="w-7 h-7 rounded bg-[#2a2a2a] text-white flex items-center justify-center font-bold text-xs mb-3">
-                2
-              </div>
-              <h3 className="text-sm font-semibold text-white mb-1.5">Importance &amp; Broad Interest</h3>
-              <p className="text-xs text-[#9b9a97] leading-relaxed mb-3">
-                Would researchers outside the narrow subfield care? Checks whether the abstract links to fundamental questions.
-              </p>
-              <div className="text-[11px] text-[#529cca] bg-[#192636] p-2 rounded border border-[#254263]">
-                Catches: &ldquo;Hyper-specialized focus lacking cross-disciplinary impact.&rdquo;
-              </div>
-            </div>
-
-            {/* Dim 3 */}
-            <div className="p-4 rounded-lg bg-[#202020] border border-[#2e2e2e] hover:border-[#383838] transition">
-              <div className="w-7 h-7 rounded bg-[#2a2a2a] text-white flex items-center justify-center font-bold text-xs mb-3">
-                3
-              </div>
-              <h3 className="text-sm font-semibold text-white mb-1.5">Claims vs. Evidence</h3>
-              <p className="text-xs text-[#9b9a97] leading-relaxed mb-3">
-                Scans for overstatement patterns: claiming causation from correlative data, and missing negative controls.
-              </p>
-              <div className="text-[11px] text-[#f1b854] bg-[#2e281b] p-2 rounded border border-[#4a3e26]">
-                Catches: &ldquo;Causal claim made without rescue experiment or inhibitor.&rdquo;
-              </div>
-            </div>
-
-            {/* Dim 4 */}
-            <div className="p-4 rounded-lg bg-[#202020] border border-[#2e2e2e] hover:border-[#383838] transition">
-              <div className="w-7 h-7 rounded bg-[#2a2a2a] text-white flex items-center justify-center font-bold text-xs mb-3">
-                4
-              </div>
-              <h3 className="text-sm font-semibold text-white mb-1.5">Methodological Soundness</h3>
-              <p className="text-xs text-[#9b9a97] leading-relaxed mb-3">
-                Verifies sample size power justification, statistical test suitability, blinding, and randomization.
-              </p>
-              <div className="text-[11px] text-[#9a6dd7] bg-[#291f33] p-2 rounded border border-[#442c5c]">
-                Catches: &ldquo;Underpowered cohort (n=6) without power calculation.&rdquo;
-              </div>
-            </div>
-
-            {/* Dim 5 */}
-            <div className="p-4 rounded-lg bg-[#202020] border border-[#2e2e2e] hover:border-[#383838] transition">
-              <div className="w-7 h-7 rounded bg-[#2a2a2a] text-white flex items-center justify-center font-bold text-xs mb-3">
-                5
-              </div>
-              <h3 className="text-sm font-semibold text-white mb-1.5">Clarity &amp; Narrative Flow</h3>
-              <p className="text-xs text-[#9b9a97] leading-relaxed mb-3">
-                Evaluates abstract structure (Problem &rarr; Gap &rarr; Method &rarr; Finding &rarr; Impact) and readability.
-              </p>
-              <div className="text-[11px] text-[#4dab83] bg-[#1c2e24] p-2 rounded border border-[#284a36]">
-                Catches: &ldquo;Missing knowledge gap bridge in opening paragraph.&rdquo;
-              </div>
-            </div>
-
-            {/* Dim 6 */}
-            <div className="p-4 rounded-lg bg-[#202020] border border-[#2e2e2e] hover:border-[#383838] transition">
-              <div className="w-7 h-7 rounded bg-[#2a2a2a] text-white flex items-center justify-center font-bold text-xs mb-3">
-                6
-              </div>
-              <h3 className="text-sm font-semibold text-white mb-1.5">Prior Work &amp; Citations</h3>
-              <p className="text-xs text-[#9b9a97] leading-relaxed mb-3">
-                Live verification of DOIs against Crossref and Retraction Watch. Flags hallucinated citations and retracted works.
-              </p>
-              <div className="text-[11px] text-[#ff7373] bg-[#2d1f1f] p-2 rounded border border-[#4a2b2b]">
-                Catches: &ldquo;Unresolvable DOI indicating AI hallucination or retracted paper.&rdquo;
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 4-Persona Reviewer Simulation Preview */}
-      <section className="py-16 border-b border-[#2e2e2e]">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-            <div>
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-normal bg-[#222222] text-[#9b9a97] border border-[#333333] mb-3">
-                <Users className="w-3.5 h-3.5" />
-                <span>The Persona Simulation</span>
-              </div>
-              <h2 className="text-2xl font-serif font-bold text-white mb-3">
-                Simulate your 4 peer reviewers before the editor sees your draft.
-              </h2>
-              <p className="text-xs text-[#9b9a97] leading-relaxed mb-5 font-light">
-                Manuscripts are rarely rejected because of grammar; they are rejected because one specific reviewer persona found a vulnerability they couldn&apos;t forgive.
-              </p>
-
-              <div className="space-y-2 text-xs text-[#cccccc]">
-                <div className="p-2.5 rounded-lg bg-[#202020] border border-[#2e2e2e]">
-                  <span className="font-semibold text-white">🔬 Methods Specialist:</span> Scrutinizes controls, protocols, reagents, and reproducibility.
+          {/* Bento Top Row (Two 50% Cards) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            {/* Bento Card 1 */}
+            <div className="rounded-2xl border border-[#eaeaea] bg-white p-7 sm:p-8 shadow-xs flex flex-col justify-between hover:shadow-md transition">
+              <div>
+                <div className="flex items-center justify-between text-xs text-[#888888] mb-2 font-medium">
+                  <span>Editorial Synthesis</span>
+                  <div className="w-4 h-4 rounded-full bg-black text-white flex items-center justify-center text-[10px]">
+                    <Check className="w-2.5 h-2.5" />
+                  </div>
                 </div>
-                <div className="p-2.5 rounded-lg bg-[#202020] border border-[#2e2e2e]">
-                  <span className="font-semibold text-white">🧬 Domain Expert:</span> Evaluates biological significance against competitor baselines.
+                <h3 className="text-xl sm:text-2xl font-bold text-[#111111] tracking-tight mb-4">
+                  Bring everything into one system of record.
+                </h3>
+              </div>
+
+              {/* Mini UI Mockup inside card */}
+              <div className="rounded-xl border border-[#eaeaea] bg-[#fafafa] p-4 text-xs space-y-2 mt-4">
+                <div className="flex items-center justify-between pb-2 border-b border-[#ecece9]">
+                  <span className="font-semibold text-[#111111]">Pre-Submission Rubric</span>
+                  <span className="text-[11px] text-[#888888]">Calibrated to Nature</span>
                 </div>
-                <div className="p-2.5 rounded-lg bg-[#202020] border border-[#2e2e2e]">
-                  <span className="font-semibold text-white">📑 Journal Editor:</span> Assesses desk-rejection risk, target audience appeal, and broad scope.
-                </div>
-                <div className="p-2.5 rounded-lg bg-[#202020] border border-[#2e2e2e]">
-                  <span className="font-semibold text-white">📊 Biostatistician:</span> Checks normality distributions, p-hacking risks, and multiple testing corrections.
+                <div className="space-y-1.5 pt-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[#555555]">Originality &amp; Novelty</span>
+                    <span className="px-2 py-0.5 rounded bg-[#eefaf3] text-[#2b7a4b] font-medium">4.5 / 5.0</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[#555555]">Claims vs Evidence</span>
+                    <span className="px-2 py-0.5 rounded bg-[#faecd7] text-[#915809] font-medium">Overclaim Risk</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[#555555]">Methodological Soundness</span>
+                    <span className="px-2 py-0.5 rounded bg-[#f5f5f4] text-[#555555] font-medium">Power Calculation Needed</span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="p-5 rounded-lg bg-[#202020] border border-[#2e2e2e] space-y-3">
-              <div className="flex items-center justify-between pb-2 border-b border-[#2e2e2e]">
-                <span className="text-xs font-medium text-white">Simulated Fatal Reviewer Objection</span>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-[#2d1f1f] text-[#ff7373] border border-[#4a2b2b] uppercase font-bold">
-                  Priority A
-                </span>
+            {/* Bento Card 2 */}
+            <div className="rounded-2xl border border-[#eaeaea] bg-white p-7 sm:p-8 shadow-xs flex flex-col justify-between hover:shadow-md transition">
+              <div>
+                <div className="flex items-center justify-between text-xs text-[#888888] mb-2 font-medium">
+                  <span>Citation Audit</span>
+                  <div className="w-4 h-4 rounded-full bg-black text-white flex items-center justify-center text-[10px]">
+                    <Check className="w-2.5 h-2.5" />
+                  </div>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-bold text-[#111111] tracking-tight mb-4">
+                  Get answers instantly with live verification.
+                </h3>
               </div>
 
-              <blockquote className="text-xs italic text-[#cccccc] border-l-2 border-[#ff7373] pl-3 py-0.5 leading-relaxed font-serif">
-                &ldquo;The authors assert that compound K directly inhibits kinase phosphorylation. However, Figure 3B lacks the total protein loading control, and no rescue assay is presented. Without this, the causal claim cannot be accepted.&rdquo;
-              </blockquote>
+              {/* Chart & Search Mockup */}
+              <div className="rounded-xl border border-[#eaeaea] bg-[#fafafa] p-4 text-xs space-y-3 mt-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-full border-4 border-[#0075eb] border-t-[#0075eb] border-r-[#0075eb] border-b-[#cce3fb] border-l-[#0075eb] flex items-center justify-center font-bold text-sm text-[#0075eb]">
+                    94%
+                  </div>
+                  <div>
+                    <div className="font-semibold text-[#111111]">Recency Profile</div>
+                    <div className="text-[11px] text-[#777777]">94% citations published within last 5 years</div>
+                  </div>
+                </div>
 
-              <div className="p-3 rounded bg-[#1b251f] text-xs text-[#a3d4b6] border border-[#284232]">
-                <span className="font-semibold text-white block mb-0.5">Required Pre-Submission Resolution:</span>
-                Add the non-phosphorylated total protein control to Figure 3B, or revise text to describe association rather than direct inhibition.
+                <div className="flex items-center gap-2 p-2 rounded-lg bg-white border border-[#e5e5e5] shadow-xs text-xs">
+                  <Search className="w-3.5 h-3.5 text-[#0075eb]" />
+                  <span className="text-[#555555] truncate">What are our biggest desk-reject risks?</span>
+                  <span className="ml-auto w-5 h-5 rounded bg-[#0075eb] text-white flex items-center justify-center text-[10px]">
+                    &rarr;
+                  </span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Free Research Tools Grid */}
-      <section className="py-16 border-b border-[#2e2e2e]">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8">
-            <div>
-              <div className="text-xs font-medium uppercase tracking-widest text-[#8a8a86] mb-1">
-                Modular Utilities
+          {/* Bento Middle Row (Wide 100% Card) */}
+          <div className="rounded-2xl border border-[#eaeaea] bg-[#fbfbfa] p-7 sm:p-8 shadow-xs mb-6 hover:shadow-md transition">
+            <div className="flex items-center justify-between text-xs text-[#888888] mb-2 font-medium">
+              <span>Peer-Review Simulation</span>
+              <div className="w-4 h-4 rounded-full bg-black text-white flex items-center justify-center text-[10px]">
+                <Check className="w-2.5 h-2.5" />
               </div>
-              <h2 className="text-2xl font-serif font-bold text-white">
-                Standalone submission tools
-              </h2>
             </div>
-            <Link
-              href="/tools"
-              className="mt-2 sm:mt-0 text-xs text-emerald-400 hover:text-emerald-300 font-medium"
-            >
-              View all 8 tools &rarr;
-            </Link>
+            <h3 className="text-xl sm:text-2xl font-bold text-[#111111] tracking-tight mb-4">
+              Keep reviews moving 24/7 with expert agents.
+            </h3>
+
+            {/* 4 Persona Cards in Bento */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-4">
+              <div className="p-3.5 rounded-xl bg-white border border-[#e5e5e5] shadow-xs space-y-2">
+                <div className="flex items-center gap-2 font-semibold text-xs text-[#111111]">
+                  <FlaskConical className="w-3.5 h-3.5 text-[#0075eb]" />
+                  <span>Methods Specialist</span>
+                </div>
+                <p className="text-[11px] text-[#666666]">
+                  Assesses CRISPR library representation, sequencing coverage, and negative controls.
+                </p>
+                <div className="text-[10px] font-semibold text-[#0075eb] bg-[#eef5fd] px-2 py-0.5 rounded">
+                  Protocol Reproducibility
+                </div>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-white border border-[#e5e5e5] shadow-xs space-y-2">
+                <div className="flex items-center gap-2 font-semibold text-xs text-[#111111]">
+                  <GraduationCap className="w-3.5 h-3.5 text-[#e38817]" />
+                  <span>Domain Expert</span>
+                </div>
+                <p className="text-[11px] text-[#666666]">
+                  Evaluates biological plausibility, pathway mechanism, and novelty against 2024 literature.
+                </p>
+                <div className="text-[10px] font-semibold text-[#915809] bg-[#faecd7] px-2 py-0.5 rounded">
+                  Mechanistic Novelty
+                </div>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-white border border-[#e5e5e5] shadow-xs space-y-2">
+                <div className="flex items-center gap-2 font-semibold text-xs text-[#111111]">
+                  <BookOpen className="w-3.5 h-3.5 text-[#9a6dd7]" />
+                  <span>Senior Journal Editor</span>
+                </div>
+                <p className="text-[11px] text-[#666666]">
+                  Screens broad interest, translational implications, and immediate desk-rejection hazards.
+                </p>
+                <div className="text-[10px] font-semibold text-[#7642bb] bg-[#f3edf9] px-2 py-0.5 rounded">
+                  Desk-Reject Triage
+                </div>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-white border border-[#e5e5e5] shadow-xs space-y-2">
+                <div className="flex items-center gap-2 font-semibold text-xs text-[#111111]">
+                  <BarChart3 className="w-3.5 h-3.5 text-[#2b7a4b]" />
+                  <span>Senior Biostatistician</span>
+                </div>
+                <p className="text-[11px] text-[#666666]">
+                  Audits sample power calculations, multiplicity adjustments (FDR), and variance metrics.
+                </p>
+                <div className="text-[10px] font-semibold text-[#2b7a4b] bg-[#eefaf3] px-2 py-0.5 rounded">
+                  Statistical Validity
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            <Link
-              href="/tools/journal-fit"
-              className="p-4 rounded-lg bg-[#202020] border border-[#2e2e2e] hover:border-[#383838] transition"
-            >
-              <div className="text-xl mb-2 select-none">📖</div>
-              <h3 className="text-xs font-semibold text-white mb-1">Journal Fit Predictor</h3>
-              <p className="text-[11px] text-[#9b9a97] leading-relaxed">
-                Matches title + abstract against 1,300+ journals to rank Reach, Realistic, and Fallback venues.
-              </p>
-            </Link>
-
+          {/* 5 Bottom Quick Tool Integration Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
             <Link
               href="/tools/reference-checker"
-              className="p-4 rounded-lg bg-[#202020] border border-[#2e2e2e] hover:border-[#383838] transition"
+              className="p-4 rounded-xl border border-[#eaeaea] bg-white hover:border-[#cccccc] hover:shadow-sm transition flex flex-col justify-between group"
             >
-              <div className="text-xl mb-2 select-none">🔍</div>
-              <h3 className="text-xs font-semibold text-white mb-1">Reference &amp; Retraction Checker</h3>
-              <p className="text-[11px] text-[#9b9a97] leading-relaxed">
-                Paste bibliography to verify Crossref DOIs in real time, catching hallucinations and retracted papers.
-              </p>
-            </Link>
-
-            <Link
-              href="/tools/citation-claim"
-              className="p-4 rounded-lg bg-[#202020] border border-[#2e2e2e] hover:border-[#383838] transition"
-            >
-              <div className="text-xl mb-2 select-none">✨</div>
-              <h3 className="text-xs font-semibold text-white mb-1">Citation Claim Validator</h3>
-              <p className="text-[11px] text-[#9b9a97] leading-relaxed">
-                Validates whether the cited study actually supports the sentence attached to it.
-              </p>
+              <div className="w-8 h-8 rounded-lg bg-[#eef5fd] text-[#0075eb] flex items-center justify-center mb-3">
+                <CheckCircle2 className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="font-semibold text-xs text-[#111111] group-hover:text-[#0075eb] flex items-center justify-between">
+                  <span>Reference Audit</span>
+                  <span className="text-[#888888]">&rarr;</span>
+                </div>
+                <p className="text-[11px] text-[#777777] mt-0.5">Crossref verification</p>
+              </div>
             </Link>
 
             <Link
               href="/tools/prisma"
-              className="p-4 rounded-lg bg-[#202020] border border-[#2e2e2e] hover:border-[#383838] transition"
+              className="p-4 rounded-xl border border-[#eaeaea] bg-white hover:border-[#cccccc] hover:shadow-sm transition flex flex-col justify-between group"
             >
-              <div className="text-xl mb-2 select-none">📊</div>
-              <h3 className="text-xs font-semibold text-white mb-1">PRISMA Flow Diagram</h3>
-              <p className="text-[11px] text-[#9b9a97] leading-relaxed">
-                Client-side systematic review flow generator. Reconciles screening counts and exports SVG.
-              </p>
+              <div className="w-8 h-8 rounded-lg bg-[#faecd7] text-[#915809] flex items-center justify-center mb-3">
+                <Layers className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="font-semibold text-xs text-[#111111] group-hover:text-[#915809] flex items-center justify-between">
+                  <span>PRISMA 2020</span>
+                  <span className="text-[#888888]">&rarr;</span>
+                </div>
+                <p className="text-[11px] text-[#777777] mt-0.5">Flow diagrams &amp; SVG</p>
+              </div>
+            </Link>
+
+            <Link
+              href="/tools/journal-fit"
+              className="p-4 rounded-xl border border-[#eaeaea] bg-white hover:border-[#cccccc] hover:shadow-sm transition flex flex-col justify-between group"
+            >
+              <div className="w-8 h-8 rounded-lg bg-[#fdeeee] text-[#c52b2b] flex items-center justify-center mb-3">
+                <BookOpen className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="font-semibold text-xs text-[#111111] group-hover:text-[#c52b2b] flex items-center justify-between">
+                  <span>Journal Fit</span>
+                  <span className="text-[#888888]">&rarr;</span>
+                </div>
+                <p className="text-[11px] text-[#777777] mt-0.5">Match 20+ venues</p>
+              </div>
+            </Link>
+
+            <Link
+              href="/tools/citation-claim"
+              className="p-4 rounded-xl border border-[#eaeaea] bg-white hover:border-[#cccccc] hover:shadow-sm transition flex flex-col justify-between group"
+            >
+              <div className="w-8 h-8 rounded-lg bg-[#eefaf3] text-[#2b7a4b] flex items-center justify-center mb-3">
+                <Sparkles className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="font-semibold text-xs text-[#111111] group-hover:text-[#2b7a4b] flex items-center justify-between">
+                  <span>Citation Claim</span>
+                  <span className="text-[#888888]">&rarr;</span>
+                </div>
+                <p className="text-[11px] text-[#777777] mt-0.5">Audit claim accuracy</p>
+              </div>
             </Link>
 
             <Link
               href="/tools/cover-letter"
-              className="p-4 rounded-lg bg-[#202020] border border-[#2e2e2e] hover:border-[#383838] transition"
+              className="p-4 rounded-xl border border-[#eaeaea] bg-white hover:border-[#cccccc] hover:shadow-sm transition flex flex-col justify-between group col-span-2 sm:col-span-1"
             >
-              <div className="text-xl mb-2 select-none">✉️</div>
-              <h3 className="text-xs font-semibold text-white mb-1">Cover Letter Generator</h3>
-              <p className="text-[11px] text-[#9b9a97] leading-relaxed">
-                Drafts formal editor-ready submission letter conveying novelty, journal scope, and reviewers.
-              </p>
-            </Link>
-
-            <Link
-              href="/tools/response-builder"
-              className="p-4 rounded-lg bg-[#202020] border border-[#2e2e2e] hover:border-[#383838] transition"
-            >
-              <div className="text-xl mb-2 select-none">📝</div>
-              <h3 className="text-xs font-semibold text-white mb-1">Response to Reviewers</h3>
-              <p className="text-[11px] text-[#9b9a97] leading-relaxed">
-                Converts decision letters into a point-by-point rebuttal matrix and revision checklist.
-              </p>
+              <div className="w-8 h-8 rounded-lg bg-[#f3edf9] text-[#7642bb] flex items-center justify-center mb-3">
+                <FileText className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="font-semibold text-xs text-[#111111] group-hover:text-[#7642bb] flex items-center justify-between">
+                  <span>Cover Letter</span>
+                  <span className="text-[#888888]">&rarr;</span>
+                </div>
+                <p className="text-[11px] text-[#777777] mt-0.5">Editor-grade letters</p>
+              </div>
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Local-First & Privacy Section */}
-      <section className="py-16 text-center">
-        <div className="mx-auto max-w-2xl px-4 sm:px-6">
-          <div className="text-3xl mb-3 select-none">🔒</div>
-          <h2 className="text-2xl font-serif font-bold text-white mb-2">
-            Your unpublished research never leaves your control.
+      {/* ------------------------------------------------------------- */}
+      {/* 4. TESTIMONIALS SECTION: "Trusted by teams that ship."        */}
+      {/* ------------------------------------------------------------- */}
+      <section className="py-20 px-4 sm:px-6 bg-white border-t border-[#eaeaea]">
+        <div className="mx-auto max-w-5xl">
+          <h2 className="text-3xl sm:text-5xl font-bold text-[#111111] tracking-tight mb-12">
+            Trusted by researchers that publish.
           </h2>
-          <p className="text-xs text-[#9b9a97] leading-relaxed mb-6 font-light">
-            You don&apos;t have to trust commercial clouds with your unpublished discoveries. ManuView supports <strong>100% offline local AI execution</strong> using Ollama (<code className="text-[#4dab83]">llama3.3</code>, <code className="text-[#4dab83]">mistral</code>, or <code className="text-[#4dab83]">deepseek-r1</code>).
-          </p>
 
-          <div className="inline-flex items-center gap-2 p-2.5 rounded-lg bg-[#202020] border border-[#2e2e2e] text-xs text-[#cccccc]">
-            <Cpu className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Zero model training &bull; Zero database retention &bull; 100% Open Source MIT License</span>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Duotone Card 1: Red / Coral (Nature Communications) */}
+            <div className="relative rounded-2xl overflow-hidden aspect-[4/5] bg-gradient-to-br from-[#c93b3b] via-[#d64545] to-[#a82424] text-white p-7 flex flex-col justify-between shadow-md">
+              <div className="flex items-center justify-between z-10">
+                <span className="font-serif font-bold text-base tracking-tight">nature communications</span>
+              </div>
+
+              <div className="z-10 space-y-4">
+                <p className="text-xs sm:text-sm leading-relaxed font-medium text-white/95">
+                  &ldquo;ManuView caught a fatal multiple-testing multiplicity flaw in our Methods that would have triggered immediate desk rejection. We fixed it before submission and were accepted.&rdquo;
+                </p>
+                <div className="pt-2 border-t border-white/20">
+                  <div className="font-semibold text-xs">Dr. Aris Vance</div>
+                  <div className="text-[11px] text-white/80">Lead Investigator, Oncology Institute</div>
+                </div>
+              </div>
+
+              {/* Duotone Background Grain/Wave Overlay */}
+              <div className="absolute inset-0 bg-black/15 pointer-events-none" />
+            </div>
+
+            {/* Duotone Card 2: Ocean Blue (Cell Reports) */}
+            <div className="relative rounded-2xl overflow-hidden aspect-[4/5] bg-gradient-to-br from-[#1e5088] via-[#2463aa] to-[#123863] text-white p-7 flex flex-col justify-between shadow-md">
+              <div className="flex items-center justify-between z-10">
+                <span className="font-serif font-bold text-base tracking-tight">Cell Reports</span>
+              </div>
+
+              <div className="z-10 space-y-4">
+                <p className="text-xs sm:text-sm leading-relaxed font-medium text-white/95">
+                  &ldquo;The 4-persona peer-review simulation prepared our team for the exact objections our referees raised during revision. It is like having an editorial board in your pocket.&rdquo;
+                </p>
+                <div className="pt-2 border-t border-white/20">
+                  <div className="font-semibold text-xs">Prof. Elena Rostova</div>
+                  <div className="text-[11px] text-white/80">Chair of Computational Genomics</div>
+                </div>
+              </div>
+
+              {/* Duotone Background Grain/Wave Overlay */}
+              <div className="absolute inset-0 bg-black/15 pointer-events-none" />
+            </div>
+
+            {/* Duotone Card 3: Golden Amber (The Lancet) */}
+            <div className="relative rounded-2xl overflow-hidden aspect-[4/5] bg-gradient-to-br from-[#b87d19] via-[#c98d24] to-[#8f5e0c] text-white p-7 flex flex-col justify-between shadow-md">
+              <div className="flex items-center justify-between z-10">
+                <span className="font-serif font-bold text-base tracking-tight">THE LANCET</span>
+              </div>
+
+              <div className="z-10 space-y-4">
+                <p className="text-xs sm:text-sm leading-relaxed font-medium text-white/95">
+                  &ldquo;We ran all 82 references through the integrity scanner and caught a retracted paper we did not know about. Saved our lab from an embarrassing correction notice.&rdquo;
+                </p>
+                <div className="pt-2 border-t border-white/20">
+                  <div className="font-semibold text-xs">Dr. Marcus Sorkin</div>
+                  <div className="text-[11px] text-white/80">Director of Clinical Biostatistics</div>
+                </div>
+              </div>
+
+              {/* Duotone Background Grain/Wave Overlay */}
+              <div className="absolute inset-0 bg-black/15 pointer-events-none" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------------- */}
+      {/* 5. GET STARTED TODAY CTA SECTION                              */}
+      {/* ------------------------------------------------------------- */}
+      <section className="py-24 sm:py-32 px-4 sm:px-6 bg-[#fafafa] border-t border-[#eaeaea] text-center">
+        <div className="mx-auto max-w-2xl">
+          <h2 className="text-3xl sm:text-5xl font-bold text-[#111111] tracking-tight mb-6">
+            Get started today.
+          </h2>
+
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <Link
+              href="/scan"
+              className="px-5 py-2.5 rounded-md bg-[#0075eb] hover:bg-[#0066cc] text-white font-medium text-sm shadow-xs transition active:scale-[0.98]"
+            >
+              Try ManuView free
+            </Link>
+
+            <Link
+              href="/examples"
+              className="px-4 py-2.5 rounded-md text-[#111111] hover:text-[#0075eb] hover:bg-white font-medium text-sm transition"
+            >
+              Explore sample preprints
+            </Link>
           </div>
         </div>
       </section>

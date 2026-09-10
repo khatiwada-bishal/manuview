@@ -262,12 +262,12 @@ export default function ScanPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#191919] text-[#e6e6e6] py-10">
+    <div className="min-h-screen bg-white text-[#111111] py-12">
       <div className="mx-auto max-w-4xl px-4 sm:px-6">
         
         {/* Top Breadcrumb & Page Icon */}
         <div className="mb-6 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs text-[#8a8a86]">
+          <div className="flex items-center gap-2 text-xs text-[#777777]">
             <span>Workspace</span>
             <span>/</span>
             <span>Diagnostics</span>
@@ -278,7 +278,7 @@ export default function ScanPage() {
           <button
             type="button"
             onClick={() => setSettingsOpen(true)}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#222222] hover:bg-[#2a2a2a] border border-[#333333] text-xs text-[#9b9a97] hover:text-[#e6e6e6] transition"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-[#fafafa] border border-[#eaeaea] text-xs text-[#555555] hover:text-[#111111] shadow-2xs transition"
           >
             <Settings className="w-3.5 h-3.5" />
             <span>{activeProviderInfo.name}</span>
@@ -288,19 +288,19 @@ export default function ScanPage() {
         {/* Notion Page Header */}
         <div className="mb-8">
           <div className="text-4xl mb-3 select-none">📄</div>
-          <h1 className="text-3xl sm:text-4xl font-serif font-bold text-white tracking-tight mb-2">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#111111] mb-2 font-serif">
             Manuscript Pre-Submission Diagnostic
           </h1>
-          <p className="text-sm text-[#9b9a97] font-light">
+          <p className="text-sm text-[#666666] font-light">
             Calibrated peer-review rubric to surface desk-rejection hazards, causal overclaims, missing controls, and citation integrity bugs.
           </p>
         </div>
 
         {/* Notion Properties Block (Database metadata rows) */}
-        <div className="mb-8 rounded-lg bg-[#202020] border border-[#2e2e2e] p-3 text-xs divide-y divide-[#2a2a2a]">
+        <div className="mb-8 rounded-xl bg-[#fafafa] border border-[#eaeaea] p-4 text-xs divide-y divide-[#eaeaea]">
           {/* Property 1: Target Journal */}
           <div className="flex items-center py-2 px-1">
-            <div className="w-36 flex items-center gap-2 text-[#8a8a86]">
+            <div className="w-36 flex items-center gap-2 text-[#777777]">
               <Tag className="w-3.5 h-3.5" />
               <span>Target Journal</span>
             </div>
@@ -310,22 +310,22 @@ export default function ScanPage() {
                 value={targetJournal}
                 onChange={(e) => setTargetJournal(e.target.value)}
                 placeholder="e.g., Nature Communications, Cell, Lancet"
-                className="w-full bg-transparent text-[#e6e6e6] placeholder-[#555555] focus:outline-none text-xs hover:bg-[#262626] px-2 py-1 rounded transition"
+                className="w-full bg-transparent text-[#111111] placeholder-[#888888] focus:outline-none text-xs hover:bg-white px-2 py-1 rounded-lg transition"
               />
             </div>
           </div>
 
           {/* Property 2: AI Diagnostic Engine */}
           <div className="flex items-center py-2 px-1">
-            <div className="w-36 flex items-center gap-2 text-[#8a8a86]">
+            <div className="w-36 flex items-center gap-2 text-[#777777]">
               <SlidersHorizontal className="w-3.5 h-3.5" />
               <span>AI Engine</span>
             </div>
             <div className="flex-1 flex flex-wrap items-center gap-2">
               {/* 1. Connected & Operational -> Green */}
               {apiStatus === 'connected' && (
-                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-[#1c2e24] text-[#4dab83] border border-[#284a36]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#4dab83]" />
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-[#e6f4ea] text-[#137333] border border-[#ceead6]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#1e8e3e]" />
                   {activeProviderInfo.name} ({activeProviderInfo.model})
                 </span>
               )}
@@ -333,10 +333,10 @@ export default function ScanPage() {
               {/* 2. Unconfigured / Missing Key -> Orange */}
               {apiStatus === 'unconfigured' && (
                 <span 
-                  className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-[#2e2316] text-[#e09f3e] border border-[#53391d]"
+                  className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-[#fef7e0] text-[#b06000] border border-[#fce8b2]"
                   title="No API key configured in browser settings or .env.local"
                 >
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#e09f3e]" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#b06000]" />
                   No API Key (Setup Required)
                 </span>
               )}
@@ -344,18 +344,18 @@ export default function ScanPage() {
               {/* 3. Invalid Key / Connection Failed -> Red */}
               {apiStatus === 'error' && (
                 <span 
-                  className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-[#2d1f1f] text-[#eb5757] border border-[#4a2828]"
+                  className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-[#fce8e6] text-[#c5221f] border border-[#fad2cf]"
                   title={apiErrorMessage || "Connection probe failed"}
                 >
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#eb5757]" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#c5221f]" />
                   {activeProviderInfo.name}: Connection Failed
                 </span>
               )}
 
               {/* 4. Probing / Testing -> Blue */}
               {apiStatus === 'checking' && (
-                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-[#1c2430] text-[#58a6ff] border border-[#263850]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#58a6ff] animate-pulse" />
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-[#f0f7ff] text-[#0075eb] border border-[#d0e5ff]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#0075eb] animate-pulse" />
                   Testing {activeProviderInfo.name}...
                 </span>
               )}
@@ -363,7 +363,7 @@ export default function ScanPage() {
               <button
                 type="button"
                 onClick={() => setSettingsOpen(true)}
-                className="text-[11px] text-[#8a8a86] hover:text-[#e6e6e6] hover:underline"
+                className="text-[11px] text-[#0075eb] hover:underline font-medium"
               >
                 Configure
               </button>
@@ -372,10 +372,10 @@ export default function ScanPage() {
                 type="button"
                 onClick={checkProviderStatus}
                 disabled={pinging}
-                className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded bg-[#262626] hover:bg-[#2e2e2e] border border-[#333333] text-[#cfcfcd] hover:text-white transition disabled:opacity-50"
+                className="inline-flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-lg bg-white hover:bg-[#fafafa] border border-[#eaeaea] text-[#37352f] shadow-2xs transition disabled:opacity-50"
                 title="Test API connection & ping latency"
               >
-                <Activity className={`w-3 h-3 ${pinging ? "animate-spin text-emerald-400" : "text-[#8a8a86]"}`} />
+                <Activity className={`w-3 h-3 ${pinging ? "animate-spin text-emerald-400" : "text-[#777777]"}`} />
                 <span>{pinging ? "Testing Ping..." : "Check Connection"}</span>
               </button>
 
@@ -401,18 +401,18 @@ export default function ScanPage() {
 
           {/* Property 3: Audit Scope */}
           <div className="flex items-center py-2 px-1">
-            <div className="w-36 flex items-center gap-2 text-[#8a8a86]">
+            <div className="w-36 flex items-center gap-2 text-[#777777]">
               <Hash className="w-3.5 h-3.5" />
               <span>Diagnostic Scope</span>
             </div>
-            <div className="flex-1 text-[#9b9a97]">
+            <div className="flex-1 text-[#666666]">
               6 Dimensions &bull; 4 Reviewer Personas &bull; Crossref DOI Resolution &bull; Retraction Screening
             </div>
           </div>
 
           {/* Property 4: Privacy & Retention */}
           <div className="flex items-center py-2 px-1">
-            <div className="w-36 flex items-center gap-2 text-[#8a8a86]">
+            <div className="w-36 flex items-center gap-2 text-[#777777]">
               <ShieldCheck className="w-3.5 h-3.5" />
               <span>Data Retention</span>
             </div>
@@ -426,7 +426,7 @@ export default function ScanPage() {
         {!report && (
           <div className="space-y-6">
             {/* Notion Callout Box: Sample Preprint Tip */}
-            <div className="flex items-start gap-3 p-3.5 rounded-lg bg-[#222222] border border-[#2e2e2e] text-xs text-[#cccccc]">
+            <div className="flex items-start gap-3 p-4 rounded-xl bg-[#fafafa] border border-[#eaeaea] text-xs text-[#555555]">
               <span className="text-base select-none">💡</span>
               <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <span>
@@ -435,7 +435,7 @@ export default function ScanPage() {
                 <button
                   type="button"
                   onClick={handleLoadSample}
-                  className="px-2.5 py-1 rounded bg-[#2c2c2c] hover:bg-[#383838] text-white font-medium text-xs border border-[#404040] transition flex items-center gap-1 self-start sm:self-auto whitespace-nowrap"
+                  className="px-3 py-1.5 rounded-lg bg-white hover:bg-[#fafafa] text-[#37352f] font-medium text-xs border border-[#eaeaea] shadow-2xs transition flex items-center gap-1 self-start sm:self-auto whitespace-nowrap"
                 >
                   <RefreshCw className="w-3 h-3" />
                   Load Sample Preprint
@@ -445,20 +445,20 @@ export default function ScanPage() {
 
             <form onSubmit={handleRunScan} className="space-y-5">
               {/* Document Input: Tabs / File or Text */}
-              <div className="rounded-lg bg-[#202020] border border-[#2e2e2e] p-5 space-y-4">
-                <div className="text-xs font-medium text-[#8a8a86] uppercase tracking-wider">
+              <div className="rounded-xl bg-[#fafafa] border border-[#eaeaea] p-6 space-y-4">
+                <div className="text-xs font-medium text-[#777777] uppercase tracking-wider">
                   Manuscript Draft
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* File Upload Box */}
                   <div>
-                    <label className="text-xs text-[#9b9a97] mb-1.5 block font-medium">
+                    <label className="text-xs text-[#666666] mb-1.5 block font-medium">
                       Upload Document (.docx, .txt)
                     </label>
-                    <label className="flex flex-col items-center justify-center border border-dashed border-[#383838] hover:border-[#666666] rounded-lg p-6 bg-[#1b1b1b] cursor-pointer transition group">
-                      <Upload className="w-6 h-6 text-[#6b6a67] group-hover:text-[#e6e6e6] transition mb-2" />
-                      <span className="text-xs text-[#cccccc] font-medium text-center truncate max-w-full px-2">
+                    <label className="flex flex-col items-center justify-center border border-dashed border-[#d0d0d0] hover:border-[#0075eb] rounded-xl p-6 bg-white hover:bg-[#f0f7ff]/20 cursor-pointer transition group">
+                      <Upload className="w-6 h-6 text-[#888888] group-hover:text-[#0075eb] transition mb-2" />
+                      <span className="text-xs text-[#555555] font-medium text-center truncate max-w-full px-2">
                         {file ? file.name : "Click to choose file or drag & drop"}
                       </span>
                       <span className="text-[11px] text-[#787774] mt-1">Word (.docx) or Text file</span>
@@ -473,7 +473,7 @@ export default function ScanPage() {
 
                   {/* Direct Paste Box */}
                   <div>
-                    <label className="text-xs text-[#9b9a97] mb-1.5 block font-medium">
+                    <label className="text-xs text-[#666666] mb-1.5 block font-medium">
                       Or Paste Manuscript Text
                     </label>
                     <textarea
@@ -481,13 +481,13 @@ export default function ScanPage() {
                       value={inputText}
                       onChange={(e) => setInputText(e.target.value)}
                       placeholder="Paste Title, Abstract, Methods, and References here..."
-                      className="w-full p-3 rounded-lg bg-[#1b1b1b] border border-[#333333] text-xs text-[#e6e6e6] placeholder-[#555555] focus:outline-none focus:border-[#666666] font-mono leading-relaxed transition resize-y"
+                      className="w-full p-3 rounded-xl bg-white border border-[#eaeaea] text-xs text-[#111111] placeholder-[#888888] focus:outline-none focus:border-[#0075eb] font-mono leading-relaxed transition resize-y shadow-2xs"
                     />
                   </div>
                 </div>
 
                 {error && (
-                  <div className="p-3 rounded-lg bg-[rgba(224,62,62,0.12)] border border-[rgba(224,62,62,0.25)] text-[#ff7373] text-xs flex items-center gap-2">
+                  <div className="p-3 rounded-lg bg-[rgba(224,62,62,0.12)] border border-[rgba(224,62,62,0.25)] text-[#c5221f] text-xs flex items-center gap-2">
                     <AlertCircle className="w-4 h-4 flex-shrink-0" />
                     <span>{error}</span>
                   </div>
@@ -496,12 +496,12 @@ export default function ScanPage() {
 
               {/* Connection Status Callout Banners */}
               {apiStatus === 'unconfigured' && (
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-lg bg-[#2e2316] border border-[#53391d] text-xs text-[#f1b854]">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-[#fef7e0] border border-[#fce8b2] text-xs text-[#b06000]">
                   <div className="flex items-start gap-2.5">
                     <AlertTriangle className="w-4 h-4 text-[#e09f3e] flex-shrink-0 mt-0.5" />
                     <div>
-                      <span className="font-semibold text-white block">LLM API Connection Required:</span>
-                      <span className="text-[#d8c39f]">
+                      <span className="font-semibold text-[#8f4a00] block">LLM API Connection Required:</span>
+                      <span className="text-[#8f4a00]/90">
                         Pre-submission diagnostic scans require an active AI model to generate peer-review simulation and editorial triage. You can upload files or paste text now, but must configure an API key to run the scan.
                       </span>
                     </div>
@@ -509,7 +509,7 @@ export default function ScanPage() {
                   <button
                     type="button"
                     onClick={() => setSettingsOpen(true)}
-                    className="px-3 py-1.5 rounded bg-[#3d2f1f] hover:bg-[#4d3b26] text-white font-medium text-xs border border-[#6b4a26] transition whitespace-nowrap self-start sm:self-auto"
+                    className="px-3 py-1.5 rounded-lg bg-[#fcedd7] hover:bg-[#fae1bc] text-[#915809] font-medium text-xs border border-[#f5cf9c] transition whitespace-nowrap self-start sm:self-auto"
                   >
                     Configure AI Settings
                   </button>
@@ -517,12 +517,12 @@ export default function ScanPage() {
               )}
 
               {apiStatus === 'error' && (
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-lg bg-[#2d1f1f] border border-[#4a2828] text-xs text-[#ff9999]">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-[#fce8e6] border border-[#fad2cf] text-xs text-[#c5221f]">
                   <div className="flex items-start gap-2.5">
                     <AlertCircle className="w-4 h-4 text-[#eb5757] flex-shrink-0 mt-0.5" />
                     <div>
-                      <span className="font-semibold text-white block">API Key Not Working / Unreachable:</span>
-                      <span className="font-mono text-[11px] text-[#ffb3b3] block mt-0.5 break-words">
+                      <span className="font-semibold text-[#c5221f] block">API Key Not Working / Unreachable:</span>
+                      <span className="font-mono text-[11px] text-[#c5221f] block mt-0.5 break-words">
                         {apiErrorMessage || "Unable to communicate with the configured model. Please verify your credentials."}
                       </span>
                     </div>
@@ -531,14 +531,14 @@ export default function ScanPage() {
                     <button
                       type="button"
                       onClick={checkProviderStatus}
-                      className="px-2.5 py-1.5 rounded bg-[#382323] hover:bg-[#472b2b] text-white font-medium text-xs border border-[#5c3333] transition whitespace-nowrap"
+                      className="px-3 py-1.5 rounded-lg bg-white hover:bg-[#fafafa] text-[#c5221f] font-medium text-xs border border-[#fad2cf] transition whitespace-nowrap"
                     >
                       Retry Ping
                     </button>
                     <button
                       type="button"
                       onClick={() => setSettingsOpen(true)}
-                      className="px-3 py-1.5 rounded bg-[#4a2828] hover:bg-[#5a3232] text-white font-medium text-xs border border-[#6e3b3b] transition whitespace-nowrap"
+                      className="px-3 py-1.5 rounded-lg bg-[#fad2cf] hover:bg-[#f8beba] text-[#c5221f] font-medium text-xs border border-[#f5a7a2] transition whitespace-nowrap"
                     >
                       Fix in Settings
                     </button>
@@ -547,7 +547,7 @@ export default function ScanPage() {
               )}
 
               {apiStatus === 'checking' && (
-                <div className="p-3 rounded-lg bg-[#1c2430] border border-[#263850] text-xs text-[#8cb4f5] flex items-center gap-2">
+                <div className="p-3.5 rounded-xl bg-[#f0f7ff] border border-[#d0e5ff] text-xs text-[#0075eb] flex items-center gap-2">
                   <RefreshCw className="w-4 h-4 animate-spin text-[#58a6ff] flex-shrink-0" />
                   <span>Verifying LLM API connection status...</span>
                 </div>
@@ -559,8 +559,8 @@ export default function ScanPage() {
                 disabled={loading || apiStatus !== 'connected'}
                 className={`w-full py-3 px-4 rounded-lg font-medium text-xs sm:text-sm border transition flex items-center justify-center gap-2 shadow-sm ${
                   apiStatus === 'connected' && !loading
-                    ? "bg-[#252525] hover:bg-[#2d2d2d] text-white border-[#3d3d3d] hover:border-[#555555] active:scale-[0.99] cursor-pointer"
-                    : "bg-[#1c1c1c] text-[#6b6a67] border-[#2c2c2c] opacity-60 cursor-not-allowed"
+                    ? "bg-[#0075eb] hover:bg-[#0066cc] text-[#111111] border-[#0075eb] hover:border-[#0066cc] active:scale-[0.99] cursor-pointer shadow-sm"
+                    : "bg-[#eaeaea] text-[#888888] border-[#e0e0e0] opacity-80 cursor-not-allowed"
                 }`}
                 title={apiStatus !== 'connected' ? "Valid LLM API connection required to run diagnostic scan" : "Run Pre-Submission Diagnostic Scan"}
               >
@@ -584,16 +584,16 @@ export default function ScanPage() {
         {report && (
           <div className="space-y-8 animate-fade-in">
             {/* Top Navigation Bar in Results */}
-            <div className="flex items-center justify-between pb-3 border-b border-[#2e2e2e]">
+            <div className="flex items-center justify-between pb-3 border-b border-[#eaeaea]">
               <button
                 onClick={() => setReport(null)}
-                className="flex items-center gap-1.5 text-xs text-[#9b9a97] hover:text-[#e6e6e6] hover:bg-[#252525] px-2.5 py-1 rounded transition"
+                className="flex items-center gap-1.5 text-xs text-[#666666] hover:text-[#111111] hover:bg-[#fafafa] px-2.5 py-1 rounded-lg transition"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 <span>Back to Input</span>
               </button>
 
-              <div className="flex items-center gap-2 text-xs text-[#8a8a86]">
+              <div className="flex items-center gap-2 text-xs text-[#777777]">
                 <span>Target:</span>
                 <span className="text-[#e6e6e6] font-medium">{report.targetJournal || "General High Impact"}</span>
               </div>
@@ -602,33 +602,33 @@ export default function ScanPage() {
             {/* Document Title Header */}
             <div className="space-y-2">
               <div className="text-3xl select-none">📑</div>
-              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-white leading-snug">
+              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#111111] leading-snug">
                 {report.title}
               </h2>
             </div>
 
             {/* Document Classification & Personalized Salutation Callout */}
             {report.classification && (
-              <div className={`p-4 rounded-lg border text-xs space-y-3 ${
+              <div className={`p-5 rounded-xl border text-xs space-y-3 ${
                 report.classification.isAcademicManuscript
-                  ? "bg-[#1d2621] border-[#294233] text-[#d1e7dd]"
+                  ? "bg-[#e6f4ea] border-[#ceead6] text-[#137333]"
                   : report.classification.category === "source_code"
-                  ? "bg-[#1f222d] border-[#2e354a] text-[#ccd6f6]"
+                  ? "bg-[#f0f7ff] border-[#d0e5ff] text-[#0075eb]"
                   : report.classification.category === "resume_cv"
-                  ? "bg-[#1d2630] border-[#2b3a4a] text-[#c9dff7]"
-                  : "bg-[#2d2222] border-[#4a2e2e] text-[#f7d6d6]"
+                  ? "bg-[#f0f7ff] border-[#d0e5ff] text-[#0075eb]"
+                  : "bg-[#fef7e0] border-[#fce8b2] text-[#b06000]"
               }`}>
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-white/10">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-[#eaeaea]">
                   <div className="flex items-center gap-2">
                     <span className="text-base select-none">
                       {report.classification.isAcademicManuscript ? "🔬" :
                        report.classification.category === "source_code" ? "💻" :
                        report.classification.category === "resume_cv" ? "👤" : "⚠️"}
                     </span>
-                    <span className="font-semibold text-white">
+                    <span className="font-semibold text-[#111111]">
                       Document Classification: {report.classification.categoryLabel}
                     </span>
-                    <span className="text-[10px] px-2 py-0.5 rounded font-medium bg-black/30 border border-white/10">
+                    <span className="text-[10px] px-2 py-0.5 rounded font-medium bg-white/70 border border-[#eaeaea]">
                       {report.classification.isAcademicManuscript ? "Academic Paper" : "Non-Manuscript Content"}
                     </span>
                   </div>
@@ -637,7 +637,7 @@ export default function ScanPage() {
                     <button
                       type="button"
                       onClick={handleLoadSample}
-                      className="px-2.5 py-1 rounded bg-black/40 hover:bg-black/60 text-white border border-white/20 text-[11px] font-medium transition flex items-center gap-1 self-start sm:self-auto"
+                      className="px-2.5 py-1 rounded bg-white hover:bg-[#fafafa] text-[#111111] border border-[#eaeaea] shadow-2xs text-[11px] font-medium transition flex items-center gap-1 self-start sm:self-auto"
                     >
                       <RefreshCw className="w-3 h-3" />
                       Test with Sample Research Preprint
@@ -646,7 +646,7 @@ export default function ScanPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <div className="font-medium text-white">
+                  <div className="font-medium text-[#111111]">
                     {report.classification.salutation}
                   </div>
                   <p className="leading-relaxed opacity-90 font-light">
@@ -657,7 +657,7 @@ export default function ScanPage() {
                   {report.classification.detectedFeatures && report.classification.detectedFeatures.length > 0 && (
                     <div className="pt-1 flex flex-wrap gap-1.5">
                       {report.classification.detectedFeatures.map((feat, idx) => (
-                        <span key={idx} className="text-[11px] px-2 py-0.5 rounded bg-black/30 border border-white/10 text-white/90">
+                        <span key={idx} className="text-[11px] px-2 py-0.5 rounded bg-white/70 border border-[#eaeaea] text-[#333333]">
                           &bull; {feat}
                         </span>
                       ))}
@@ -666,7 +666,7 @@ export default function ScanPage() {
 
                   {report.classification.customGuidance && (
                     <div className="mt-2 pt-2 border-t border-white/10 text-[11px] flex items-start gap-1.5">
-                      <span className="font-semibold text-white">Recommended Action:</span>
+                      <span className="font-semibold text-[#111111]">Recommended Action:</span>
                       <span>{report.classification.customGuidance}</span>
                     </div>
                   )}
@@ -677,25 +677,25 @@ export default function ScanPage() {
             {/* Non-Academic File: Suppress Rubrics & Display Guidance */}
             {report.classification && !report.classification.isAcademicManuscript ? (
               <div className="space-y-6">
-                <div className="p-6 rounded-lg bg-[#202020] border border-[#2e2e2e] space-y-4">
-                  <div className="flex items-center gap-2 text-xs font-semibold text-[#f1b854] uppercase tracking-wider">
+                <div className="p-6 rounded-xl bg-[#fafafa] border border-[#eaeaea] space-y-4">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-[#b06000] uppercase tracking-wider">
                     <Info className="w-4 h-4" />
                     Academic Peer-Review Rubrics Omitted
                   </div>
-                  <h3 className="text-xl font-serif font-bold text-white">
+                  <h3 className="text-xl font-serif font-bold text-[#111111]">
                     Why are scientific peer-review scores omitted for this file?
                   </h3>
-                  <p className="text-xs sm:text-sm text-[#9b9a97] leading-relaxed font-light">
+                  <p className="text-xs sm:text-sm text-[#666666] leading-relaxed font-light">
                     ManuView&apos;s <strong>Submission Readiness Score</strong>, <strong>Editorial Triage Synthesis</strong>, <strong>6 Evaluation Dimensions</strong>, <strong>4-Persona Reviewer Simulation</strong>, <strong>Citation Integrity Audit</strong>, and <strong>Target Journal Recommendation Tiers</strong> are specifically calibrated against empirical research papers and clinical trial standards. Because this file is classified as <strong>{report.classification?.categoryLabel || "Non-Academic Content"}</strong>, journal peer-review metrics are not applicable and have been omitted.
                   </p>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-[#2e2e2e] text-xs">
-                    <div className="p-4 rounded-lg bg-[#191919] border border-[#2a2a2a]">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-[#eaeaea] text-xs">
+                    <div className="p-4 rounded-xl bg-white border border-[#eaeaea]">
                       <div className="font-medium text-[#e6e6e6] mb-2 flex items-center gap-1.5">
                         <FileText className="w-3.5 h-3.5 text-emerald-400" />
                         What ManuView Reviews
                       </div>
-                      <ul className="space-y-1.5 text-[#9b9a97]">
+                      <ul className="space-y-1.5 text-[#666666]">
                         <li className="flex items-center gap-1.5">
                           <CheckCircle2 className="w-3 h-3 text-emerald-400 flex-shrink-0" />
                           Empirical research papers &amp; preprints (bioRxiv, arXiv, medRxiv)
@@ -715,25 +715,25 @@ export default function ScanPage() {
                       </ul>
                     </div>
 
-                    <div className="p-4 rounded-lg bg-[#191919] border border-[#2a2a2a]">
+                    <div className="p-4 rounded-xl bg-white border border-[#eaeaea]">
                       <div className="font-medium text-[#e6e6e6] mb-2 flex items-center gap-1.5">
-                        <AlertTriangle className="w-3.5 h-3.5 text-[#f1b854]" />
+                        <AlertTriangle className="w-3.5 h-3.5 text-[#b06000]" />
                         Detected in This Submission
                       </div>
-                      <ul className="space-y-1.5 text-[#9b9a97]">
-                        <li>• File Type: <span className="text-white font-medium">{report.classification.categoryLabel}</span></li>
-                        <li>• Identified Role: <span className="text-white font-medium">{report.classification.salutation}</span></li>
-                        <li>• Scientific Sections: <span className="text-[#f1b854]">Not present (IMRaD absent)</span></li>
-                        <li>• Peer-Reviewed Citations: <span className="text-white">{report.citationIntegrity.totalReferences > 0 ? `${report.citationIntegrity.totalReferences} found` : "0 references detected"}</span></li>
+                      <ul className="space-y-1.5 text-[#666666]">
+                        <li>• File Type: <span className="text-[#111111] font-medium">{report.classification.categoryLabel}</span></li>
+                        <li>• Identified Role: <span className="text-[#111111] font-medium">{report.classification.salutation}</span></li>
+                        <li>• Scientific Sections: <span className="text-[#b06000]">Not present (IMRaD absent)</span></li>
+                        <li>• Peer-Reviewed Citations: <span className="text-[#111111]">{report.citationIntegrity.totalReferences > 0 ? `${report.citationIntegrity.totalReferences} found` : "0 references detected"}</span></li>
                       </ul>
                     </div>
                   </div>
 
-                  <div className="pt-4 border-t border-[#2e2e2e] flex flex-col sm:flex-row items-center gap-3">
+                  <div className="pt-4 border-t border-[#eaeaea] flex flex-col sm:flex-row items-center gap-3">
                     <button
                       type="button"
                       onClick={handleLoadSample}
-                      className="w-full sm:w-auto px-4 py-2 rounded-lg bg-[#252525] hover:bg-[#303030] text-white border border-[#3d3d3d] text-xs font-medium transition flex items-center justify-center gap-1.5"
+                      className="w-full sm:w-auto px-4 py-2 rounded-lg bg-[#0075eb] hover:bg-[#0066cc] text-[#111111] border border-[#0075eb] shadow-sm text-xs font-medium transition flex items-center justify-center gap-1.5"
                     >
                       <RefreshCw className="w-3.5 h-3.5 text-emerald-400" />
                       Load Sample Preprint to See Full Peer-Review Diagnostic
@@ -741,7 +741,7 @@ export default function ScanPage() {
                     <button
                       type="button"
                       onClick={() => setReport(null)}
-                      className="w-full sm:w-auto px-4 py-2 rounded-lg bg-transparent hover:bg-[#252525] text-[#9b9a97] hover:text-[#e6e6e6] border border-[#2e2e2e] text-xs font-medium transition"
+                      className="w-full sm:w-auto px-4 py-2 rounded-lg bg-white hover:bg-[#fafafa] text-[#555555] hover:text-[#111111] border border-[#eaeaea] text-xs font-medium transition"
                     >
                       Upload a Research Paper (.docx / text)
                     </button>
@@ -753,18 +753,18 @@ export default function ScanPage() {
                 {/* Score & Editorial Triage Block */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   {/* Readiness Score Card */}
-                  <div className="p-5 rounded-lg bg-[#202020] border border-[#2e2e2e] flex flex-col justify-center items-center text-center">
-                    <div className="text-[11px] font-semibold uppercase tracking-wider text-[#8a8a86] mb-1">
+                  <div className="p-5 rounded-xl bg-[#fafafa] border border-[#eaeaea] flex flex-col justify-center items-center text-center">
+                    <div className="text-[11px] font-semibold uppercase tracking-wider text-[#777777] mb-1">
                       Readiness Score
                     </div>
                     <div className="flex items-baseline gap-1 my-1">
-                      <span className="text-4xl font-bold font-serif text-white">{report.overallScore}</span>
-                      <span className="text-[#6b6a67] text-sm font-serif">/100</span>
+                      <span className="text-4xl font-bold font-serif text-[#111111]">{report.overallScore}</span>
+                      <span className="text-[#888888] text-sm font-serif">/100</span>
                     </div>
                     <div className={`mt-1 px-2.5 py-0.5 rounded text-[11px] font-medium border ${
-                      report.overallScore >= 80 ? "bg-[#1c2e24] text-[#4dab83] border-[#284a36]" :
-                      report.overallScore >= 65 ? "bg-[#2e281b] text-[#f1b854] border-[#4a3e26]" :
-                      "bg-[#2d1f1f] text-[#ff7373] border-[#4a2b2b]"
+                      report.overallScore >= 80 ? "bg-[#e6f4ea] text-[#137333] border-[#ceead6]" :
+                      report.overallScore >= 65 ? "bg-[#fef7e0] text-[#b06000] border-[#fce8b2]" :
+                      "bg-[#fce8e6] text-[#c5221f] border-[#fad2cf]"
                     }`}>
                       {report.overallScore >= 80 ? "Submission Ready" :
                        report.overallScore >= 65 ? "Revision Prioritized" :
@@ -773,12 +773,12 @@ export default function ScanPage() {
                   </div>
 
                   {/* Editorial Summary Callout */}
-                  <div className="md:col-span-3 p-5 rounded-lg bg-[#202020] border border-[#2e2e2e] flex flex-col justify-center">
-                    <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-400 mb-2">
+                  <div className="md:col-span-3 p-5 rounded-xl bg-[#fafafa] border border-[#eaeaea] flex flex-col justify-center">
+                    <div className="flex items-center gap-1.5 text-xs font-semibold text-[#137333] mb-2">
                       <span className="text-sm select-none">📌</span>
                       <span className="uppercase tracking-wider">Editorial Triage Synthesis</span>
                     </div>
-                    <p className="text-xs sm:text-sm text-[#cccccc] leading-relaxed font-light">
+                    <p className="text-xs sm:text-sm text-[#555555] leading-relaxed font-light">
                       {report.summary}
                     </p>
                   </div>
@@ -786,32 +786,32 @@ export default function ScanPage() {
 
                 {/* The 6 Evaluation Dimensions */}
                 <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-white">
-                    <BarChart3 className="w-4 h-4 text-[#8a8a86]" />
+                  <div className="flex items-center gap-2 text-sm font-semibold text-[#111111]">
+                    <BarChart3 className="w-4 h-4 text-[#777777]" />
                     <span>The 6 Evaluation Dimensions (1–5 Scale)</span>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     {Object.entries(report.dimensions).map(([key, dim]) => (
-                      <div key={key} className="p-4 rounded-lg bg-[#202020] border border-[#2e2e2e] flex flex-col justify-between hover:border-[#383838] transition">
+                      <div key={key} className="p-4 rounded-xl bg-[#fafafa] border border-[#eaeaea] flex flex-col justify-between hover:border-[#d0d0d0] hover:shadow-2xs transition">
                         <div>
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs font-semibold text-[#e6e6e6]">{dim.label}</span>
+                            <span className="text-xs font-semibold text-[#111111]">{dim.label}</span>
                             <span className={`px-2 py-0.5 rounded font-mono text-xs font-semibold border ${
-                              dim.score >= 4 ? "bg-[#1c2e24] text-[#4dab83] border-[#284a36]" :
-                              dim.score === 3 ? "bg-[#2e281b] text-[#f1b854] border-[#4a3e26]" :
-                              "bg-[#2d1f1f] text-[#ff7373] border-[#4a2b2b]"
+                              dim.score >= 4 ? "bg-[#e6f4ea] text-[#137333] border-[#ceead6]" :
+                              dim.score === 3 ? "bg-[#fef7e0] text-[#b06000] border-[#fce8b2]" :
+                              "bg-[#fce8e6] text-[#c5221f] border-[#fad2cf]"
                             }`}>
                               {dim.score} / 5
                             </span>
                           </div>
-                          <p className="text-xs text-[#9b9a97] leading-relaxed mb-3 font-light">
+                          <p className="text-xs text-[#666666] leading-relaxed mb-3 font-light">
                             {dim.verdict}
                           </p>
                         </div>
 
                         {dim.vulnerabilities.length > 0 && (
-                          <div className="pt-2 border-t border-[#2a2a2a] text-[11px] text-[#ff7373] flex items-start gap-1.5">
+                          <div className="pt-2 border-t border-[#eaeaea] text-[11px] text-[#c5221f] flex items-start gap-1.5">
                             <AlertTriangle className="w-3 h-3 flex-shrink-0 mt-0.5" />
                             <span className="truncate">{dim.vulnerabilities[0]}</span>
                           </div>
@@ -823,8 +823,8 @@ export default function ScanPage() {
 
                 {/* Prioritized Action Plan */}
                 <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-white">
-                    <AlertCircle className="w-4 h-4 text-[#ff7373]" />
+                  <div className="flex items-center gap-2 text-sm font-semibold text-[#111111]">
+                    <AlertCircle className="w-4 h-4 text-[#c5221f]" />
                     <span>Prioritized Action Plan before Submission</span>
                   </div>
 
@@ -832,18 +832,18 @@ export default function ScanPage() {
                     {report.priorityIssues.map((issue: PriorityIssue) => (
                       <div
                         key={issue.id}
-                        className="p-4 rounded-lg bg-[#202020] border border-[#2e2e2e] space-y-3"
+                        className="p-5 rounded-xl bg-[#fafafa] border border-[#eaeaea] space-y-3"
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${
-                              issue.priority === "A" ? "bg-[#2d1f1f] text-[#ff7373] border-[#4a2b2b]" :
-                              issue.priority === "B" ? "bg-[#2e281b] text-[#f1b854] border-[#4a3e26]" :
-                              "bg-[#222222] text-[#9b9a97] border-[#333333]"
+                              issue.priority === "A" ? "bg-[#fce8e6] text-[#c5221f] border-[#fad2cf]" :
+                              issue.priority === "B" ? "bg-[#fef7e0] text-[#b06000] border-[#fce8b2]" :
+                              "bg-white text-[#666666] border-[#eaeaea]"
                             }`}>
                               Priority {issue.priority}
                             </span>
-                            <span className="text-[11px] font-medium text-[#8a8a86] uppercase tracking-wide">
+                            <span className="text-[11px] font-medium text-[#777777] uppercase tracking-wide">
                               {issue.category}
                             </span>
                           </div>
@@ -852,19 +852,19 @@ export default function ScanPage() {
                           </span>
                         </div>
 
-                        <h4 className="text-sm font-semibold text-white">{issue.title}</h4>
-                        <p className="text-xs text-[#9b9a97] leading-relaxed">{issue.description}</p>
+                        <h4 className="text-sm font-semibold text-[#111111]">{issue.title}</h4>
+                        <p className="text-xs text-[#666666] leading-relaxed">{issue.description}</p>
 
                         {/* Notion Quote Block */}
-                        <div className="border-l-2 border-[#454545] pl-3 py-0.5 text-xs italic text-[#cccccc] font-serif">
+                        <div className="border-l-2 border-[#d0d0d0] pl-3 py-0.5 text-xs italic text-[#333333] font-serif">
                           &ldquo;{issue.reviewerQuote}&rdquo;
                         </div>
 
                         {/* Notion Action Box */}
-                        <div className="p-3 rounded bg-[#1b251f] border border-[#284232] text-xs text-[#a3d4b6] flex items-start gap-2">
+                        <div className="p-3 rounded-xl bg-white border border-[#ceead6] text-xs text-[#137333] flex items-start gap-2">
                           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0 mt-0.5" />
                           <div>
-                            <span className="font-semibold text-white block mb-0.5">Required Pre-Submission Fix:</span>
+                            <span className="font-semibold text-[#111111] block mb-0.5">Required Pre-Submission Fix:</span>
                             {issue.actionableFix}
                           </div>
                         </div>
@@ -876,8 +876,8 @@ export default function ScanPage() {
                 {/* 4-Persona Peer-Review Simulation */}
                 <div className="space-y-3">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-white">
-                      <Users className="w-4 h-4 text-[#8a8a86]" />
+                    <div className="flex items-center gap-2 text-sm font-semibold text-[#111111]">
+                      <Users className="w-4 h-4 text-[#777777]" />
                       <span>4-Persona Peer-Review Simulation</span>
                     </div>
                     <span className="text-[11px] text-[#787774]">
@@ -886,17 +886,17 @@ export default function ScanPage() {
                   </div>
 
                   {/* Notion-style database view tabs */}
-                  <div className="flex items-center gap-1 border-b border-[#2e2e2e] pb-1 overflow-x-auto">
+                  <div className="flex items-center gap-1 border-b border-[#eaeaea] pb-1 overflow-x-auto">
                     {report.reviewerPersonas.map((p: ReviewerPersonaFeedback, idx: number) => {
                       const isActive = selectedPersona === idx;
                       return (
                         <button
                           key={p.persona}
                           onClick={() => setSelectedPersona(idx)}
-                          className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs whitespace-nowrap transition ${
+                          className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap transition ${
                             isActive
-                              ? "bg-[#282828] text-white font-medium border border-[#383838]"
-                              : "text-[#8a8a86] hover:text-[#e6e6e6] hover:bg-[#202020]"
+                              ? "bg-white text-[#111111] font-semibold border border-[#d0d0d0] shadow-2xs"
+                              : "text-[#666666] hover:text-[#111111] hover:bg-[#fafafa]"
                           }`}
                         >
                           <span>
@@ -908,8 +908,8 @@ export default function ScanPage() {
                           {p.decisionRecommendation && (
                             <span className={`text-[9px] px-1 py-0.2 rounded border ${
                               p.decisionRecommendation.includes("Reject")
-                                ? "text-[#ff7373] border-[#4a2b2b]"
-                                : "text-[#f1b854] border-[#4a3e26]"
+                                ? "text-[#c5221f] border-[#fad2cf] bg-[#fce8e6]"
+                                : "text-[#b06000] border-[#fce8b2] bg-[#fef7e0]"
                             }`}>
                               {p.decisionRecommendation}
                             </span>
@@ -924,29 +924,29 @@ export default function ScanPage() {
                     const active = report.reviewerPersonas[selectedPersona];
                     const isReject = active.decisionRecommendation?.includes("Reject");
                     return (
-                      <div className="p-5 rounded-lg bg-[#202020] border border-[#2e2e2e] space-y-5 animate-fade-in">
+                      <div className="p-6 rounded-xl bg-[#fafafa] border border-[#eaeaea] space-y-5 animate-fade-in">
                         {/* Header with Title and Affiliation */}
-                        <div className="flex flex-col md:flex-row md:items-start justify-between gap-3 pb-4 border-b border-[#2a2a2a]">
+                        <div className="flex flex-col md:flex-row md:items-start justify-between gap-3 pb-4 border-b border-[#eaeaea]">
                           <div className="space-y-1">
                             <div className="flex flex-wrap items-center gap-2">
-                              <h4 className="text-base font-serif font-bold text-white">
+                              <h4 className="text-base font-serif font-bold text-[#111111]">
                                 {active.name}
                               </h4>
                               {active.decisionRecommendation && (
                                 <span className={`text-[11px] font-semibold px-2 py-0.5 rounded border ${
                                   isReject
-                                    ? "bg-[#2d1f1f] text-[#ff7373] border-[#4a2b2b]"
-                                    : "bg-[#2e281b] text-[#f1b854] border-[#4a3e26]"
+                                    ? "bg-[#fce8e6] text-[#c5221f] border-[#fad2cf]"
+                                    : "bg-[#fef7e0] text-[#b06000] border-[#fce8b2]"
                                 }`}>
                                   Decision: {active.decisionRecommendation}
                                 </span>
                               )}
                             </div>
-                            <div className="text-xs text-[#cccccc]">
+                            <div className="text-xs text-[#555555]">
                               {active.title}
                             </div>
                             {active.affiliation && (
-                              <div className="text-[11px] text-[#8a8a86] flex items-center gap-1.5">
+                              <div className="text-[11px] text-[#777777] flex items-center gap-1.5">
                                 <GraduationCap className="w-3.5 h-3.5" />
                                 <span>{active.affiliation}</span>
                               </div>
@@ -954,18 +954,18 @@ export default function ScanPage() {
                           </div>
 
                           {active.expertise && (
-                            <div className="p-2.5 rounded bg-[#191919] border border-[#2a2a2a] text-[11px] text-[#cccccc] md:max-w-xs">
-                              <span className="font-semibold text-emerald-400 block mb-0.5">Focus:</span>
+                            <div className="p-2.5 rounded-lg bg-white border border-[#eaeaea] text-[11px] text-[#555555] md:max-w-xs">
+                              <span className="font-semibold text-[#137333] block mb-0.5">Focus:</span>
                               {active.expertise}
                             </div>
                           )}
                         </div>
 
                         {/* Fatal Reviewer Objection Callout */}
-                        <div className="p-3.5 rounded bg-[rgba(224,62,62,0.1)] border border-[rgba(224,62,62,0.25)] text-xs text-[#ff9999] flex items-start gap-2.5">
+                        <div className="p-3.5 rounded-xl bg-[#fce8e6] border border-[#fad2cf] text-xs text-[#c5221f] flex items-start gap-2.5">
                           <span className="text-base select-none">⚠️</span>
                           <div>
-                            <span className="font-semibold text-white block mb-0.5 uppercase tracking-wider text-[10px]">
+                            <span className="font-semibold text-[#111111] block mb-0.5 uppercase tracking-wider text-[10px]">
                               Fatal Reviewer Objection:
                             </span>
                             {active.keyChallenge}
@@ -974,10 +974,10 @@ export default function ScanPage() {
 
                         {/* Detailed Peer-Review Assessment */}
                         <div className="space-y-2">
-                          <div className="text-xs font-semibold text-[#8a8a86] uppercase tracking-wider">
+                          <div className="text-xs font-semibold text-[#777777] uppercase tracking-wider">
                             Detailed Peer-Review Assessment:
                           </div>
-                          <div className="text-xs text-[#cccccc] leading-relaxed font-light p-3.5 rounded bg-[#191919] border border-[#2a2a2a] whitespace-pre-line">
+                          <div className="text-xs text-[#555555] leading-relaxed font-light p-3.5 rounded-xl bg-white border border-[#eaeaea] text-[#333333] whitespace-pre-line">
                             {active.assessment}
                           </div>
                         </div>
@@ -985,14 +985,14 @@ export default function ScanPage() {
                         {/* Major Vulnerabilities */}
                         {active.majorCritiques && active.majorCritiques.length > 0 && (
                           <div className="space-y-2">
-                            <div className="text-xs font-semibold text-[#ff7373] uppercase tracking-wider flex items-center gap-1.5">
+                            <div className="text-xs font-semibold text-[#c5221f] uppercase tracking-wider flex items-center gap-1.5">
                               <AlertTriangle className="w-3.5 h-3.5" />
                               <span>Major Methodological Vulnerabilities:</span>
                             </div>
                             <div className="space-y-1.5">
                               {active.majorCritiques.map((critique: string, i: number) => (
-                                <div key={i} className="p-2.5 rounded bg-[#191919] border border-[#2a2a2a] text-xs text-[#cccccc] flex items-start gap-2">
-                                  <span className="font-mono text-[#ff7373] font-bold text-[11px] mt-0.5">[{i + 1}]</span>
+                                <div key={i} className="p-2.5 rounded-lg bg-white border border-[#eaeaea] text-xs text-[#333333] flex items-start gap-2">
+                                  <span className="font-mono text-[#c5221f] font-bold text-[11px] mt-0.5">[{i + 1}]</span>
                                   <span className="leading-relaxed">{critique}</span>
                                 </div>
                               ))}
@@ -1003,14 +1003,14 @@ export default function ScanPage() {
                         {/* Missing Controls */}
                         {active.missingControlsOrAnalyses && active.missingControlsOrAnalyses.length > 0 && (
                           <div className="space-y-2">
-                            <div className="text-xs font-semibold text-[#f1b854] uppercase tracking-wider flex items-center gap-1.5">
+                            <div className="text-xs font-semibold text-[#b06000] uppercase tracking-wider flex items-center gap-1.5">
                               <FlaskConical className="w-3.5 h-3.5" />
                               <span>Missing Experimental Controls &amp; Analyses:</span>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                               {active.missingControlsOrAnalyses.map((ctrl: string, i: number) => (
-                                <div key={i} className="p-2.5 rounded bg-[#191919] border border-[#2a2a2a] text-xs text-[#cccccc] flex items-start gap-2">
-                                  <span className="text-[#f1b854] font-bold">•</span>
+                                <div key={i} className="p-2.5 rounded-lg bg-white border border-[#eaeaea] text-xs text-[#333333] flex items-start gap-2">
+                                  <span className="text-[#b06000] font-bold">•</span>
                                   <span className="leading-relaxed">{ctrl}</span>
                                 </div>
                               ))}
@@ -1019,14 +1019,14 @@ export default function ScanPage() {
                         )}
 
                         {/* Mandatory Revisions Demanded */}
-                        <div className="space-y-2 pt-2 border-t border-[#2a2a2a]">
+                        <div className="space-y-2 pt-2 border-t border-[#eaeaea]">
                           <div className="text-xs font-semibold text-[#4dab83] uppercase tracking-wider flex items-center gap-1.5">
                             <CheckSquare className="w-3.5 h-3.5" />
                             <span>Mandatory Revisions Demanded for Re-Review:</span>
                           </div>
                           <div className="space-y-1.5">
                             {active.mustAddressItems.map((item: string, i: number) => (
-                              <div key={i} className="p-2.5 rounded bg-[#191919] border border-[#2a2a2a] text-xs text-[#cccccc] flex items-start gap-2">
+                              <div key={i} className="p-2.5 rounded-lg bg-white border border-[#eaeaea] text-xs text-[#333333] flex items-start gap-2">
                                 <span className="text-[#4dab83] font-bold">✓</span>
                                 <span className="leading-relaxed">{item}</span>
                               </div>
@@ -1040,41 +1040,41 @@ export default function ScanPage() {
 
                 {/* Citation & Reference Integrity Audit */}
                 <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-white">
+                  <div className="flex items-center gap-2 text-sm font-semibold text-[#111111]">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                     <span>Citation &amp; Reference Integrity Audit</span>
                   </div>
 
                   {/* Stat tiles */}
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <div className="p-3 rounded-lg bg-[#202020] border border-[#2e2e2e] text-center">
-                      <div className="text-xl font-bold font-serif text-white">{report.citationIntegrity.totalReferences}</div>
-                      <div className="text-[11px] text-[#8a8a86]">Total References</div>
+                    <div className="p-3.5 rounded-xl bg-[#fafafa] border border-[#eaeaea] text-center">
+                      <div className="text-xl font-bold font-serif text-[#111111]">{report.citationIntegrity.totalReferences}</div>
+                      <div className="text-[11px] text-[#777777]">Total References</div>
                     </div>
-                    <div className="p-3 rounded-lg bg-[#202020] border border-[#2e2e2e] text-center">
+                    <div className="p-3.5 rounded-xl bg-[#fafafa] border border-[#eaeaea] text-center">
                       <div className="text-xl font-bold font-serif text-[#4dab83]">{report.citationIntegrity.verifiedCount}</div>
-                      <div className="text-[11px] text-[#8a8a86]">Crossref Verified</div>
+                      <div className="text-[11px] text-[#777777]">Crossref Verified</div>
                     </div>
-                    <div className="p-3 rounded-lg bg-[#202020] border border-[#2e2e2e] text-center">
-                      <div className={`text-xl font-bold font-serif ${report.citationIntegrity.unresolvableCount > 0 ? "text-[#ff7373]" : "text-white"}`}>
+                    <div className="p-3.5 rounded-xl bg-[#fafafa] border border-[#eaeaea] text-center">
+                      <div className={`text-xl font-bold font-serif ${report.citationIntegrity.unresolvableCount > 0 ? "text-[#c5221f]" : "text-[#111111]"}`}>
                         {report.citationIntegrity.unresolvableCount}
                       </div>
-                      <div className="text-[11px] text-[#8a8a86]">Unresolvable DOIs</div>
+                      <div className="text-[11px] text-[#777777]">Unresolvable DOIs</div>
                     </div>
-                    <div className="p-3 rounded-lg bg-[#202020] border border-[#2e2e2e] text-center">
-                      <div className={`text-xl font-bold font-serif ${report.citationIntegrity.retractedCount > 0 ? "text-[#ff7373]" : "text-[#4dab83]"}`}>
+                    <div className="p-3.5 rounded-xl bg-[#fafafa] border border-[#eaeaea] text-center">
+                      <div className={`text-xl font-bold font-serif ${report.citationIntegrity.retractedCount > 0 ? "text-[#c5221f]" : "text-[#4dab83]"}`}>
                         {report.citationIntegrity.retractedCount}
                       </div>
-                      <div className="text-[11px] text-[#8a8a86]">Retracted Flagged</div>
+                      <div className="text-[11px] text-[#777777]">Retracted Flagged</div>
                     </div>
                   </div>
 
                   {/* Notion Table View for References */}
-                  <div className="rounded-lg bg-[#202020] border border-[#2e2e2e] overflow-hidden">
-                    <div className="p-2.5 bg-[#1a1a1a] border-b border-[#2e2e2e] text-[11px] font-semibold text-[#8a8a86] uppercase tracking-wider">
+                  <div className="rounded-xl bg-[#fafafa] border border-[#eaeaea] overflow-hidden">
+                    <div className="p-3 bg-white border-b border-[#eaeaea] text-[11px] font-semibold text-[#666666] uppercase tracking-wider">
                       Bibliography Samples
                     </div>
-                    <div className="divide-y divide-[#2a2a2a]">
+                    <div className="divide-y divide-[#eaeaea]">
                       {report.citationIntegrity.references.slice(0, 5).map((ref, idx) => (
                         <div key={idx} className="p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs">
                           <div className="space-y-0.5 max-w-xl">
@@ -1088,15 +1088,15 @@ export default function ScanPage() {
 
                           <div className="flex-shrink-0">
                             {ref.isRetracted ? (
-                              <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#2d1f1f] text-[#ff7373] border border-[#4a2b2b]">
+                              <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#2d1f1f] text-[#c5221f] border border-[#4a2b2b]">
                                 RETRACTED
                               </span>
                             ) : ref.status === 'valid' ? (
-                              <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#1c2e24] text-[#4dab83] border border-[#284a36]">
+                              <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#e6f4ea] text-[#137333] border border-[#ceead6]">
                                 Crossref Verified
                               </span>
                             ) : (
-                              <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#2e281b] text-[#f1b854] border border-[#4a3e26]">
+                              <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#2e281b] text-[#b06000] border border-[#4a3e26]">
                                 Unverified
                               </span>
                             )}
@@ -1109,38 +1109,38 @@ export default function ScanPage() {
 
                 {/* Target Journal Recommendation Tiers */}
                 <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-white">
-                    <BookOpen className="w-4 h-4 text-[#8a8a86]" />
+                  <div className="flex items-center gap-2 text-sm font-semibold text-[#111111]">
+                    <BookOpen className="w-4 h-4 text-[#777777]" />
                     <span>Target Journal Recommendation Tiers</span>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     {report.journalRecommendations.map((rec, idx) => (
-                      <div key={idx} className="p-4 rounded-lg bg-[#202020] border border-[#2e2e2e] flex flex-col justify-between hover:border-[#383838] transition">
+                      <div key={idx} className="p-4 rounded-xl bg-[#fafafa] border border-[#eaeaea] flex flex-col justify-between hover:border-[#d0d0d0] transition">
                         <div>
                           <div className="flex items-center justify-between mb-2">
                             <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${
-                              rec.tier === 'Reach' ? 'bg-[#291f33] text-[#b388ff] border-[#442c5c]' :
-                              rec.tier === 'Realistic' ? 'bg-[#1c2e24] text-[#4dab83] border-[#284a36]' :
-                              'bg-[#192636] text-[#64b5f6] border-[#254263]'
+                              rec.tier === 'Reach' ? 'bg-[#f3e8fd] text-[#7e22ce] border-[#e9d5ff]' :
+                              rec.tier === 'Realistic' ? 'bg-[#e6f4ea] text-[#137333] border-[#ceead6]' :
+                              'bg-[#f0f7ff] text-[#0075eb] border-[#d0e5ff]'
                             }`}>
                               {rec.tier} Tier
                             </span>
-                            <span className="text-xs font-mono font-semibold text-[#8a8a86]">
+                            <span className="text-xs font-mono font-semibold text-[#777777]">
                               IF: {rec.impactFactor}
                             </span>
                           </div>
 
-                          <h4 className="text-sm font-serif font-bold text-white mb-0.5">{rec.journalName}</h4>
+                          <h4 className="text-sm font-serif font-bold text-[#111111] mb-0.5">{rec.journalName}</h4>
                           <p className="text-[11px] text-[#787774] mb-3">{rec.publisher}</p>
 
-                          <div className="p-2.5 rounded bg-[#191919] border border-[#2a2a2a] text-[11px] text-[#cccccc] mb-3">
-                            <span className="font-semibold text-white block mb-0.5">Scope Rationale:</span>
+                          <div className="p-2.5 rounded-lg bg-white border border-[#eaeaea] text-[11px] text-[#555555] mb-3">
+                            <span className="font-semibold text-[#111111] block mb-0.5">Scope Rationale:</span>
                             {rec.scopeRationale}
                           </div>
                         </div>
 
-                        <div className="text-[11px] text-[#ff7373] pt-2 border-t border-[#2a2a2a]">
+                        <div className="text-[11px] text-[#c5221f] pt-2 border-t border-[#eaeaea]">
                           <span className="font-semibold block mb-0.5">Desk-Reject Hazard:</span>
                           {rec.rejectionRisks[0] || "Methodological rigor requirements"}
                         </div>

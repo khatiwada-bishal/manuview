@@ -23,32 +23,37 @@ export function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full border-b border-[#2e2e2e] bg-[#191919]/90 backdrop-blur-md">
-        <div className="mx-auto flex h-13 max-w-7xl items-center justify-between px-4 sm:px-6">
-          {/* Left: Notion Breadcrumbs */}
-          <div className="flex items-center gap-3 text-sm">
+      {/* Top Notion Announcement Banner */}
+      <div className="bg-[#f7f7f5] text-[#37352f] border-b border-[#eaeaea] py-1.5 px-4 text-center text-[11px] sm:text-xs font-medium flex items-center justify-center gap-1 hover:bg-[#f0f0ee] transition cursor-pointer">
+        <Link href="/scan" className="inline-flex items-center gap-1.5">
+          <span className="font-semibold">✨ Introducing ManuView 2.0:</span>
+          <span className="text-[#555555]">Field-Adaptive 4-Persona Peer-Review Simulation</span>
+          <ChevronRight className="w-3.5 h-3.5 text-[#888888]" />
+        </Link>
+      </div>
+
+      <header className="sticky top-0 z-40 w-full border-b border-[#eaeaea] bg-white/95 backdrop-blur-md">
+        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
+          {/* Left: Notion Logo & Navigation */}
+          <div className="flex items-center gap-6 text-sm">
             <Link 
               href="/" 
-              className="flex items-center gap-2 px-2 py-1 -ml-2 rounded-md hover:bg-[#252525] text-[#e6e6e6] transition group"
+              className="flex items-center gap-2.5 px-1 py-1 rounded-md hover:opacity-85 transition group"
             >
-              <div className="flex h-6 w-6 items-center justify-center rounded bg-[#252525] border border-[#333333] text-emerald-400 group-hover:border-emerald-500/40 transition">
-                <FileSearch className="w-3.5 h-3.5" />
+              <div className="flex h-6 w-6 items-center justify-center rounded bg-black text-white font-serif font-bold text-xs shadow-xs">
+                M
               </div>
-              <span className="font-medium tracking-tight text-[#e6e6e6] text-xs sm:text-sm">
+              <span className="font-semibold tracking-tight text-[#111111] text-sm sm:text-base">
                 ManuView
               </span>
             </Link>
 
-            <span className="text-[#4a4a4a] select-none text-xs">/</span>
-
-            <nav className="flex items-center gap-1 text-xs">
+            <nav className="hidden md:flex items-center gap-1 text-xs sm:text-sm font-medium text-[#444444]">
               <Link
                 href="/scan"
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[#9b9a97] hover:text-[#e6e6e6] hover:bg-[#252525] transition"
+                className="px-2.5 py-1.5 rounded-md hover:text-[#111111] hover:bg-[#f5f5f4] transition"
               >
-                <span>📄</span>
-                <span className="hidden sm:inline">Pre-Submission Scan</span>
-                <span className="sm:hidden">Scan</span>
+                Pre-Submission Scan
               </Link>
 
               {/* Tools Dropdown */}
@@ -56,66 +61,66 @@ export function Navbar() {
                 <button
                   onClick={() => setToolsDropdown(!toolsDropdown)}
                   onMouseEnter={() => setToolsDropdown(true)}
-                  className="flex items-center gap-1 px-2.5 py-1 rounded-md text-[#9b9a97] hover:text-[#e6e6e6] hover:bg-[#252525] transition"
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-md hover:text-[#111111] hover:bg-[#f5f5f4] transition"
                 >
-                  <span>Tools</span>
-                  <ChevronDown className="w-3.5 h-3.5 text-[#6b6a67]" />
+                  <span>Research Tools</span>
+                  <ChevronDown className="w-3.5 h-3.5 text-[#777777]" />
                 </button>
 
                 {toolsDropdown && (
-                  <div className="absolute top-full -left-2 w-72 rounded-lg bg-[#202020] border border-[#2e2e2e] shadow-2xl p-1.5 z-50 text-xs">
-                    <div className="px-2 py-1 text-[10px] font-semibold text-[#6b6a67] uppercase tracking-wider">
+                  <div className="absolute top-full -left-2 w-72 rounded-xl bg-white border border-[#e5e5e5] shadow-xl p-2 z-50 text-xs animate-fade-in">
+                    <div className="px-2 py-1 text-[10px] font-semibold text-[#888888] uppercase tracking-wider">
                       Research Modules
                     </div>
                     <Link
                       href="/tools/journal-fit"
-                      className="flex items-start gap-2.5 p-2 rounded-md hover:bg-[#2a2a2a] text-[#cccccc] hover:text-white transition"
+                      className="flex items-start gap-2.5 p-2 rounded-lg hover:bg-[#f7f7f5] text-[#333333] hover:text-[#111111] transition"
                     >
-                      <BookOpen className="w-4 h-4 text-emerald-400 mt-0.5" />
+                      <BookOpen className="w-4 h-4 text-[#0075eb] mt-0.5" />
                       <div>
-                        <div className="font-medium text-[#e6e6e6]">Journal Fit Predictor</div>
-                        <div className="text-[11px] text-[#8a8a86]">Match manuscript against 1,300+ venues</div>
+                        <div className="font-medium text-[#111111]">Journal Fit Predictor</div>
+                        <div className="text-[11px] text-[#777777]">Match manuscript against 1,300+ venues</div>
                       </div>
                     </Link>
 
                     <Link
                       href="/tools/reference-checker"
-                      className="flex items-start gap-2.5 p-2 rounded-md hover:bg-[#2a2a2a] text-[#cccccc] hover:text-white transition"
+                      className="flex items-start gap-2.5 p-2 rounded-lg hover:bg-[#f7f7f5] text-[#333333] hover:text-[#111111] transition"
                     >
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 mt-0.5" />
+                      <CheckCircle2 className="w-4 h-4 text-[#0075eb] mt-0.5" />
                       <div>
-                        <div className="font-medium text-[#e6e6e6]">Reference Integrity Audit</div>
-                        <div className="text-[11px] text-[#8a8a86]">Crossref &amp; Retraction Watch verification</div>
+                        <div className="font-medium text-[#111111]">Reference Integrity Audit</div>
+                        <div className="text-[11px] text-[#777777]">Crossref &amp; Retraction Watch verification</div>
                       </div>
                     </Link>
 
                     <Link
                       href="/tools/citation-claim"
-                      className="flex items-start gap-2.5 p-2 rounded-md hover:bg-[#2a2a2a] text-[#cccccc] hover:text-white transition"
+                      className="flex items-start gap-2.5 p-2 rounded-lg hover:bg-[#f7f7f5] text-[#333333] hover:text-[#111111] transition"
                     >
-                      <Sparkles className="w-4 h-4 text-emerald-400 mt-0.5" />
+                      <Sparkles className="w-4 h-4 text-[#0075eb] mt-0.5" />
                       <div>
-                        <div className="font-medium text-[#e6e6e6]">Citation Claim Validator</div>
-                        <div className="text-[11px] text-[#8a8a86]">Audit if cited study supports statement</div>
+                        <div className="font-medium text-[#111111]">Citation Claim Validator</div>
+                        <div className="text-[11px] text-[#777777]">Audit if cited study supports statement</div>
                       </div>
                     </Link>
 
                     <Link
                       href="/tools/prisma"
-                      className="flex items-start gap-2.5 p-2 rounded-md hover:bg-[#2a2a2a] text-[#cccccc] hover:text-white transition"
+                      className="flex items-start gap-2.5 p-2 rounded-lg hover:bg-[#f7f7f5] text-[#333333] hover:text-[#111111] transition"
                     >
-                      <Layers className="w-4 h-4 text-emerald-400 mt-0.5" />
+                      <Layers className="w-4 h-4 text-[#0075eb] mt-0.5" />
                       <div>
-                        <div className="font-medium text-[#e6e6e6]">PRISMA Flow Diagram</div>
-                        <div className="text-[11px] text-[#8a8a86]">Reconcile screening counts &amp; export SVG</div>
+                        <div className="font-medium text-[#111111]">PRISMA Flow Diagram</div>
+                        <div className="text-[11px] text-[#777777]">Reconcile screening counts &amp; export SVG</div>
                       </div>
                     </Link>
 
-                    <div className="my-1 border-t border-[#2e2e2e]" />
+                    <div className="my-1 border-t border-[#f0f0ee]" />
 
                     <Link
                       href="/tools"
-                      className="flex items-center justify-between p-2 rounded-md hover:bg-[#2a2a2a] text-emerald-400 text-xs font-medium transition"
+                      className="flex items-center justify-between p-2 rounded-lg hover:bg-[#f7f7f5] text-[#0075eb] text-xs font-semibold transition"
                     >
                       <span>View all 8 tools</span>
                       <ChevronRight className="w-3.5 h-3.5" />
@@ -126,7 +131,7 @@ export function Navbar() {
 
               <Link 
                 href="/examples" 
-                className="hidden md:inline-flex items-center px-2.5 py-1 rounded-md text-[#9b9a97] hover:text-[#e6e6e6] hover:bg-[#252525] transition"
+                className="px-2.5 py-1.5 rounded-md hover:text-[#111111] hover:bg-[#f5f5f4] transition"
               >
                 Examples
               </Link>
@@ -134,14 +139,14 @@ export function Navbar() {
           </div>
 
           {/* Right Action Controls */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             {/* AI Settings Button (Notion Ghost style) */}
             <button
               onClick={() => setSettingsOpen(true)}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-[#222222] hover:bg-[#2a2a2a] border border-[#333333] text-xs font-normal text-[#9b9a97] hover:text-[#e6e6e6] transition"
-              title="Configure Local Ollama or API Keys"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md hover:bg-[#f5f5f4] text-xs font-medium text-[#555555] hover:text-[#111111] transition"
+              title="Configure API Keys & Diagnostics"
             >
-              <Settings className="w-3.5 h-3.5 text-[#9b9a97]" />
+              <Settings className="w-3.5 h-3.5 text-[#777777]" />
               <span className="hidden sm:inline">AI Settings</span>
             </button>
 
@@ -150,7 +155,7 @@ export function Navbar() {
               href="https://github.com/khatiwada-bishal/manuview"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-1.5 rounded-md text-[#8a8a86] hover:text-[#e6e6e6] hover:bg-[#252525] transition"
+              className="p-1.5 rounded-md text-[#666666] hover:text-[#111111] hover:bg-[#f5f5f4] transition"
               title="Star on GitHub"
             >
               <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
@@ -158,13 +163,13 @@ export function Navbar() {
               </svg>
             </a>
 
-            {/* Notion-style Action Button */}
+            {/* Notion-style Action Button (Iconic Blue Button from Screenshot) */}
             <Link
               href="/scan"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#252525] hover:bg-[#2e2e2e] border border-[#383838] hover:border-[#484848] text-xs font-medium text-[#e6e6e6] transition"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-[#0075eb] hover:bg-[#0066cc] text-xs sm:text-sm font-medium text-white shadow-xs transition active:scale-[0.98]"
             >
-              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Review Manuscript</span>
+              <Sparkles className="w-3.5 h-3.5 text-white/90" />
+              <span>Get ManuView free</span>
             </Link>
           </div>
         </div>
