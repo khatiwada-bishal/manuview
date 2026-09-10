@@ -4,7 +4,12 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #111111;
+  --foreground: #2F3437;
+  --ink-primary: #2F3437;
+  --ink-muted: #787774;
+  --ink-dim: #9B9A97;
+  --border-hairline: #EBEBEA;
+  --surface-muted: #F7F7F5;
 }
 
 body {
@@ -12,7 +17,8 @@ body {
   background: var(--background);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, "Apple Color Emoji", Arial, sans-serif;
   overflow-x: hidden;
-  letter-spacing: -0.011em;
+  letter-spacing: -0.015em;
+  line-height: 1.55;
 }
 
 /* Notion custom subtle scrollbars */

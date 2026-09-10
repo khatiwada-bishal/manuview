@@ -145,3 +145,12 @@ export interface ProviderConfig {
   baseUrl?: string; // e.g. http://localhost:11434 for Ollama
   apiKey?: string;
 }
+
+export interface AvailableModel {
+  id: string;
+  name: string;
+  description: string;
+  tag?: string;
+  recommended?: boolean;
+}
+

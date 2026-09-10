@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import Link from "next/link";
 import { 
   Sparkles, 
@@ -24,15 +25,16 @@ import {
 } from "lucide-react";
 
 export default function HomePage() {
+  const [activeTab, setActiveTab] = useState<'paper' | 'personas' | 'crossref' | 'recommendations'>('paper');
   return (
-    <div className="flex flex-col bg-white text-[#111111]">
+    <div className="flex flex-col bg-white text-[#2F3437]">
       {/* ------------------------------------------------------------- */}
       {/* 1. HERO SECTION                                               */}
       {/* ------------------------------------------------------------- */}
       <section className="relative pt-12 sm:pt-20 pb-16 sm:pb-24 px-4 sm:px-6 overflow-hidden">
         <div className="mx-auto max-w-5xl text-center">
           {/* Main Headline with Iconic Inline Yellow Pill */}
-          <h1 className="text-4xl sm:text-6xl md:text-[68px] font-bold text-[#111111] tracking-[-0.03em] leading-[1.08] mb-6">
+          <h1 className="text-4xl sm:text-6xl md:text-[68px] font-bold text-[#2F3437] tracking-[-0.03em] leading-[1.08] mb-6">
             Where researchers and <br />
             agents{" "}
             <span className="inline-flex items-center gap-2 px-3.5 py-1 sm:px-4 sm:py-1.5 rounded-full bg-[#fcedd7] text-[#915809] border border-[#f5dcb7] font-semibold text-2xl sm:text-4xl md:text-5xl align-middle mx-1 sm:mx-2 shadow-xs select-none">
@@ -43,7 +45,7 @@ export default function HomePage() {
           </h1>
 
           {/* Subtitle */}
-          <p className="text-base sm:text-lg text-[#555555] mb-8 max-w-2xl mx-auto leading-relaxed font-normal">
+          <p className="text-base sm:text-lg text-[#787774] mb-8 max-w-2xl mx-auto leading-relaxed font-normal">
             Catch desk-reject flaws, citation hallucinations, and causal overclaims before submitting to top journals. A free, open-source editorial diagnostic for science.
           </p>
 
@@ -51,14 +53,14 @@ export default function HomePage() {
           <div className="flex flex-wrap items-center justify-center gap-3.5 mb-14 sm:mb-18">
             <Link
               href="/scan"
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-md bg-[#0075eb] hover:bg-[#0066cc] text-white font-medium text-sm shadow-xs transition active:scale-[0.98]"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-md bg-[#000000] hover:bg-[#2F3437] text-white font-medium text-sm shadow-xs transition active:scale-[0.98]"
             >
               <span>Try ManuView free</span>
             </Link>
 
             <Link
               href="/tools"
-              className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-md text-[#111111] hover:text-[#0075eb] hover:bg-[#f5f5f4] font-medium text-sm transition"
+              className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-md text-[#2F3437] hover:text-[#0075eb] hover:bg-[#f5f5f4] font-medium text-sm transition"
             >
               <span>Explore Research Tools</span>
               <ArrowRight className="w-4 h-4" />
@@ -130,36 +132,36 @@ export default function HomePage() {
             </div>
 
             {/* Window Container */}
-            <div className="rounded-2xl border border-[#e5e5e5] bg-white shadow-[0_20px_70px_rgba(0,0,0,0.08)] overflow-hidden">
+            <div className="rounded-2xl border border-[#EBEBEA] bg-white shadow-[0_20px_70px_rgba(0,0,0,0.08)] overflow-hidden">
               {/* macOS Window Titlebar */}
-              <div className="flex items-center justify-between px-4 py-3 border-b border-[#f0f0ee] bg-[#fafafa] select-none text-xs">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-[#EBEBEA] bg-[#F7F7F5] select-none text-xs">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-[#ff5f57] border border-[#e0443e]" />
                   <div className="w-3 h-3 rounded-full bg-[#febc2e] border border-[#d89e24]" />
                   <div className="w-3 h-3 rounded-full bg-[#28c840] border border-[#1aab29]" />
                 </div>
-                <div className="text-[11px] text-[#777777] font-medium flex items-center gap-1.5">
+                <div className="text-[11px] text-[#787774] font-medium flex items-center gap-1.5">
                   <span>🔬 Oncology Institute</span>
                   <span className="text-[#cccccc]">/</span>
-                  <span className="text-[#111111]">📄 DLL3 SCLC Nature Pre-Submission</span>
+                  <span className="text-[#2F3437]">📄 DLL3 SCLC Nature Pre-Submission</span>
                 </div>
-                <div className="flex items-center gap-2 text-[11px] text-[#777777]">
-                  <span className="px-2 py-0.5 rounded bg-[#eef5fd] text-[#0075eb] font-semibold">Active</span>
+                <div className="flex items-center gap-2 text-[11px] text-[#787774]">
+                  <span className="px-2 py-0.5 rounded bg-[#EBF3FB] text-[#18569C] border border-[#CDE1F8] font-semibold">Active</span>
                 </div>
               </div>
 
               {/* Window Interior: Notion Layout */}
               <div className="grid grid-cols-1 md:grid-cols-12 min-h-[460px]">
                 {/* Left Notion Sidebar */}
-                <div className="hidden md:block md:col-span-3 border-r border-[#f0f0ee] bg-[#fbfbfa] p-3 text-xs space-y-4">
-                  <div className="flex items-center gap-2 px-2 py-1 font-semibold text-[#111111]">
+                <div className="hidden md:block md:col-span-3 border-r border-[#EBEBEA] bg-[#F7F7F5] p-3 text-xs space-y-4">
+                  <div className="flex items-center gap-2 px-2 py-1 font-semibold text-[#2F3437]">
                     <div className="w-4 h-4 rounded bg-black text-white flex items-center justify-center text-[10px] font-serif">M</div>
                     <span>Cancer Genomics</span>
                   </div>
 
-                  <div className="space-y-0.5 text-[#666666]">
-                    <div className="px-2 py-1 rounded hover:bg-[#f0f0ee] cursor-pointer flex items-center gap-2 text-[#111111] font-medium">
-                      <Search className="w-3.5 h-3.5 text-[#888888]" />
+                  <div className="space-y-0.5 text-[#787774]">
+                    <div className="px-2 py-1 rounded hover:bg-[#f0f0ee] cursor-pointer flex items-center gap-2 text-[#2F3437] font-medium">
+                      <Search className="w-3.5 h-3.5 text-[#9B9A97]" />
                       <span>Search</span>
                     </div>
                     <div className="px-2 py-1 rounded hover:bg-[#f0f0ee] cursor-pointer flex items-center gap-2">
@@ -167,7 +169,7 @@ export default function HomePage() {
                       <span>Notion AI Review</span>
                     </div>
                     <div className="px-2 py-1 rounded hover:bg-[#f0f0ee] cursor-pointer flex items-center gap-2">
-                      <SlidersHorizontal className="w-3.5 h-3.5 text-[#888888]" />
+                      <SlidersHorizontal className="w-3.5 h-3.5 text-[#9B9A97]" />
                       <span>AI Settings</span>
                     </div>
                   </div>
@@ -177,143 +179,271 @@ export default function HomePage() {
                       Workspaces
                     </div>
                     <div className="space-y-0.5">
-                      <div className="px-2 py-1.5 rounded bg-[#f0f0ee] text-[#111111] font-medium flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setActiveTab('paper')}
+                        className={`w-full text-left px-2 py-1.5 rounded font-medium flex items-center gap-2 transition cursor-pointer ${
+                          activeTab === 'paper' ? 'bg-[#EBEBEA] text-[#2F3437]' : 'hover:bg-[#EBEBEA] text-[#787774]'
+                        }`}
+                      >
                         <span>📄</span>
                         <span className="truncate">DLL3 Activation Paper</span>
-                      </div>
-                      <div className="px-2 py-1.5 rounded hover:bg-[#f0f0ee] text-[#666666] flex items-center gap-2">
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setActiveTab('personas')}
+                        className={`w-full text-left px-2 py-1.5 rounded font-medium flex items-center gap-2 transition cursor-pointer ${
+                          activeTab === 'personas' ? 'bg-[#EBEBEA] text-[#2F3437]' : 'hover:bg-[#EBEBEA] text-[#787774]'
+                        }`}
+                      >
                         <span>👥</span>
                         <span className="truncate">4-Persona Reviews</span>
-                      </div>
-                      <div className="px-2 py-1.5 rounded hover:bg-[#f0f0ee] text-[#666666] flex items-center gap-2">
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setActiveTab('crossref')}
+                        className={`w-full text-left px-2 py-1.5 rounded font-medium flex items-center gap-2 transition cursor-pointer ${
+                          activeTab === 'crossref' ? 'bg-[#EBEBEA] text-[#2F3437]' : 'hover:bg-[#EBEBEA] text-[#787774]'
+                        }`}
+                      >
                         <span>✅</span>
                         <span className="truncate">CrossRef Audit</span>
-                      </div>
-                      <div className="px-2 py-1.5 rounded hover:bg-[#f0f0ee] text-[#666666] flex items-center gap-2">
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setActiveTab('recommendations')}
+                        className={`w-full text-left px-2 py-1.5 rounded font-medium flex items-center gap-2 transition cursor-pointer ${
+                          activeTab === 'recommendations' ? 'bg-[#EBEBEA] text-[#2F3437]' : 'hover:bg-[#EBEBEA] text-[#787774]'
+                        }`}
+                      >
                         <span>📑</span>
                         <span className="truncate">Nature Recommendations</span>
-                      </div>
+                      </button>
                     </div>
                   </div>
                 </div>
 
-                {/* Right Document Canvas */}
-                <div className="p-6 md:p-8 md:col-span-9 bg-white space-y-6">
-                  {/* Notion Page Icon & Title */}
-                  <div>
-                    <div className="text-3xl mb-2 select-none">🧬</div>
-                    <h2 className="text-2xl sm:text-3xl font-bold text-[#111111] tracking-tight">
-                      Nature Communications Pre-Submission
-                    </h2>
-                  </div>
+                {/* Right Document Canvas with Interactive Tab States */}
+                <div className="p-6 md:p-8 md:col-span-9 bg-white space-y-5">
+                  {activeTab === 'paper' && (
+                    <>
+                      <div>
+                        <div className="text-3xl mb-2 select-none">🧬</div>
+                        <h2 className="text-2xl sm:text-3xl font-bold text-[#2F3437] tracking-tight">
+                          Nature Communications Pre-Submission
+                        </h2>
+                      </div>
 
-                  {/* Notion Database Property Rows */}
-                  <div className="rounded-lg border border-[#e8e8e6] bg-[#fafafa] p-3 text-xs divide-y divide-[#ecece9]">
-                    <div className="flex items-center py-1.5 px-1">
-                      <span className="w-32 text-[#787774] flex items-center gap-1.5">
-                        <Tag className="w-3.5 h-3.5" /> Target Journal
-                      </span>
-                      <span className="px-2 py-0.5 rounded bg-[#faecd7] text-[#915809] font-medium">
-                        Nature Communications
-                      </span>
-                    </div>
+                      <div className="rounded-xl border border-[#EBEBEA] bg-[#F7F7F5] p-3 text-xs divide-y divide-[#EBEBEA]">
+                        <div className="flex items-center py-1.5 px-1">
+                          <span className="w-32 text-[#787774] flex items-center gap-1.5">
+                            <Tag className="w-3.5 h-3.5" /> Target Journal
+                          </span>
+                          <span className="px-2 py-0.5 rounded-md bg-[#FBF3DB] text-[#78510E] border border-[#F4E2B6] font-semibold">
+                            Nature Communications
+                          </span>
+                        </div>
 
-                    <div className="flex items-center py-1.5 px-1">
-                      <span className="w-32 text-[#787774] flex items-center gap-1.5">
-                        <SlidersHorizontal className="w-3.5 h-3.5" /> AI Engine
-                      </span>
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#eefaf3] text-[#2b7a4b] font-medium border border-[#c6e8d2]">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#2b7a4b]" />
-                        GEMINI 1.5 FLASH (⚡ 184ms)
-                      </span>
-                    </div>
+                        <div className="flex items-center py-1.5 px-1">
+                          <span className="w-32 text-[#787774] flex items-center gap-1.5">
+                            <SlidersHorizontal className="w-3.5 h-3.5" /> AI Engine
+                          </span>
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#EDF6EE] text-[#1E5A2A] border border-[#CBE7CE] font-semibold">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#1E5A2A]" />
+                            GEMINI 2.5 FLASH (⚡ 142ms)
+                          </span>
+                        </div>
 
-                    <div className="flex items-center py-1.5 px-1">
-                      <span className="w-32 text-[#787774] flex items-center gap-1.5">
-                        <ShieldCheck className="w-3.5 h-3.5" /> Triage Readiness
-                      </span>
-                      <span className="font-semibold text-[#111111]">
-                        78 / 100 &bull; <span className="text-[#e38817]">Major Revision Recommended</span>
-                      </span>
-                    </div>
-                  </div>
+                        <div className="flex items-center py-1.5 px-1">
+                          <span className="w-32 text-[#787774] flex items-center gap-1.5">
+                            <ShieldCheck className="w-3.5 h-3.5" /> Triage Readiness
+                          </span>
+                          <span className="font-semibold text-[#2F3437]">
+                            78 / 100 &bull; <span className="text-[#78510E]">Revision Prioritized</span>
+                          </span>
+                        </div>
+                      </div>
 
-                  {/* Notion Kanban / Card Columns */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-                    {/* Column 1 */}
-                    <div className="p-3 rounded-xl border border-[#eaeaea] bg-white shadow-xs space-y-2">
-                      <div className="flex items-center justify-between text-xs font-semibold text-[#111111]">
-                        <span>Triage Vulnerabilities</span>
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#f5f5f4] text-[#777777]">2</span>
-                      </div>
-                      <div className="p-2.5 rounded-lg border border-[#f0f0ee] bg-[#fbfbfa] text-xs space-y-1">
-                        <div className="font-semibold text-[#c52b2b] flex items-center gap-1">
-                          <AlertTriangle className="w-3 h-3" /> Causal Overclaim
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                        <div className="p-3.5 rounded-xl border border-[#EBEBEA] bg-white shadow-2xs space-y-2">
+                          <div className="flex items-center justify-between text-xs font-semibold text-[#2F3437]">
+                            <span>Triage Vulnerabilities</span>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#F7F7F5] text-[#787774]">2</span>
+                          </div>
+                          <div className="p-2.5 rounded-lg border border-[#F7CECC] bg-[#FDF0EF] text-xs space-y-1">
+                            <div className="font-semibold text-[#7C2D2B] flex items-center gap-1">
+                              <AlertTriangle className="w-3 h-3" /> Causal Overclaim
+                            </div>
+                            <p className="text-[11px] text-[#7C2D2B]/90 leading-snug">
+                              Abstract claims POU2F1 proves DLL3 expression without rescue control.
+                            </p>
+                          </div>
+                          <div className="p-2.5 rounded-lg border border-[#F4E2B6] bg-[#FBF3DB] text-xs space-y-1">
+                            <div className="font-semibold text-[#78510E] flex items-center gap-1">
+                              <AlertTriangle className="w-3 h-3" /> Sample Size Power
+                            </div>
+                            <p className="text-[11px] text-[#78510E]/90 leading-snug">
+                              Cohort n=8 lacks a priori statistical power calculation.
+                            </p>
+                          </div>
                         </div>
-                        <p className="text-[11px] text-[#666666] leading-snug">
-                          Abstract claims POU2F1 proves DLL3 expression without rescue control.
-                        </p>
-                      </div>
-                      <div className="p-2.5 rounded-lg border border-[#f0f0ee] bg-[#fbfbfa] text-xs space-y-1">
-                        <div className="font-semibold text-[#d48816] flex items-center gap-1">
-                          <AlertTriangle className="w-3 h-3" /> Sample Size Power
-                        </div>
-                        <p className="text-[11px] text-[#666666] leading-snug">
-                          Cohort n=8 lacks a priori statistical power calculation.
-                        </p>
-                      </div>
-                    </div>
 
-                    {/* Column 2 */}
-                    <div className="p-3 rounded-xl border border-[#eaeaea] bg-white shadow-xs space-y-2">
-                      <div className="flex items-center justify-between text-xs font-semibold text-[#111111]">
-                        <span>4-Persona Reviews</span>
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#f5f5f4] text-[#777777]">4</span>
-                      </div>
-                      <div className="p-2.5 rounded-lg border border-[#f0f0ee] bg-[#fbfbfa] text-xs space-y-1">
-                        <div className="font-semibold text-[#111111] flex items-center justify-between">
-                          <span>Dr. Vance (Methods)</span>
-                          <span className="text-[10px] px-1.5 rounded bg-[#faecd7] text-[#915809]">Major</span>
+                        <div className="p-3.5 rounded-xl border border-[#EBEBEA] bg-white shadow-2xs space-y-2">
+                          <div className="flex items-center justify-between text-xs font-semibold text-[#2F3437]">
+                            <span>4-Persona Reviews</span>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#F7F7F5] text-[#787774]">4</span>
+                          </div>
+                          <div className="p-2.5 rounded-lg border border-[#EBEBEA] bg-[#F7F7F5] text-xs space-y-1">
+                            <div className="font-semibold text-[#2F3437] flex items-center justify-between">
+                              <span>Dr. Vance (Methods)</span>
+                              <span className="text-[10px] px-1.5 rounded bg-[#FBF3DB] text-[#78510E] border border-[#F4E2B6]">Major</span>
+                            </div>
+                            <p className="text-[11px] text-[#787774] leading-snug">
+                              &ldquo;sgRNA library coverage depth must be confirmed in organoids.&rdquo;
+                            </p>
+                          </div>
+                          <div className="p-2.5 rounded-lg border border-[#EBEBEA] bg-[#F7F7F5] text-xs space-y-1">
+                            <div className="font-semibold text-[#2F3437] flex items-center justify-between">
+                              <span>Dr. Sorkin (Stats)</span>
+                              <span className="text-[10px] px-1.5 rounded bg-[#FBF3DB] text-[#78510E] border border-[#F4E2B6]">Major</span>
+                            </div>
+                            <p className="text-[11px] text-[#787774] leading-snug">
+                              &ldquo;Parametric t-test used on small sample size without normality test.&rdquo;
+                            </p>
+                          </div>
                         </div>
-                        <p className="text-[11px] text-[#666666] leading-snug">
-                          &ldquo;sgRNA library coverage depth must be confirmed in organoids.&rdquo;
-                        </p>
-                      </div>
-                      <div className="p-2.5 rounded-lg border border-[#f0f0ee] bg-[#fbfbfa] text-xs space-y-1">
-                        <div className="font-semibold text-[#111111] flex items-center justify-between">
-                          <span>Dr. Sorkin (Stats)</span>
-                          <span className="text-[10px] px-1.5 rounded bg-[#faecd7] text-[#915809]">Major</span>
-                        </div>
-                        <p className="text-[11px] text-[#666666] leading-snug">
-                          &ldquo;Parametric t-test used on small sample size without normality test.&rdquo;
-                        </p>
-                      </div>
-                    </div>
 
-                    {/* Column 3 */}
-                    <div className="p-3 rounded-xl border border-[#eaeaea] bg-white shadow-xs space-y-2">
-                      <div className="flex items-center justify-between text-xs font-semibold text-[#111111]">
-                        <span>Citation Audit</span>
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#eefaf3] text-[#2b7a4b]">Live</span>
-                      </div>
-                      <div className="p-2.5 rounded-lg border border-[#c6e8d2] bg-[#f3fbf6] text-xs space-y-1">
-                        <div className="font-semibold text-[#2b7a4b] flex items-center gap-1">
-                          <CheckCircle2 className="w-3 h-3" /> CrossRef Verified
+                        <div className="p-3.5 rounded-xl border border-[#EBEBEA] bg-white shadow-2xs space-y-2">
+                          <div className="flex items-center justify-between text-xs font-semibold text-[#2F3437]">
+                            <span>Citation Audit</span>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#EDF6EE] text-[#1E5A2A] border border-[#CBE7CE]">Live</span>
+                          </div>
+                          <div className="p-2.5 rounded-lg border border-[#CBE7CE] bg-[#EDF6EE] text-xs space-y-1">
+                            <div className="font-semibold text-[#1E5A2A] flex items-center gap-1">
+                              <CheckCircle2 className="w-3 h-3" /> CrossRef Verified
+                            </div>
+                            <p className="text-[11px] text-[#1E5A2A]/90 leading-snug">
+                              15 / 15 cited DOIs resolved with confirmed metadata.
+                            </p>
+                          </div>
+                          <div className="p-2.5 rounded-lg border border-[#CBE7CE] bg-[#EDF6EE] text-xs space-y-1">
+                            <div className="font-semibold text-[#1E5A2A] flex items-center gap-1">
+                              <CheckCircle2 className="w-3 h-3" /> Retraction Watch Clear
+                            </div>
+                            <p className="text-[11px] text-[#1E5A2A]/90 leading-snug">
+                              Zero retracted references flagged in manuscript bibliography.
+                            </p>
+                          </div>
                         </div>
-                        <p className="text-[11px] text-[#337a50] leading-snug">
-                          15 / 15 cited DOIs resolved with confirmed metadata.
-                        </p>
                       </div>
-                      <div className="p-2.5 rounded-lg border border-[#c6e8d2] bg-[#f3fbf6] text-xs space-y-1">
-                        <div className="font-semibold text-[#2b7a4b] flex items-center gap-1">
-                          <CheckCircle2 className="w-3 h-3" /> Retraction Watch Clear
+                    </>
+                  )}
+
+                  {activeTab === 'personas' && (
+                    <div className="space-y-4 animate-fade-in">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-bold text-[#2F3437]">4-Persona Independent Reviewers</h3>
+                        <span className="text-xs text-[#787774]">Field-calibrated domain referees</span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="p-3.5 rounded-xl border border-[#EBEBEA] bg-[#F7F7F5] space-y-1.5">
+                          <div className="flex items-center justify-between">
+                            <span className="font-semibold text-xs text-[#2F3437]">Dr. Aris Vance (Senior Methods Reviewer)</span>
+                            <span className="text-[10px] px-1.5 rounded bg-[#FDF0EF] text-[#7C2D2B] border border-[#F7CECC]">Major Rev</span>
+                          </div>
+                          <p className="text-xs text-[#787774] italic">
+                            &ldquo;POU2F1 binding to the DLL3 distal enhancer element is correlative. shRNA knockdown without complementary CRISPR rescue leaves an open alternative hypothesis.&rdquo;
+                          </p>
                         </div>
-                        <p className="text-[11px] text-[#337a50] leading-snug">
-                          Zero retracted references flagged in manuscript bibliography.
-                        </p>
+                        <div className="p-3.5 rounded-xl border border-[#EBEBEA] bg-[#F7F7F5] space-y-1.5">
+                          <div className="flex items-center justify-between">
+                            <span className="font-semibold text-xs text-[#2F3437]">Dr. Elena Rostova (Senior Editor, Nature)</span>
+                            <span className="text-[10px] px-1.5 rounded bg-[#FBF3DB] text-[#78510E] border border-[#F4E2B6]">Editorial Triage</span>
+                          </div>
+                          <p className="text-xs text-[#787774] italic">
+                            &ldquo;The title claim of a &lsquo;universal predictive biomarker&rsquo; is an overreach for a retrospective organoid cohort (n=8). Scope must be moderated for submission.&rdquo;
+                          </p>
+                        </div>
+                        <div className="p-3.5 rounded-xl border border-[#EBEBEA] bg-[#F7F7F5] space-y-1.5">
+                          <div className="flex items-center justify-between">
+                            <span className="font-semibold text-xs text-[#2F3437]">Dr. Michael Sorkin (Biostatistician)</span>
+                            <span className="text-[10px] px-1.5 rounded bg-[#FDF0EF] text-[#7C2D2B] border border-[#F7CECC]">Desk Reject Risk</span>
+                          </div>
+                          <p className="text-xs text-[#787774] italic">
+                            &ldquo;No multiplicity correction (FDR / Bonferroni) applied to 1,200 sgRNA targets. Unpaired t-test was used on small samples without Shapiro-Wilk testing.&rdquo;
+                          </p>
+                        </div>
+                        <div className="p-3.5 rounded-xl border border-[#EBEBEA] bg-[#F7F7F5] space-y-1.5">
+                          <div className="flex items-center justify-between">
+                            <span className="font-semibold text-xs text-[#2F3437]">Dr. Marcus Chen (Translational Oncologist)</span>
+                            <span className="text-[10px] px-1.5 rounded bg-[#EDF6EE] text-[#1E5A2A] border border-[#CBE7CE]">High Value</span>
+                          </div>
+                          <p className="text-xs text-[#787774] italic">
+                            &ldquo;The biological nomination of POU2F1 is genuinely promising for SCLC. Addressing the control experiments will significantly elevate acceptance probability.&rdquo;
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
+
+                  {activeTab === 'crossref' && (
+                    <div className="space-y-4 animate-fade-in">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-bold text-[#2F3437]">CrossRef &amp; Retraction Screening</h3>
+                        <span className="text-xs text-[#1E5A2A] font-semibold bg-[#EDF6EE] px-2 py-0.5 rounded-md border border-[#CBE7CE]">100% Deterministic</span>
+                      </div>
+                      <div className="border border-[#EBEBEA] rounded-xl overflow-hidden text-xs">
+                        <div className="p-2.5 bg-[#F7F7F5] border-b border-[#EBEBEA] font-semibold text-[#787774] flex items-center justify-between">
+                          <span>Cited Reference</span>
+                          <span>Audit Status</span>
+                        </div>
+                        <div className="p-3 border-b border-[#EBEBEA] flex items-center justify-between">
+                          <div>
+                            <div className="font-medium text-[#2F3437]">Saunders D, et al. A DLL3-targeted ADC for SCLC.</div>
+                            <div className="text-[11px] text-[#787774]">DOI: 10.1126/scitranslmed.aac9459 &bull; Sci Transl Med</div>
+                          </div>
+                          <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#EDF6EE] text-[#1E5A2A] border border-[#CBE7CE]">
+                            CrossRef Verified
+                          </span>
+                        </div>
+                        <div className="p-3 flex items-center justify-between bg-[#FDF0EF]">
+                          <div>
+                            <div className="font-medium text-[#7C2D2B]">Wakefield AJ, et al. Ileal-lymphoid-nodular hyperplasia... (1998)</div>
+                            <div className="text-[11px] text-[#7C2D2B]/90">DOI: 10.1016/S0140-6736(97)11096-0 &bull; Lancet</div>
+                          </div>
+                          <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-white text-[#7C2D2B] border border-[#F7CECC]">
+                            RETRACTED (Flagged)
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {activeTab === 'recommendations' && (
+                    <div className="space-y-4 animate-fade-in">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-bold text-[#2F3437]">Target Journal Tiers &amp; Hazards</h3>
+                        <span className="text-xs text-[#787774]">Curated catalog match</span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div className="p-3.5 rounded-xl border border-[#DFD5F5] bg-[#F6F3F9] space-y-1">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-white text-[#57338C] border border-[#DFD5F5]">Reach &bull; IF 14.7</span>
+                          <h4 className="font-bold text-sm text-[#2F3437] mt-1">Nature Communications</h4>
+                          <p className="text-xs text-[#787774]">Mechanistic rigor required. Must include rescue experiment before submission.</p>
+                        </div>
+                        <div className="p-3.5 rounded-xl border border-[#CBE7CE] bg-[#EDF6EE] space-y-1">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-white text-[#1E5A2A] border border-[#CBE7CE]">Realistic &bull; IF 8.8</span>
+                          <h4 className="font-bold text-sm text-[#2F3437] mt-1">Cell Reports</h4>
+                          <p className="text-xs text-[#787774]">High scope fit for POU2F1 discovery with moderate revisions.</p>
+                        </div>
+                        <div className="p-3.5 rounded-xl border border-[#CDE1F8] bg-[#EBF3FB] space-y-1">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-white text-[#18569C] border border-[#CDE1F8]">Fallback &bull; IF 5.2</span>
+                          <h4 className="font-bold text-sm text-[#2F3437] mt-1">Oncogene</h4>
+                          <p className="text-xs text-[#787774]">Safe publishing target if organoid rescue experiments cannot be completed in time.</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -324,19 +454,19 @@ export default function HomePage() {
       {/* ------------------------------------------------------------- */}
       {/* 2. LOGO BAR (Scholarly Publisher Venues)                      */}
       {/* ------------------------------------------------------------- */}
-      <section className="py-10 border-y border-[#eaeaea] bg-[#fafafa]">
+      <section className="py-10 border-y border-[#EBEBEA] bg-[#F7F7F5]">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 text-center">
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-[#888888] mb-6">
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-[#9B9A97] mb-6">
             Empowering authors publishing in premier scientific journals worldwide
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-14 text-sm sm:text-base font-serif font-bold text-[#888888] tracking-wider">
-            <span className="hover:text-[#111111] transition">NATURE</span>
-            <span className="hover:text-[#111111] transition">SCIENCE</span>
-            <span className="hover:text-[#111111] transition">CELL</span>
-            <span className="hover:text-[#111111] transition">THE LANCET</span>
-            <span className="hover:text-[#111111] transition">PNAS</span>
-            <span className="hover:text-[#111111] transition">PLOS ONE</span>
-            <span className="hover:text-[#111111] transition">IEEE TPAMI</span>
+          <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-14 text-sm sm:text-base font-serif font-bold text-[#9B9A97] tracking-wider">
+            <span className="hover:text-[#2F3437] transition">NATURE</span>
+            <span className="hover:text-[#2F3437] transition">SCIENCE</span>
+            <span className="hover:text-[#2F3437] transition">CELL</span>
+            <span className="hover:text-[#2F3437] transition">THE LANCET</span>
+            <span className="hover:text-[#2F3437] transition">PNAS</span>
+            <span className="hover:text-[#2F3437] transition">PLOS ONE</span>
+            <span className="hover:text-[#2F3437] transition">IEEE TPAMI</span>
           </div>
         </div>
       </section>
@@ -346,78 +476,78 @@ export default function HomePage() {
       {/* ------------------------------------------------------------- */}
       <section className="py-20 px-4 sm:px-6 bg-white">
         <div className="mx-auto max-w-5xl">
-          <h2 className="text-3xl sm:text-5xl font-bold text-[#111111] tracking-tight mb-12">
+          <h2 className="text-3xl sm:text-5xl font-bold text-[#2F3437] tracking-tight mb-12">
             AI where your research works.
           </h2>
 
           {/* Bento Top Row (Two 50% Cards) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             {/* Bento Card 1 */}
-            <div className="rounded-2xl border border-[#eaeaea] bg-white p-7 sm:p-8 shadow-xs flex flex-col justify-between hover:shadow-md transition">
+            <div className="rounded-2xl border border-[#EBEBEA] bg-white p-7 sm:p-8 shadow-xs flex flex-col justify-between hover:shadow-md transition">
               <div>
-                <div className="flex items-center justify-between text-xs text-[#888888] mb-2 font-medium">
+                <div className="flex items-center justify-between text-xs text-[#9B9A97] mb-2 font-medium">
                   <span>Editorial Synthesis</span>
                   <div className="w-4 h-4 rounded-full bg-black text-white flex items-center justify-center text-[10px]">
                     <Check className="w-2.5 h-2.5" />
                   </div>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-[#111111] tracking-tight mb-4">
+                <h3 className="text-xl sm:text-2xl font-bold text-[#2F3437] tracking-tight mb-4">
                   Bring everything into one system of record.
                 </h3>
               </div>
 
               {/* Mini UI Mockup inside card */}
-              <div className="rounded-xl border border-[#eaeaea] bg-[#fafafa] p-4 text-xs space-y-2 mt-4">
+              <div className="rounded-xl border border-[#EBEBEA] bg-[#F7F7F5] p-4 text-xs space-y-2 mt-4">
                 <div className="flex items-center justify-between pb-2 border-b border-[#ecece9]">
-                  <span className="font-semibold text-[#111111]">Pre-Submission Rubric</span>
-                  <span className="text-[11px] text-[#888888]">Calibrated to Nature</span>
+                  <span className="font-semibold text-[#2F3437]">Pre-Submission Rubric</span>
+                  <span className="text-[11px] text-[#9B9A97]">Calibrated to Nature</span>
                 </div>
                 <div className="space-y-1.5 pt-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-[#555555]">Originality &amp; Novelty</span>
-                    <span className="px-2 py-0.5 rounded bg-[#eefaf3] text-[#2b7a4b] font-medium">4.5 / 5.0</span>
+                    <span className="text-[#787774]">Originality &amp; Novelty</span>
+                    <span className="px-2 py-0.5 rounded bg-[#EDF6EE] text-[#1E5A2A] border border-[#CBE7CE] font-medium">4.5 / 5.0</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[#555555]">Claims vs Evidence</span>
-                    <span className="px-2 py-0.5 rounded bg-[#faecd7] text-[#915809] font-medium">Overclaim Risk</span>
+                    <span className="text-[#787774]">Claims vs Evidence</span>
+                    <span className="px-2 py-0.5 rounded bg-[#FBF3DB] text-[#78510E] border border-[#F4E2B6] font-medium">Overclaim Risk</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[#555555]">Methodological Soundness</span>
-                    <span className="px-2 py-0.5 rounded bg-[#f5f5f4] text-[#555555] font-medium">Power Calculation Needed</span>
+                    <span className="text-[#787774]">Methodological Soundness</span>
+                    <span className="px-2 py-0.5 rounded bg-[#f5f5f4] text-[#787774] font-medium">Power Calculation Needed</span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Bento Card 2 */}
-            <div className="rounded-2xl border border-[#eaeaea] bg-white p-7 sm:p-8 shadow-xs flex flex-col justify-between hover:shadow-md transition">
+            <div className="rounded-2xl border border-[#EBEBEA] bg-white p-7 sm:p-8 shadow-xs flex flex-col justify-between hover:shadow-md transition">
               <div>
-                <div className="flex items-center justify-between text-xs text-[#888888] mb-2 font-medium">
+                <div className="flex items-center justify-between text-xs text-[#9B9A97] mb-2 font-medium">
                   <span>Citation Audit</span>
                   <div className="w-4 h-4 rounded-full bg-black text-white flex items-center justify-center text-[10px]">
                     <Check className="w-2.5 h-2.5" />
                   </div>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-[#111111] tracking-tight mb-4">
+                <h3 className="text-xl sm:text-2xl font-bold text-[#2F3437] tracking-tight mb-4">
                   Get answers instantly with live verification.
                 </h3>
               </div>
 
               {/* Chart & Search Mockup */}
-              <div className="rounded-xl border border-[#eaeaea] bg-[#fafafa] p-4 text-xs space-y-3 mt-4">
+              <div className="rounded-xl border border-[#EBEBEA] bg-[#F7F7F5] p-4 text-xs space-y-3 mt-4">
                 <div className="flex items-center gap-4">
                   <div className="w-14 h-14 rounded-full border-4 border-[#0075eb] border-t-[#0075eb] border-r-[#0075eb] border-b-[#cce3fb] border-l-[#0075eb] flex items-center justify-center font-bold text-sm text-[#0075eb]">
                     94%
                   </div>
                   <div>
-                    <div className="font-semibold text-[#111111]">Recency Profile</div>
-                    <div className="text-[11px] text-[#777777]">94% citations published within last 5 years</div>
+                    <div className="font-semibold text-[#2F3437]">Recency Profile</div>
+                    <div className="text-[11px] text-[#787774]">94% citations published within last 5 years</div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 p-2 rounded-lg bg-white border border-[#e5e5e5] shadow-xs text-xs">
+                <div className="flex items-center gap-2 p-2 rounded-lg bg-white border border-[#EBEBEA] shadow-xs text-xs">
                   <Search className="w-3.5 h-3.5 text-[#0075eb]" />
-                  <span className="text-[#555555] truncate">What are our biggest desk-reject risks?</span>
+                  <span className="text-[#787774] truncate">What are our biggest desk-reject risks?</span>
                   <span className="ml-auto w-5 h-5 rounded bg-[#0075eb] text-white flex items-center justify-center text-[10px]">
                     &rarr;
                   </span>
@@ -427,25 +557,25 @@ export default function HomePage() {
           </div>
 
           {/* Bento Middle Row (Wide 100% Card) */}
-          <div className="rounded-2xl border border-[#eaeaea] bg-[#fbfbfa] p-7 sm:p-8 shadow-xs mb-6 hover:shadow-md transition">
-            <div className="flex items-center justify-between text-xs text-[#888888] mb-2 font-medium">
+          <div className="rounded-2xl border border-[#EBEBEA] bg-[#F7F7F5] p-7 sm:p-8 shadow-xs mb-6 hover:shadow-md transition">
+            <div className="flex items-center justify-between text-xs text-[#9B9A97] mb-2 font-medium">
               <span>Peer-Review Simulation</span>
               <div className="w-4 h-4 rounded-full bg-black text-white flex items-center justify-center text-[10px]">
                 <Check className="w-2.5 h-2.5" />
               </div>
             </div>
-            <h3 className="text-xl sm:text-2xl font-bold text-[#111111] tracking-tight mb-4">
+            <h3 className="text-xl sm:text-2xl font-bold text-[#2F3437] tracking-tight mb-4">
               Keep reviews moving 24/7 with expert agents.
             </h3>
 
             {/* 4 Persona Cards in Bento */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-4">
-              <div className="p-3.5 rounded-xl bg-white border border-[#e5e5e5] shadow-xs space-y-2">
-                <div className="flex items-center gap-2 font-semibold text-xs text-[#111111]">
+              <div className="p-3.5 rounded-xl bg-white border border-[#EBEBEA] shadow-xs space-y-2">
+                <div className="flex items-center gap-2 font-semibold text-xs text-[#2F3437]">
                   <FlaskConical className="w-3.5 h-3.5 text-[#0075eb]" />
                   <span>Methods Specialist</span>
                 </div>
-                <p className="text-[11px] text-[#666666]">
+                <p className="text-[11px] text-[#787774]">
                   Assesses CRISPR library representation, sequencing coverage, and negative controls.
                 </p>
                 <div className="text-[10px] font-semibold text-[#0075eb] bg-[#eef5fd] px-2 py-0.5 rounded">
@@ -453,12 +583,12 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-white border border-[#e5e5e5] shadow-xs space-y-2">
-                <div className="flex items-center gap-2 font-semibold text-xs text-[#111111]">
+              <div className="p-3.5 rounded-xl bg-white border border-[#EBEBEA] shadow-xs space-y-2">
+                <div className="flex items-center gap-2 font-semibold text-xs text-[#2F3437]">
                   <GraduationCap className="w-3.5 h-3.5 text-[#e38817]" />
                   <span>Domain Expert</span>
                 </div>
-                <p className="text-[11px] text-[#666666]">
+                <p className="text-[11px] text-[#787774]">
                   Evaluates biological plausibility, pathway mechanism, and novelty against 2024 literature.
                 </p>
                 <div className="text-[10px] font-semibold text-[#915809] bg-[#faecd7] px-2 py-0.5 rounded">
@@ -466,12 +596,12 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-white border border-[#e5e5e5] shadow-xs space-y-2">
-                <div className="flex items-center gap-2 font-semibold text-xs text-[#111111]">
+              <div className="p-3.5 rounded-xl bg-white border border-[#EBEBEA] shadow-xs space-y-2">
+                <div className="flex items-center gap-2 font-semibold text-xs text-[#2F3437]">
                   <BookOpen className="w-3.5 h-3.5 text-[#9a6dd7]" />
                   <span>Senior Journal Editor</span>
                 </div>
-                <p className="text-[11px] text-[#666666]">
+                <p className="text-[11px] text-[#787774]">
                   Screens broad interest, translational implications, and immediate desk-rejection hazards.
                 </p>
                 <div className="text-[10px] font-semibold text-[#7642bb] bg-[#f3edf9] px-2 py-0.5 rounded">
@@ -479,12 +609,12 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-white border border-[#e5e5e5] shadow-xs space-y-2">
-                <div className="flex items-center gap-2 font-semibold text-xs text-[#111111]">
+              <div className="p-3.5 rounded-xl bg-white border border-[#EBEBEA] shadow-xs space-y-2">
+                <div className="flex items-center gap-2 font-semibold text-xs text-[#2F3437]">
                   <BarChart3 className="w-3.5 h-3.5 text-[#2b7a4b]" />
                   <span>Senior Biostatistician</span>
                 </div>
-                <p className="text-[11px] text-[#666666]">
+                <p className="text-[11px] text-[#787774]">
                   Audits sample power calculations, multiplicity adjustments (FDR), and variance metrics.
                 </p>
                 <div className="text-[10px] font-semibold text-[#2b7a4b] bg-[#eefaf3] px-2 py-0.5 rounded">
@@ -498,81 +628,81 @@ export default function HomePage() {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
             <Link
               href="/tools/reference-checker"
-              className="p-4 rounded-xl border border-[#eaeaea] bg-white hover:border-[#cccccc] hover:shadow-sm transition flex flex-col justify-between group"
+              className="p-4 rounded-xl border border-[#EBEBEA] bg-white hover:border-[#cccccc] hover:shadow-sm transition flex flex-col justify-between group"
             >
-              <div className="w-8 h-8 rounded-lg bg-[#eef5fd] text-[#0075eb] flex items-center justify-center mb-3">
+              <div className="w-8 h-8 rounded-lg bg-[#EBF3FB] text-[#18569C] border border-[#CDE1F8] flex items-center justify-center mb-3">
                 <CheckCircle2 className="w-4 h-4" />
               </div>
               <div>
-                <div className="font-semibold text-xs text-[#111111] group-hover:text-[#0075eb] flex items-center justify-between">
+                <div className="font-semibold text-xs text-[#2F3437] group-hover:text-[#0075eb] flex items-center justify-between">
                   <span>Reference Audit</span>
-                  <span className="text-[#888888]">&rarr;</span>
+                  <span className="text-[#9B9A97]">&rarr;</span>
                 </div>
-                <p className="text-[11px] text-[#777777] mt-0.5">Crossref verification</p>
+                <p className="text-[11px] text-[#787774] mt-0.5">Crossref verification</p>
               </div>
             </Link>
 
             <Link
               href="/tools/prisma"
-              className="p-4 rounded-xl border border-[#eaeaea] bg-white hover:border-[#cccccc] hover:shadow-sm transition flex flex-col justify-between group"
+              className="p-4 rounded-xl border border-[#EBEBEA] bg-white hover:border-[#cccccc] hover:shadow-sm transition flex flex-col justify-between group"
             >
-              <div className="w-8 h-8 rounded-lg bg-[#faecd7] text-[#915809] flex items-center justify-center mb-3">
+              <div className="w-8 h-8 rounded-lg bg-[#FBF3DB] text-[#78510E] border border-[#F4E2B6] flex items-center justify-center mb-3">
                 <Layers className="w-4 h-4" />
               </div>
               <div>
-                <div className="font-semibold text-xs text-[#111111] group-hover:text-[#915809] flex items-center justify-between">
+                <div className="font-semibold text-xs text-[#2F3437] group-hover:text-[#915809] flex items-center justify-between">
                   <span>PRISMA 2020</span>
-                  <span className="text-[#888888]">&rarr;</span>
+                  <span className="text-[#9B9A97]">&rarr;</span>
                 </div>
-                <p className="text-[11px] text-[#777777] mt-0.5">Flow diagrams &amp; SVG</p>
+                <p className="text-[11px] text-[#787774] mt-0.5">Flow diagrams &amp; SVG</p>
               </div>
             </Link>
 
             <Link
               href="/tools/journal-fit"
-              className="p-4 rounded-xl border border-[#eaeaea] bg-white hover:border-[#cccccc] hover:shadow-sm transition flex flex-col justify-between group"
+              className="p-4 rounded-xl border border-[#EBEBEA] bg-white hover:border-[#cccccc] hover:shadow-sm transition flex flex-col justify-between group"
             >
-              <div className="w-8 h-8 rounded-lg bg-[#fdeeee] text-[#c52b2b] flex items-center justify-center mb-3">
+              <div className="w-8 h-8 rounded-lg bg-[#FDF0EF] text-[#7C2D2B] flex items-center justify-center mb-3">
                 <BookOpen className="w-4 h-4" />
               </div>
               <div>
-                <div className="font-semibold text-xs text-[#111111] group-hover:text-[#c52b2b] flex items-center justify-between">
+                <div className="font-semibold text-xs text-[#2F3437] group-hover:text-[#7C2D2B] flex items-center justify-between">
                   <span>Journal Fit</span>
-                  <span className="text-[#888888]">&rarr;</span>
+                  <span className="text-[#9B9A97]">&rarr;</span>
                 </div>
-                <p className="text-[11px] text-[#777777] mt-0.5">Match 20+ venues</p>
+                <p className="text-[11px] text-[#787774] mt-0.5">Match 20+ venues</p>
               </div>
             </Link>
 
             <Link
               href="/tools/citation-claim"
-              className="p-4 rounded-xl border border-[#eaeaea] bg-white hover:border-[#cccccc] hover:shadow-sm transition flex flex-col justify-between group"
+              className="p-4 rounded-xl border border-[#EBEBEA] bg-white hover:border-[#cccccc] hover:shadow-sm transition flex flex-col justify-between group"
             >
-              <div className="w-8 h-8 rounded-lg bg-[#eefaf3] text-[#2b7a4b] flex items-center justify-center mb-3">
+              <div className="w-8 h-8 rounded-lg bg-[#EDF6EE] text-[#1E5A2A] border border-[#CBE7CE] flex items-center justify-center mb-3">
                 <Sparkles className="w-4 h-4" />
               </div>
               <div>
-                <div className="font-semibold text-xs text-[#111111] group-hover:text-[#2b7a4b] flex items-center justify-between">
+                <div className="font-semibold text-xs text-[#2F3437] group-hover:text-[#2b7a4b] flex items-center justify-between">
                   <span>Citation Claim</span>
-                  <span className="text-[#888888]">&rarr;</span>
+                  <span className="text-[#9B9A97]">&rarr;</span>
                 </div>
-                <p className="text-[11px] text-[#777777] mt-0.5">Audit claim accuracy</p>
+                <p className="text-[11px] text-[#787774] mt-0.5">Audit claim accuracy</p>
               </div>
             </Link>
 
             <Link
               href="/tools/cover-letter"
-              className="p-4 rounded-xl border border-[#eaeaea] bg-white hover:border-[#cccccc] hover:shadow-sm transition flex flex-col justify-between group col-span-2 sm:col-span-1"
+              className="p-4 rounded-xl border border-[#EBEBEA] bg-white hover:border-[#cccccc] hover:shadow-sm transition flex flex-col justify-between group col-span-2 sm:col-span-1"
             >
-              <div className="w-8 h-8 rounded-lg bg-[#f3edf9] text-[#7642bb] flex items-center justify-center mb-3">
+              <div className="w-8 h-8 rounded-lg bg-[#F6F3F9] text-[#57338C] border border-[#DFD5F5] flex items-center justify-center mb-3">
                 <FileText className="w-4 h-4" />
               </div>
               <div>
-                <div className="font-semibold text-xs text-[#111111] group-hover:text-[#7642bb] flex items-center justify-between">
+                <div className="font-semibold text-xs text-[#2F3437] group-hover:text-[#7642bb] flex items-center justify-between">
                   <span>Cover Letter</span>
-                  <span className="text-[#888888]">&rarr;</span>
+                  <span className="text-[#9B9A97]">&rarr;</span>
                 </div>
-                <p className="text-[11px] text-[#777777] mt-0.5">Editor-grade letters</p>
+                <p className="text-[11px] text-[#787774] mt-0.5">Editor-grade letters</p>
               </div>
             </Link>
           </div>
@@ -582,15 +712,15 @@ export default function HomePage() {
       {/* ------------------------------------------------------------- */}
       {/* 4. TESTIMONIALS SECTION: "Trusted by teams that ship."        */}
       {/* ------------------------------------------------------------- */}
-      <section className="py-20 px-4 sm:px-6 bg-white border-t border-[#eaeaea]">
+      <section className="py-20 px-4 sm:px-6 bg-white border-t border-[#EBEBEA]">
         <div className="mx-auto max-w-5xl">
-          <h2 className="text-3xl sm:text-5xl font-bold text-[#111111] tracking-tight mb-12">
+          <h2 className="text-3xl sm:text-5xl font-bold text-[#2F3437] tracking-tight mb-12">
             Trusted by researchers that publish.
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Duotone Card 1: Red / Coral (Nature Communications) */}
-            <div className="relative rounded-2xl overflow-hidden aspect-[4/5] bg-gradient-to-br from-[#c93b3b] via-[#d64545] to-[#a82424] text-white p-7 flex flex-col justify-between shadow-md">
+            <div className="relative rounded-2xl overflow-hidden aspect-[4/5] bg-gradient-to-br from-[#7C2D2B] via-[#8F3533] to-[#5C1F1E] text-white p-7 flex flex-col justify-between shadow-md">
               <div className="flex items-center justify-between z-10">
                 <span className="font-serif font-bold text-base tracking-tight">nature communications</span>
               </div>
@@ -610,7 +740,7 @@ export default function HomePage() {
             </div>
 
             {/* Duotone Card 2: Ocean Blue (Cell Reports) */}
-            <div className="relative rounded-2xl overflow-hidden aspect-[4/5] bg-gradient-to-br from-[#1e5088] via-[#2463aa] to-[#123863] text-white p-7 flex flex-col justify-between shadow-md">
+            <div className="relative rounded-2xl overflow-hidden aspect-[4/5] bg-gradient-to-br from-[#18569C] via-[#1E67BA] to-[#124278] text-white p-7 flex flex-col justify-between shadow-md">
               <div className="flex items-center justify-between z-10">
                 <span className="font-serif font-bold text-base tracking-tight">Cell Reports</span>
               </div>
@@ -655,23 +785,23 @@ export default function HomePage() {
       {/* ------------------------------------------------------------- */}
       {/* 5. GET STARTED TODAY CTA SECTION                              */}
       {/* ------------------------------------------------------------- */}
-      <section className="py-24 sm:py-32 px-4 sm:px-6 bg-[#fafafa] border-t border-[#eaeaea] text-center">
+      <section className="py-24 sm:py-32 px-4 sm:px-6 bg-[#F7F7F5] border-t border-[#EBEBEA] text-center">
         <div className="mx-auto max-w-2xl">
-          <h2 className="text-3xl sm:text-5xl font-bold text-[#111111] tracking-tight mb-6">
+          <h2 className="text-3xl sm:text-5xl font-bold text-[#2F3437] tracking-tight mb-6">
             Get started today.
           </h2>
 
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Link
               href="/scan"
-              className="px-5 py-2.5 rounded-md bg-[#0075eb] hover:bg-[#0066cc] text-white font-medium text-sm shadow-xs transition active:scale-[0.98]"
+              className="px-5 py-2.5 rounded-md bg-[#000000] hover:bg-[#2F3437] text-white font-medium text-sm shadow-xs transition active:scale-[0.98]"
             >
               Try ManuView free
             </Link>
 
             <Link
               href="/examples"
-              className="px-4 py-2.5 rounded-md text-[#111111] hover:text-[#0075eb] hover:bg-white font-medium text-sm transition"
+              className="px-4 py-2.5 rounded-md text-[#2F3437] hover:text-[#0075eb] hover:bg-white font-medium text-sm transition"
             >
               Explore sample preprints
             </Link>

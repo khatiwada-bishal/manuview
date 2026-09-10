@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ProviderConfig, LLMProvider } from "@/lib/types";
-import { Settings, ShieldCheck, X, CheckCircle2, FileCode, Activity, RefreshCw, AlertCircle, Zap } from "lucide-react";
+import { ProviderConfig, LLMProvider, AvailableModel } from "@/lib/types";
+import { Settings, ShieldCheck, X, CheckCircle2, FileCode, Activity, RefreshCw, AlertCircle, Zap, Check, ChevronDown, Sparkles } from "lucide-react";
 import { GeminiLogo, OpenAILogo, GroqLogo, AnthropicLogo, OllamaLogo } from "./BrandLogos";
 
 interface Props {
@@ -13,7 +13,7 @@ interface Props {
 
 export const DEFAULT_CONFIG: ProviderConfig = {
   provider: "gemini",
-  model: "gemini-1.5-flash",
+  model: "gemini-2.5-flash",
   baseUrl: "http://localhost:11434",
   apiKey: "",
 };
@@ -22,6 +22,9 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
   const [config, setConfig] = useState<ProviderConfig>(DEFAULT_CONFIG);
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [testing, setTesting] = useState(false);
+  const [loadingModels, setLoadingModels] = useState(false);
+  const [availableModels, setAvailableModels] = useState<AvailableModel[]>([]);
+  const [showCustomInput, setShowCustomInput] = useState(false);
   const [testResult, setTestResult] = useState<{
     success: boolean;
     provider: string;
@@ -39,9 +42,11 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
   useEffect(() => {
     // Check browser local storage
     const saved = localStorage.getItem("manuview_provider_config");
+    let currentConfig = DEFAULT_CONFIG;
     if (saved) {
       try {
-        setConfig(JSON.parse(saved));
+        currentConfig = JSON.parse(saved);
+        setConfig(currentConfig);
       } catch {}
     }
 
@@ -49,12 +54,66 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
 
     // Check server-side .env status
     fetch("/api/config/status")
-      .then(res => res.json())
-      .then(data => setServerStatus(data))
+      .then((res) => res.json())
+      .then((data) => setServerStatus(data))
       .catch(() => {});
+
+    // Fetch models for current provider
+    loadModelsForProvider(currentConfig);
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  const loadModelsForProvider = async (targetConfig: ProviderConfig) => {
+    setLoadingModels(true);
+    try {
+      const res = await fetch("/api/config/models", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ config: targetConfig }),
+      });
+      const data = await res.json();
+      if (data.success && Array.isArray(data.models)) {
+        setAvailableModels(data.models);
+        // If current model is not set or empty, pick the recommended or first
+        if (!targetConfig.model && data.models.length > 0) {
+          const rec = data.models.find((m: AvailableModel) => m.recommended) || data.models[0];
+          setConfig((prev) => ({ ...prev, model: rec.id }));
+        }
+      }
+    } catch {
+      // Fallback: try GET with provider param
+      try {
+        const res = await fetch(`/api/config/models?provider=${targetConfig.provider}`);
+        const data = await res.json();
+        if (data.success && Array.isArray(data.models)) {
+          setAvailableModels(data.models);
+        }
+      } catch {}
+    } finally {
+      setLoadingModels(false);
+    }
+  };
+
+  const handleProviderChange = (newProvider: LLMProvider) => {
+    const defaultModel =
+      newProvider === "gemini"
+        ? "gemini-2.5-flash"
+        : newProvider === "openai"
+        ? "gpt-4o"
+        : newProvider === "anthropic"
+        ? "claude-3-7-sonnet-20250219"
+        : newProvider === "groq"
+        ? "llama-3.3-70b-versatile"
+        : "llama3.3";
+
+    const updated = {
+      ...config,
+      provider: newProvider,
+      model: defaultModel,
+    };
+    setConfig(updated);
+    setTestResult(null);
+    loadModelsForProvider(updated);
+  };
 
   const handleCheckConnection = async () => {
     setTesting(true);
@@ -67,6 +126,9 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
       });
       const data = await res.json();
       setTestResult(data);
+      if (Array.isArray(data.availableModels) && data.availableModels.length > 0) {
+        setAvailableModels(data.availableModels);
+      }
     } catch (err: any) {
       setTestResult({
         success: false,
@@ -91,150 +153,162 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
     }, 600);
   };
 
+  if (!isOpen) return null;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 overflow-y-auto">
-      <div className="relative w-full max-w-lg rounded-2xl bg-white border border-[#eaeaea] shadow-2xl p-6 text-[#111111] my-6">
+      <div className="relative w-full max-w-xl rounded-2xl bg-white border border-[#EBEBEA] shadow-xl p-6 sm:p-7 text-[#2F3437] my-6 max-h-[90vh] overflow-y-auto">
+        {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-1 text-[#888888] hover:text-[#111111] rounded-md transition"
+          className="absolute top-5 right-5 p-1.5 text-[#787774] hover:text-[#2F3437] hover:bg-[#F7F7F5] rounded-md transition"
+          aria-label="Close"
         >
           <X className="w-4 h-4" />
         </button>
 
-        <div className="flex items-center gap-2.5 mb-5">
-          <div className="text-xl select-none">⚙️</div>
+        {/* Modal Header */}
+        <div className="flex items-center gap-3 mb-5">
+          <div className="text-2xl select-none">⚙️</div>
           <div>
-            <h3 className="text-base font-semibold text-[#111111]">AI Engine &amp; API Key Settings</h3>
-            <p className="text-xs text-[#666666]">Select your provider and add credentials for real-time peer-review diagnostics.</p>
+            <h3 className="text-lg font-bold tracking-tight text-[#2F3437]">
+              AI Diagnostic Engine &amp; Models
+            </h3>
+            <p className="text-xs text-[#787774] mt-0.5">
+              Select your LLM provider, verify the connection, and pick verified diagnostic models.
+            </p>
           </div>
         </div>
 
-        {/* Server environment indicator */}
+        {/* Server Status Banner (High Contrast Pastel) */}
         {serverStatus?.hasServerKey ? (
-          <div className="p-3 mb-4 rounded-xl bg-[#e6f4ea] border border-[#ceead6] flex items-start gap-2.5 text-xs text-[#137333]">
-            <CheckCircle2 className="w-4 h-4 text-[#1e8e3e] flex-shrink-0 mt-0.5" />
+          <div className="p-3 mb-5 rounded-xl bg-[#EDF6EE] border border-[#CBE7CE] flex items-start gap-2.5 text-xs text-[#1E5A2A]">
+            <CheckCircle2 className="w-4 h-4 text-[#1E5A2A] flex-shrink-0 mt-0.5" />
             <div>
-              <span className="font-semibold text-[#137333]">Server Key Detected:</span> Using <code className="text-[#0d652d] uppercase font-bold">{serverStatus.activeProvider}</code> from your <code className="text-[#0d652d] font-mono">.env.local</code>.
+              <span className="font-semibold text-[#1E5A2A]">Server Key Active:</span> Using{" "}
+              <code className="text-[#1E5A2A] uppercase font-bold tracking-wide">{serverStatus.activeProvider}</code> from{" "}
+              <code className="font-mono font-medium text-[#1E5A2A]">.env.local</code>. Client keys below will take precedence if provided.
             </div>
           </div>
         ) : (
-          <div className="p-3 mb-4 rounded-xl bg-[#fef7e0] border border-[#fce8b2] flex items-start gap-2.5 text-xs text-[#b06000]">
-            <FileCode className="w-4 h-4 text-[#b06000] flex-shrink-0 mt-0.5" />
+          <div className="p-3 mb-5 rounded-xl bg-[#FBF3DB] border border-[#F4E2B6] flex items-start gap-2.5 text-xs text-[#78510E]">
+            <FileCode className="w-4 h-4 text-[#78510E] flex-shrink-0 mt-0.5" />
             <div>
-              <span className="font-semibold text-[#8f4a00]">Client Key:</span> Add your API key below in browser memory, or place it in <code className="font-mono font-medium text-[#8f4a00]">.env.local</code>.
+              <span className="font-semibold text-[#78510E]">Client Storage Mode:</span> Store your API key in browser local memory, or place it in{" "}
+              <code className="font-mono font-medium text-[#78510E]">.env.local</code> for automatic server detection.
             </div>
           </div>
         )}
 
-        {/* Provider Selection Grid */}
-        <div className="space-y-4">
+        <div className="space-y-5">
+          {/* 1. Provider Selection Grid */}
           <div>
-            <label className="block text-[11px] font-medium uppercase tracking-wider text-[#888888] mb-2">
-              Select AI Engine
+            <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#787774] mb-2">
+              1. Select AI Engine
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {/* 1. Google Gemini */}
+              {/* Google Gemini */}
               <button
                 type="button"
-                onClick={() => setConfig({ ...config, provider: "gemini", model: "gemini-1.5-flash" })}
-                className={`flex items-center gap-2 p-2.5 rounded-xl border text-xs font-medium transition ${
+                onClick={() => handleProviderChange("gemini")}
+                className={`flex items-center gap-2.5 p-3 rounded-xl border text-xs transition text-left ${
                   config.provider === "gemini"
-                    ? "bg-[#f0f7ff] border-[#0075eb] text-[#0075eb] ring-1 ring-[#0075eb]"
-                    : "bg-[#fafafa] border-[#eaeaea] text-[#555555] hover:text-[#111111] hover:bg-white hover:border-[#d0d0d0]"
+                    ? "bg-[#F7F7F5] border-[#2F3437] ring-1 ring-[#2F3437] shadow-2xs"
+                    : "bg-white border-[#EBEBEA] hover:bg-[#F7F7F5] text-[#787774] hover:text-[#2F3437]"
                 }`}
               >
                 <GeminiLogo className="w-4 h-4 flex-shrink-0" />
-                <div className="text-left">
-                  <div className="leading-tight font-semibold text-xs">Gemini</div>
-                  <div className="text-[10px] text-[#0075eb]">Google</div>
+                <div>
+                  <div className="font-semibold text-[#2F3437] leading-tight">Gemini</div>
+                  <div className="text-[10px] text-[#0A85EA] font-medium">Google AI</div>
                 </div>
               </button>
 
-              {/* 2. OpenAI / Custom Proxy */}
+              {/* OpenAI */}
               <button
                 type="button"
-                onClick={() => setConfig({ ...config, provider: "openai", model: "gpt-4o" })}
-                className={`flex items-center gap-2 p-2.5 rounded-xl border text-xs font-medium transition ${
+                onClick={() => handleProviderChange("openai")}
+                className={`flex items-center gap-2.5 p-3 rounded-xl border text-xs transition text-left ${
                   config.provider === "openai"
-                    ? "bg-[#f0f7ff] border-[#0075eb] text-[#0075eb] ring-1 ring-[#0075eb]"
-                    : "bg-[#fafafa] border-[#eaeaea] text-[#555555] hover:text-[#111111] hover:bg-white hover:border-[#d0d0d0]"
+                    ? "bg-[#F7F7F5] border-[#2F3437] ring-1 ring-[#2F3437] shadow-2xs"
+                    : "bg-white border-[#EBEBEA] hover:bg-[#F7F7F5] text-[#787774] hover:text-[#2F3437]"
                 }`}
               >
-                <div className="p-0.5 rounded bg-[#111111] text-white flex items-center justify-center flex-shrink-0">
+                <div className="p-0.5 rounded bg-[#000000] text-white flex items-center justify-center flex-shrink-0">
                   <OpenAILogo className="w-3 h-3 text-white" />
                 </div>
-                <div className="text-left">
-                  <div className="leading-tight font-semibold text-xs">OpenAI</div>
-                  <div className="text-[10px] text-purple-600">Proxy/GPT-4o</div>
+                <div>
+                  <div className="font-semibold text-[#2F3437] leading-tight">OpenAI</div>
+                  <div className="text-[10px] text-[#57338C] font-medium">GPT-4o &amp; o3</div>
                 </div>
               </button>
 
-              {/* 3. Anthropic Claude */}
+              {/* Claude */}
               <button
                 type="button"
-                onClick={() => setConfig({ ...config, provider: "anthropic", model: "claude-3-5-sonnet-20241022" })}
-                className={`flex items-center gap-2 p-2.5 rounded-xl border text-xs font-medium transition ${
+                onClick={() => handleProviderChange("anthropic")}
+                className={`flex items-center gap-2.5 p-3 rounded-xl border text-xs transition text-left ${
                   config.provider === "anthropic"
-                    ? "bg-[#f0f7ff] border-[#0075eb] text-[#0075eb] ring-1 ring-[#0075eb]"
-                    : "bg-[#fafafa] border-[#eaeaea] text-[#555555] hover:text-[#111111] hover:bg-white hover:border-[#d0d0d0]"
+                    ? "bg-[#F7F7F5] border-[#2F3437] ring-1 ring-[#2F3437] shadow-2xs"
+                    : "bg-white border-[#EBEBEA] hover:bg-[#F7F7F5] text-[#787774] hover:text-[#2F3437]"
                 }`}
               >
                 <AnthropicLogo className="w-4 h-4 flex-shrink-0" />
-                <div className="text-left">
-                  <div className="leading-tight font-semibold text-xs">Claude</div>
-                  <div className="text-[10px] text-amber-700">Anthropic</div>
+                <div>
+                  <div className="font-semibold text-[#2F3437] leading-tight">Claude</div>
+                  <div className="text-[10px] text-[#78510E] font-medium">Anthropic</div>
                 </div>
               </button>
 
-              {/* 4. Groq */}
+              {/* Groq */}
               <button
                 type="button"
-                onClick={() => setConfig({ ...config, provider: "groq", model: "llama-3.3-70b-versatile" })}
-                className={`flex items-center gap-2 p-2.5 rounded-xl border text-xs font-medium transition ${
+                onClick={() => handleProviderChange("groq")}
+                className={`flex items-center gap-2.5 p-3 rounded-xl border text-xs transition text-left ${
                   config.provider === "groq"
-                    ? "bg-[#f0f7ff] border-[#0075eb] text-[#0075eb] ring-1 ring-[#0075eb]"
-                    : "bg-[#fafafa] border-[#eaeaea] text-[#555555] hover:text-[#111111] hover:bg-white hover:border-[#d0d0d0]"
+                    ? "bg-[#F7F7F5] border-[#2F3437] ring-1 ring-[#2F3437] shadow-2xs"
+                    : "bg-white border-[#EBEBEA] hover:bg-[#F7F7F5] text-[#787774] hover:text-[#2F3437]"
                 }`}
               >
                 <GroqLogo className="w-4 h-4 flex-shrink-0" />
-                <div className="text-left">
-                  <div className="leading-tight font-semibold text-xs">Groq</div>
-                  <div className="text-[10px] text-orange-600">Llama 3.3</div>
+                <div>
+                  <div className="font-semibold text-[#2F3437] leading-tight">Groq</div>
+                  <div className="text-[10px] text-[#C43834] font-medium">LPU Fast</div>
                 </div>
               </button>
 
-              {/* 5. Local Ollama */}
+              {/* Ollama */}
               <button
                 type="button"
-                onClick={() => setConfig({ ...config, provider: "ollama", model: "llama3.3" })}
-                className={`flex items-center gap-2 p-2.5 rounded-xl border text-xs font-medium transition ${
+                onClick={() => handleProviderChange("ollama")}
+                className={`flex items-center gap-2.5 p-3 rounded-xl border text-xs transition text-left ${
                   config.provider === "ollama"
-                    ? "bg-[#f0f7ff] border-[#0075eb] text-[#0075eb] ring-1 ring-[#0075eb]"
-                    : "bg-[#fafafa] border-[#eaeaea] text-[#555555] hover:text-[#111111] hover:bg-white hover:border-[#d0d0d0]"
+                    ? "bg-[#F7F7F5] border-[#2F3437] ring-1 ring-[#2F3437] shadow-2xs"
+                    : "bg-white border-[#EBEBEA] hover:bg-[#F7F7F5] text-[#787774] hover:text-[#2F3437]"
                 }`}
               >
-                <OllamaLogo className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                <div className="text-left">
-                  <div className="leading-tight font-semibold text-xs">Ollama</div>
-                  <div className="text-[10px] text-emerald-600">100% Offline</div>
+                <OllamaLogo className="w-4 h-4 text-[#1E5A2A] flex-shrink-0" />
+                <div>
+                  <div className="font-semibold text-[#2F3437] leading-tight">Ollama</div>
+                  <div className="text-[10px] text-[#1E5A2A] font-medium">100% Offline</div>
                 </div>
               </button>
             </div>
           </div>
 
-          {/* API Key Input */}
+          {/* 2. API Key / Endpoint Configuration */}
           {config.provider !== "ollama" ? (
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="block text-xs text-[#333333] font-medium">
-                  {config.provider === 'openai' ? 'API Key' : `${config.provider.toUpperCase()} API Key`}
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-semibold text-[#2F3437]">
+                  2. {config.provider === "openai" ? "API Key" : `${config.provider.toUpperCase()} API Key`}
                 </label>
                 {config.provider === "gemini" && (
                   <a
                     href="https://aistudio.google.com/app/apikey"
                     target="_blank"
                     rel="noreferrer"
-                    className="text-[11px] text-[#0075eb] hover:underline font-medium"
+                    className="text-[11px] text-[#0A85EA] hover:underline font-medium"
                   >
                     Get free Gemini key &rarr;
                   </a>
@@ -244,7 +318,7 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
                     href="https://console.groq.com/keys"
                     target="_blank"
                     rel="noreferrer"
-                    className="text-[11px] text-[#e06c00] hover:underline font-medium"
+                    className="text-[11px] text-[#78510E] hover:underline font-medium"
                   >
                     Get free Groq key &rarr;
                   </a>
@@ -254,7 +328,7 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
                     href="https://console.anthropic.com/"
                     target="_blank"
                     rel="noreferrer"
-                    className="text-[11px] text-amber-700 hover:underline font-medium"
+                    className="text-[11px] text-[#78510E] hover:underline font-medium"
                   >
                     Get Anthropic key &rarr;
                   </a>
@@ -265,151 +339,246 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
                 value={config.apiKey || ""}
                 onChange={(e) => setConfig({ ...config, apiKey: e.target.value })}
                 placeholder={
-                  config.provider === "gemini" ? "AIzaSy..." :
-                  config.provider === "anthropic" ? "sk-ant-..." :
-                  "sk-..."
+                  config.provider === "gemini"
+                    ? "AIzaSy..."
+                    : config.provider === "anthropic"
+                    ? "sk-ant-..."
+                    : "sk-..."
                 }
-                className="w-full px-3 py-2 rounded-lg bg-[#fafafa] border border-[#eaeaea] focus:border-[#0075eb] focus:bg-white text-xs text-[#111111] focus:outline-none font-mono transition"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#EBEBEA] focus:border-[#2F3437] focus:outline-none text-xs text-[#2F3437] font-mono transition shadow-2xs placeholder:text-[#9B9A97]"
               />
-              <p className="text-[11px] text-[#888888] mt-1">
-                Stored securely only in your local browser storage.
+              <p className="text-[11px] text-[#787774] mt-1">
+                Client keys are stored strictly in your local browser sandbox and never shared.
               </p>
 
-              {/* Custom Base URL (Available for OpenAI / Custom Proxies) */}
               {config.provider === "openai" && (
-                <div className="mt-2.5">
-                  <label className="block text-xs text-[#333333] font-medium mb-1">
+                <div className="mt-3">
+                  <label className="block text-xs font-semibold text-[#2F3437] mb-1">
                     API Base URL (Optional for Proxies / Custom Endpoints)
                   </label>
                   <input
                     type="text"
                     value={config.baseUrl || ""}
                     onChange={(e) => setConfig({ ...config, baseUrl: e.target.value })}
-                    placeholder="https://api.your-provider.com/v1 (or leave blank for official OpenAI)"
-                    className="w-full px-3 py-2 rounded-lg bg-[#fafafa] border border-[#eaeaea] focus:border-[#0075eb] focus:bg-white text-xs text-[#111111] focus:outline-none font-mono transition"
+                    placeholder="https://api.openai.com/v1 (or your custom proxy URL)"
+                    className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#EBEBEA] focus:border-[#2F3437] focus:outline-none text-xs text-[#2F3437] font-mono transition shadow-2xs placeholder:text-[#9B9A97]"
                   />
-                  <p className="text-[11px] text-[#888888] mt-1">
-                    Supports any OpenAI-compatible custom gateway or self-hosted endpoint.
-                  </p>
                 </div>
               )}
             </div>
           ) : (
             <div>
-              <label className="block text-xs text-[#333333] font-medium mb-1">
-                Local Ollama Base URL
+              <label className="block text-xs font-semibold text-[#2F3437] mb-1.5">
+                2. Local Ollama Server URL
               </label>
               <input
                 type="text"
                 value={config.baseUrl || "http://localhost:11434"}
                 onChange={(e) => setConfig({ ...config, baseUrl: e.target.value })}
-                className="w-full px-3 py-2 rounded-lg bg-[#fafafa] border border-[#eaeaea] focus:border-[#0075eb] focus:bg-white text-xs text-[#111111] focus:outline-none font-mono transition"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#EBEBEA] focus:border-[#2F3437] focus:outline-none text-xs text-[#2F3437] font-mono transition shadow-2xs"
               />
-              <p className="text-[11px] text-[#888888] mt-1">
-                Run <code className="text-emerald-600 font-medium">ollama serve</code> and <code className="text-emerald-600 font-medium">ollama run llama3.3</code> on your machine.
+              <p className="text-[11px] text-[#787774] mt-1">
+                Ensure <code className="text-[#1E5A2A] font-semibold">ollama serve</code> is running on your machine.
               </p>
             </div>
           )}
 
-          {/* Model Name */}
+          {/* 3. Available Models Picker (No More Guessing!) */}
           <div>
-            <label className="block text-xs text-[#333333] font-medium mb-1">
-              Model Name
-            </label>
-            <input
-              type="text"
-              value={config.model}
-              onChange={(e) => setConfig({ ...config, model: e.target.value })}
-              className="w-full px-3 py-2 rounded-lg bg-[#fafafa] border border-[#eaeaea] focus:border-[#0075eb] focus:bg-white text-xs text-[#111111] focus:outline-none font-mono transition"
-            />
-          </div>
-        </div>
-
-        {/* Privacy badge */}
-        <div className="mt-4 p-2.5 rounded-xl bg-[#fafafa] border border-[#eaeaea] flex items-center gap-2 text-[11px] text-[#666666]">
-          <ShieldCheck className="w-3.5 h-3.5 text-[#1e8e3e] flex-shrink-0" />
-          <span>Zero data retention &bull; Processed in-memory, never stored or trained on.</span>
-        </div>
-
-        {/* Connection Test Result Callout */}
-        {testResult && (
-          <div className={`mt-3.5 p-3 rounded-xl border text-xs ${
-            testResult.success
-              ? "bg-[#e6f4ea] border-[#ceead6] text-[#137333]"
-              : "bg-[#fce8e6] border-[#fad2cf] text-[#c5221f]"
-          }`}>
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                {testResult.success ? (
-                  <CheckCircle2 className="w-4 h-4 text-[#1e8e3e] flex-shrink-0" />
-                ) : (
-                  <AlertCircle className="w-4 h-4 text-[#d93025] flex-shrink-0" />
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-1.5">
+                <label className="text-xs font-semibold text-[#2F3437]">
+                  3. Select Model
+                </label>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#F7F7F5] border border-[#EBEBEA] text-[#787774] font-medium">
+                  {availableModels.length} available
+                </span>
+                {loadingModels && (
+                  <RefreshCw className="w-3 h-3 text-[#787774] animate-spin ml-1" />
                 )}
-                <div>
-                  <span className="font-semibold text-[#111111]">
-                    {testResult.success ? "Connection Verified" : "Connection Failed"}
-                  </span>
-                  <span className="text-[11px] block sm:inline sm:ml-2">
-                    {testResult.message}
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowCustomInput(!showCustomInput)}
+                className="text-[11px] text-[#0A85EA] hover:underline font-medium"
+              >
+                {showCustomInput ? "Show Preset Models" : "Custom Model ID"}
+              </button>
+            </div>
+
+            {/* If user toggles custom input */}
+            {showCustomInput ? (
+              <div className="space-y-1.5">
+                <input
+                  type="text"
+                  value={config.model}
+                  onChange={(e) => setConfig({ ...config, model: e.target.value })}
+                  placeholder="e.g. gemini-2.5-flash or custom-model-id"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#EBEBEA] focus:border-[#2F3437] focus:outline-none text-xs text-[#2F3437] font-mono transition shadow-2xs"
+                />
+                <p className="text-[11px] text-[#787774]">
+                  Enter any model ID supported by your endpoint.
+                </p>
+              </div>
+            ) : (
+              /* Available Model Cards Grid */
+              <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                {availableModels.map((m) => {
+                  const isSelected = config.model === m.id;
+                  return (
+                    <div
+                      key={m.id}
+                      onClick={() => setConfig({ ...config, model: m.id })}
+                      className={`p-3 rounded-xl border cursor-pointer transition flex items-start justify-between gap-3 ${
+                        isSelected
+                          ? "bg-[#F7F7F5] border-[#2F3437] ring-1 ring-[#2F3437] shadow-2xs"
+                          : "bg-white border-[#EBEBEA] hover:bg-[#F7F7F5] hover:border-[#D0D0CE]"
+                      }`}
+                    >
+                      <div className="flex items-start gap-2.5 flex-1 min-w-0">
+                        {/* Radio Check Indicator */}
+                        <div
+                          className={`w-4 h-4 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0 transition border ${
+                            isSelected
+                              ? "bg-[#2F3437] border-[#2F3437] text-white"
+                              : "border-[#D0D0CE] bg-white"
+                          }`}
+                        >
+                          {isSelected && <Check className="w-2.5 h-2.5 text-white stroke-[3]" />}
+                        </div>
+
+                        <div className="min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center gap-1.5 mb-0.5">
+                            <span className="font-mono text-xs font-semibold text-[#2F3437]">
+                              {m.id}
+                            </span>
+                            {m.tag && (
+                              <span
+                                className={`text-[10px] font-semibold px-2 py-0.2 rounded-md border ${
+                                  m.recommended
+                                    ? "bg-[#EBF3FB] text-[#18569C] border-[#CDE1F8]"
+                                    : m.tag.includes("Fast") || m.tag.includes("Instant")
+                                    ? "bg-[#EDF6EE] text-[#1E5A2A] border-[#CBE7CE]"
+                                    : m.tag.includes("Reasoning") || m.tag.includes("Frontier")
+                                    ? "bg-[#F6F3F9] text-[#57338C] border-[#DFD5F5]"
+                                    : "bg-[#FBF3DB] text-[#78510E] border-[#F4E2B6]"
+                                }`}
+                              >
+                                {m.tag}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[11px] text-[#787774] leading-snug truncate">
+                            {m.description || m.name}
+                          </p>
+                        </div>
+                      </div>
+
+                      {isSelected && (
+                        <span className="text-[10px] font-bold text-[#2F3437] flex-shrink-0 bg-white border border-[#EBEBEA] px-2 py-0.5 rounded-md">
+                          Selected
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Connection Test Feedback Box (Notion Pastel & High Contrast) */}
+          {testResult && (
+            <div
+              className={`p-3.5 rounded-xl border text-xs animate-fade-in ${
+                testResult.success
+                  ? "bg-[#EDF6EE] border-[#CBE7CE] text-[#1E5A2A]"
+                  : "bg-[#FDF0EF] border-[#F7CECC] text-[#7C2D2B]"
+              }`}
+            >
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  {testResult.success ? (
+                    <CheckCircle2 className="w-4 h-4 text-[#1E5A2A] flex-shrink-0" />
+                  ) : (
+                    <AlertCircle className="w-4 h-4 text-[#9B2C2C] flex-shrink-0" />
+                  )}
+                  <div className="min-w-0">
+                    <span className="font-bold block sm:inline">
+                      {testResult.success ? "Connection Operational" : "Connection Test Failed"}
+                    </span>
+                    <span className="text-[11px] opacity-90 block sm:inline sm:ml-2 truncate">
+                      {testResult.message}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex-shrink-0">
+                  <span
+                    className={`font-mono text-[11px] px-2 py-0.5 rounded-md border font-bold flex items-center gap-1 bg-white ${
+                      testResult.success
+                        ? "text-[#1E5A2A] border-[#CBE7CE]"
+                        : "text-[#7C2D2B] border-[#F7CECC]"
+                    }`}
+                  >
+                    <Zap className="w-3 h-3" />
+                    {testResult.latencyMs} ms
                   </span>
                 </div>
               </div>
-              <div className="flex items-center gap-1.5 flex-shrink-0">
-                <span className={`font-mono text-[11px] px-2 py-0.5 rounded-md border font-semibold flex items-center gap-1 ${
-                  testResult.success
-                    ? "bg-white text-[#137333] border-[#ceead6]"
-                    : "bg-white text-[#c5221f] border-[#fad2cf]"
-                }`}>
-                  <Zap className="w-3 h-3" />
-                  {testResult.latencyMs} ms
-                </span>
-              </div>
+
+              {!testResult.success && testResult.error && (
+                <div className="mt-2.5 pt-2 border-t border-[#F7CECC] text-[11px] font-mono leading-relaxed break-words text-[#7C2D2B]">
+                  {testResult.error}
+                </div>
+              )}
             </div>
-            {!testResult.success && testResult.error && (
-              <div className="mt-2 pt-2 border-t border-[#fad2cf] text-[11px] text-[#c5221f] font-mono leading-relaxed break-words">
-                {testResult.error}
-              </div>
-            )}
+          )}
+
+          {/* Privacy Footnote */}
+          <div className="p-2.5 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] flex items-center gap-2 text-[11px] text-[#787774]">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#1E5A2A] flex-shrink-0" />
+            <span>Zero data retention &bull; Processed strictly in memory &bull; Never trained on.</span>
           </div>
-        )}
 
-        {/* Action buttons */}
-        <div className="mt-5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pt-4 border-t border-[#eaeaea]">
-          {/* Check connection button */}
-          <button
-            type="button"
-            onClick={handleCheckConnection}
-            disabled={testing}
-            className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-white hover:bg-[#fafafa] disabled:opacity-50 text-[#37352f] font-medium text-xs border border-[#eaeaea] shadow-xs transition"
-          >
-            {testing ? (
-              <>
-                <RefreshCw className="w-3.5 h-3.5 animate-spin text-[#0075eb]" />
-                <span>Pinging Engine...</span>
-              </>
-            ) : (
-              <>
-                <Activity className="w-3.5 h-3.5 text-[#0075eb]" />
-                <span>Check Connection</span>
-              </>
-            )}
-          </button>
-
-          <div className="flex items-center justify-end gap-2">
+          {/* Bottom Action Footer */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4 border-t border-[#EBEBEA]">
+            {/* Check Connection Button */}
             <button
               type="button"
-              onClick={onClose}
-              className="px-3 py-2 text-xs text-[#666666] hover:text-[#111111] rounded-lg hover:bg-[#fafafa] transition"
+              onClick={handleCheckConnection}
+              disabled={testing}
+              className="flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg bg-white hover:bg-[#F7F7F5] disabled:opacity-50 text-[#2F3437] font-medium text-xs border border-[#EBEBEA] shadow-2xs transition"
             >
-              Cancel
+              {testing ? (
+                <>
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin text-[#0A85EA]" />
+                  <span>Pinging API &amp; Fetching Models...</span>
+                </>
+              ) : (
+                <>
+                  <Activity className="w-3.5 h-3.5 text-[#0A85EA]" />
+                  <span>Check Connection &amp; Refresh Models</span>
+                </>
+              )}
             </button>
-            <button
-              type="button"
-              onClick={handleSave}
-              className="px-4 py-2 rounded-lg bg-[#0075eb] hover:bg-[#0066cc] text-white font-medium text-xs transition shadow-xs"
-            >
-              {savedSuccess ? "Saved!" : "Save & Activate"}
-            </button>
+
+            {/* Save & Cancel */}
+            <div className="flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-3.5 py-2 text-xs text-[#787774] hover:text-[#2F3437] rounded-lg hover:bg-[#F7F7F5] transition font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSave}
+                className="px-4 py-2 rounded-lg bg-[#000000] hover:bg-[#2F3437] text-white font-medium text-xs transition shadow-xs"
+              >
+                {savedSuccess ? "Saved!" : "Save & Activate"}
+              </button>
+            </div>
           </div>
         </div>
       </div>

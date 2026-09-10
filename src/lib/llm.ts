@@ -1,4 +1,4 @@
-import { ProviderConfig, LLMProvider } from "./types";
+import { ProviderConfig, LLMProvider, AvailableModel } from "./types";
 
 export interface LLMMessage {
   role: 'system' | 'user' | 'assistant';
@@ -384,6 +384,315 @@ function generateOfflineReview(messages: LLMMessage[]): string {
   });
 }
 
+
+export const CURATED_MODELS: Record<LLMProvider, AvailableModel[]> = {
+  gemini: [
+    {
+      id: "gemini-2.5-flash",
+      name: "Gemini 2.5 Flash",
+      description: "Google's newest adaptive thinking model. Fast, multimodal, and highly accurate for triage.",
+      tag: "✨ Recommended",
+      recommended: true,
+    },
+    {
+      id: "gemini-2.5-pro",
+      name: "Gemini 2.5 Pro",
+      description: "Frontier scientific reasoning model for deep experimental and causal validation.",
+      tag: "🧠 Frontier Reasoning",
+      recommended: false,
+    },
+    {
+      id: "gemini-2.0-flash",
+      name: "Gemini 2.0 Flash",
+      description: "Next-gen sub-second inference speed for instant diagnostics.",
+      tag: "⚡ Ultra Fast",
+      recommended: false,
+    },
+    {
+      id: "gemini-1.5-flash",
+      name: "Gemini 1.5 Flash",
+      description: "Proven lightweight production model with balanced quality and speed.",
+      tag: "Stable",
+      recommended: false,
+    },
+    {
+      id: "gemini-1.5-pro",
+      name: "Gemini 1.5 Pro",
+      description: "Massive 2M token context window for comprehensive manuscript + supplement analysis.",
+      tag: "2M Context",
+      recommended: false,
+    },
+  ],
+  openai: [
+    {
+      id: "gpt-4o",
+      name: "GPT-4o (Omni)",
+      description: "OpenAI flagship high-intelligence model for nuanced peer-review simulation.",
+      tag: "✨ Recommended",
+      recommended: true,
+    },
+    {
+      id: "gpt-4o-mini",
+      name: "GPT-4o Mini",
+      description: "Fast, cost-efficient model for quick pre-submission screening.",
+      tag: "⚡ Fast & Affordable",
+      recommended: false,
+    },
+    {
+      id: "o3-mini",
+      name: "o3-mini (STEM)",
+      description: "Specialized STEM reasoning model for methodology, statistics, and sample power.",
+      tag: "🧠 STEM Reasoning",
+      recommended: false,
+    },
+    {
+      id: "o1",
+      name: "o1 (Full Reasoning)",
+      description: "Deep reflective thinking for intricate causal claims and mechanism proofs.",
+      tag: "🧠 Deep Thinking",
+      recommended: false,
+    },
+    {
+      id: "gpt-4-turbo",
+      name: "GPT-4 Turbo",
+      description: "Previous generation frontier model with 128k context.",
+      tag: "Legacy",
+      recommended: false,
+    },
+  ],
+  anthropic: [
+    {
+      id: "claude-3-7-sonnet-20250219",
+      name: "Claude 3.7 Sonnet",
+      description: "Anthropic's latest hybrid reasoning model. Exceptional academic critique and editorial voice.",
+      tag: "✨ Latest / Recommended",
+      recommended: true,
+    },
+    {
+      id: "claude-3-5-sonnet-20241022",
+      name: "Claude 3.5 Sonnet",
+      description: "Renowned standard for scholarly writing, tone, and deep methodological critique.",
+      tag: "Editorial Standard",
+      recommended: false,
+    },
+    {
+      id: "claude-3-5-haiku-20241022",
+      name: "Claude 3.5 Haiku",
+      description: "Rapid inference for initial sanity checks and fast scans.",
+      tag: "⚡ Ultra Fast",
+      recommended: false,
+    },
+    {
+      id: "claude-3-opus-20240229",
+      name: "Claude 3 Opus",
+      description: "Deep synthesis for complex, multidisciplinary manuscripts.",
+      tag: "Nuanced",
+      recommended: false,
+    },
+  ],
+  groq: [
+    {
+      id: "llama-3.3-70b-versatile",
+      name: "Llama 3.3 70B Versatile",
+      description: "Meta 70B flagship model on Groq LPUs (~300 tokens/sec). Full peer-review fidelity.",
+      tag: "✨ Recommended",
+      recommended: true,
+    },
+    {
+      id: "llama-3.1-8b-instant",
+      name: "Llama 3.1 8B Instant",
+      description: "Blazing fast speed (~800 tokens/sec) for real-time section checks.",
+      tag: "⚡ 800 tok/sec",
+      recommended: false,
+    },
+    {
+      id: "deepseek-r1-distill-llama-70b",
+      name: "DeepSeek R1 Distill 70B",
+      description: "Reasoning-distilled model for mathematical proof and control auditing.",
+      tag: "🧠 Reasoning",
+      recommended: false,
+    },
+    {
+      id: "mixtral-8x7b-32768",
+      name: "Mixtral 8x7B MoE",
+      description: "Mistral MoE architecture with 32k context window.",
+      tag: "MoE",
+      recommended: false,
+    },
+  ],
+  ollama: [
+    {
+      id: "llama3.3",
+      name: "Llama 3.3 (Local)",
+      description: "Meta Llama 3.3 on local machine. 100% private & offline.",
+      tag: "✨ Recommended Local",
+      recommended: true,
+    },
+    {
+      id: "deepseek-r1",
+      name: "DeepSeek R1 (Local)",
+      description: "Local reasoning model for methodology checks.",
+      tag: "🧠 Reasoning",
+      recommended: false,
+    },
+    {
+      id: "mistral",
+      name: "Mistral 7B (Local)",
+      description: "Compact and fast local inference.",
+      tag: "Fast Local",
+      recommended: false,
+    },
+    {
+      id: "phi3",
+      name: "Phi-3 (Local)",
+      description: "Microsoft Phi-3 lightweight local model.",
+      tag: "Compact",
+      recommended: false,
+    },
+  ],
+};
+
+export async function fetchAvailableModels(config?: ProviderConfig): Promise<AvailableModel[]> {
+  const serverStatus = getServerConfigStatus();
+  const provider: LLMProvider = config?.provider || (serverStatus.activeProvider !== "none" ? serverStatus.activeProvider : "gemini");
+  let apiKey = config?.apiKey?.trim() || "";
+  let baseUrl = config?.baseUrl?.trim() || "";
+
+  if (!apiKey) {
+    if (provider === "gemini") apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || "";
+    else if (provider === "groq") apiKey = process.env.GROQ_API_KEY || "";
+    else if (provider === "openai") apiKey = process.env.OPENAI_API_KEY || "";
+    else if (provider === "anthropic") apiKey = process.env.ANTHROPIC_API_KEY || "";
+  }
+  if (!baseUrl) {
+    if (provider === "openai") baseUrl = process.env.OPENAI_BASE_URL || "https://api.openai.com/v1";
+    else if (provider === "ollama") baseUrl = process.env.OLLAMA_BASE_URL || "http://localhost:11434";
+  }
+
+  const defaultList = CURATED_MODELS[provider] || CURATED_MODELS.gemini;
+
+  try {
+    if (provider === "gemini" && apiKey) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 4000);
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`, {
+        headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data.models)) {
+          const liveModels: AvailableModel[] = data.models
+            .filter((m: any) => m.supportedGenerationMethods?.includes("generateContent"))
+            .map((m: any) => {
+              const id = m.name.replace(/^models\//, "");
+              const existing = defaultList.find((d) => d.id === id);
+              return {
+                id,
+                name: m.displayName || existing?.name || id,
+                description: existing?.description || m.description || "Google Generative AI Model",
+                tag: existing?.tag || (id.includes("flash") ? "⚡ Fast" : id.includes("pro") ? "🧠 Frontier" : undefined),
+                recommended: existing?.recommended || false,
+              };
+            });
+          if (liveModels.length > 0) {
+            // Put recommended first
+            return liveModels.sort((a, b) => (b.recommended ? 1 : 0) - (a.recommended ? 1 : 0));
+          }
+        }
+      }
+    } else if (provider === "openai" && apiKey) {
+      const cleanBase = (baseUrl || "https://api.openai.com/v1").replace(/\/+$/, "");
+      const endpoint = cleanBase.endsWith("/models") ? cleanBase : `${cleanBase}/models`;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 4000);
+      const res = await fetch(endpoint, {
+        headers: { Authorization: `Bearer ${apiKey}` },
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data.data)) {
+          const chatIds = data.data
+            .map((m: any) => m.id)
+            .filter((id: string) => id.includes("gpt") || id.startsWith("o1") || id.startsWith("o3") || id.includes("chat"));
+          if (chatIds.length > 0) {
+            const mapped: AvailableModel[] = chatIds.map((id: string) => {
+              const existing = defaultList.find((d) => d.id === id);
+              return {
+                id,
+                name: existing?.name || id,
+                description: existing?.description || `OpenAI model ${id}`,
+                tag: existing?.tag || (id.startsWith("o") ? "🧠 Reasoning" : id.includes("mini") ? "⚡ Fast" : undefined),
+                recommended: existing?.recommended || id === "gpt-4o",
+              };
+            });
+            return mapped.sort((a, b) => (b.recommended ? 1 : 0) - (a.recommended ? 1 : 0));
+          }
+        }
+      }
+    } else if (provider === "groq" && apiKey) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 4000);
+      const res = await fetch("https://api.groq.com/openai/v1/models", {
+        headers: { Authorization: `Bearer ${apiKey}` },
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data.data)) {
+          const mapped: AvailableModel[] = data.data
+            .filter((m: any) => m.active !== false)
+            .map((m: any) => {
+              const id = m.id;
+              const existing = defaultList.find((d) => d.id === id);
+              return {
+                id,
+                name: existing?.name || id,
+                description: existing?.description || `Groq LPU accelerated model (${m.owned_by || "Meta"})`,
+                tag: existing?.tag || (id.includes("70b") ? "✨ High Quality" : id.includes("8b") ? "⚡ Ultra Fast" : undefined),
+                recommended: existing?.recommended || id.includes("llama-3.3-70b"),
+              };
+            });
+          if (mapped.length > 0) {
+            return mapped.sort((a, b) => (b.recommended ? 1 : 0) - (a.recommended ? 1 : 0));
+          }
+        }
+      }
+    } else if (provider === "ollama") {
+      const cleanBase = (baseUrl || "http://localhost:11434").replace(/\/+$/, "");
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
+      const res = await fetch(`${cleanBase}/api/tags`, {
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data.models) && data.models.length > 0) {
+          const installed: AvailableModel[] = data.models.map((m: any, idx: number) => ({
+            id: m.name,
+            name: `${m.name} (Installed)`,
+            description: `Locally pulled model (${Math.round(((m.size || 0) / 1024 / 1024 / 1024) * 10) / 10} GB)`,
+            tag: idx === 0 ? "✨ Active Local" : "Local",
+            recommended: idx === 0,
+          }));
+          return installed;
+        }
+      }
+    }
+  } catch {}
+
+  return defaultList;
+}
+
 export interface ConnectionTestResult {
   success: boolean;
   provider: LLMProvider;
@@ -391,11 +700,13 @@ export interface ConnectionTestResult {
   latencyMs: number;
   message: string;
   error?: string;
+  availableModels: AvailableModel[];
   details?: {
     endpoint?: string;
     statusCode?: number;
   };
 }
+
 
 export async function testLLMConnection(
   config?: ProviderConfig
@@ -436,11 +747,13 @@ export async function testLLMConnection(
       latencyMs: 0,
       message: `No API key provided for ${provider.toUpperCase()}`,
       error: `Please provide a valid ${provider.toUpperCase()} API key or configure it in .env.local`,
+      availableModels: CURATED_MODELS[provider] || CURATED_MODELS.gemini,
     };
   }
 
   const startTime = Date.now();
   const timeoutMs = 15000;
+  const availableModels = await fetchAvailableModels({ provider, model, apiKey, baseUrl });
 
   try {
     // -----------------------------------------------------------
@@ -473,6 +786,7 @@ export async function testLLMConnection(
           model: geminiModel,
           latencyMs,
           message: `Connected to Google Gemini (${geminiModel}) in ${latencyMs}ms`,
+          availableModels,
           details: { statusCode: response.status },
         };
       } else {
@@ -490,6 +804,7 @@ export async function testLLMConnection(
           latencyMs,
           message: `Gemini API returned error ${response.status}`,
           error: errMessage,
+          availableModels,
           details: { statusCode: response.status },
         };
       }
@@ -539,6 +854,7 @@ export async function testLLMConnection(
           model: chosenModel,
           latencyMs,
           message: `Connected to ${provider.toUpperCase()} (${chosenModel}) in ${latencyMs}ms`,
+          availableModels,
           details: { endpoint, statusCode: response.status },
         };
       } else {
@@ -556,6 +872,7 @@ export async function testLLMConnection(
           latencyMs,
           message: `${provider.toUpperCase()} connection failed (${response.status})`,
           error: errMessage,
+          availableModels,
           details: { endpoint, statusCode: response.status },
         };
       }
@@ -596,6 +913,7 @@ export async function testLLMConnection(
           model: chosenModel,
           latencyMs,
           message: `Connected to Anthropic (${chosenModel}) in ${latencyMs}ms`,
+          availableModels,
           details: { statusCode: response.status },
         };
       } else {
@@ -613,6 +931,7 @@ export async function testLLMConnection(
           latencyMs,
           message: `Anthropic API returned error ${response.status}`,
           error: errMessage,
+          availableModels,
           details: { statusCode: response.status },
         };
       }
@@ -656,6 +975,7 @@ export async function testLLMConnection(
           message: hasModel
             ? `Local Ollama is active with ${chosenModel} (${latencyMs}ms)`
             : `Local Ollama is reachable (${latencyMs}ms). ${installedModels.length} models installed.`,
+          availableModels,
           details: { endpoint: cleanBase, statusCode: response.status },
         };
       } else {
@@ -666,6 +986,7 @@ export async function testLLMConnection(
           latencyMs,
           message: `Ollama service returned status ${response.status}`,
           error: `Ollama at ${cleanBase} responded with status ${response.status}`,
+          availableModels,
         };
       }
     }
@@ -677,6 +998,7 @@ export async function testLLMConnection(
       latencyMs: 0,
       message: `Unsupported provider: ${provider}`,
       error: `Unknown provider ${provider}`,
+      availableModels: CURATED_MODELS[provider] || CURATED_MODELS.gemini,
     };
   } catch (err: any) {
     const latencyMs = Date.now() - startTime;
@@ -691,6 +1013,7 @@ export async function testLLMConnection(
       error: isTimeout
         ? `Request timed out. Ensure the endpoint and network are reachable.`
         : err.message || "Network error: Unable to reach the API server.",
+      availableModels: CURATED_MODELS[provider] || CURATED_MODELS.gemini,
     };
   }
 }
