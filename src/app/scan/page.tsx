@@ -15,10 +15,13 @@ import {
   RefreshCw,
   ExternalLink,
   ChevronRight,
-  Layers,
-  FileCheck
+  FileCheck,
+  Settings,
+  Key,
+  Cpu
 } from "lucide-react";
-import { FullReviewReport, PriorityIssue, ReviewerPersonaFeedback } from "@/lib/types";
+import { FullReviewReport, PriorityIssue, ReviewerPersonaFeedback, ProviderConfig } from "@/lib/types";
+import { ProviderSettingsModal } from "@/components/ProviderSettingsModal";
 
 // Sample preprint for instant one-click testing
 const SAMPLE_PREPRINT_TITLE = "Single-cell transcriptional profiling of DLL3 activation in neuroendocrine lung carcinoma";
@@ -51,6 +54,61 @@ export default function ScanPage() {
   const [report, setReport] = useState<FullReviewReport | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedPersona, setSelectedPersona] = useState<number>(0);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [activeProviderInfo, setActiveProviderInfo] = useState<{
+    type: 'server' | 'browser' | 'offline';
+    name: string;
+    model: string;
+  }>({ type: 'offline', name: 'Offline Demo Mode', model: 'Deterministic Diagnostic' });
+
+  React.useEffect(() => {
+    checkProviderStatus();
+  }, []);
+
+  const checkProviderStatus = async () => {
+    const saved = localStorage.getItem("manuview_provider_config");
+    let browserConfig: ProviderConfig | null = null;
+    if (saved) {
+      try { browserConfig = JSON.parse(saved); } catch {}
+    }
+
+    if (browserConfig && browserConfig.apiKey) {
+      setActiveProviderInfo({
+        type: 'browser',
+        name: browserConfig.provider.toUpperCase(),
+        model: browserConfig.model,
+      });
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/config/status");
+      const data = await res.json();
+      if (data.hasServerKey) {
+        setActiveProviderInfo({
+          type: 'server',
+          name: `${data.activeProvider.toUpperCase()}`,
+          model: 'from .env.local',
+        });
+        return;
+      }
+    } catch {}
+
+    if (browserConfig && browserConfig.provider === 'ollama') {
+      setActiveProviderInfo({
+        type: 'browser',
+        name: 'Local Ollama',
+        model: browserConfig.model || 'llama3.3',
+      });
+      return;
+    }
+
+    setActiveProviderInfo({
+      type: 'offline',
+      name: 'Offline Demo Fallback',
+      model: 'Deterministic Diagnostic',
+    });
+  };
 
   const handleLoadSample = () => {
     setInputText(SAMPLE_PREPRINT_TEXT);
@@ -130,6 +188,41 @@ export default function ScanPage() {
           <p className="text-slate-400 text-sm">
             Upload your paper to diagnose the methodological gaps, causal overclaims, and citation bugs editors flag in triage.
           </p>
+        </div>
+
+        {/* AI Engine Status Banner */}
+        <div className={`p-3.5 mb-6 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs ${
+          activeProviderInfo.type !== 'offline'
+            ? "bg-emerald-950/40 border-emerald-500/30 text-emerald-200"
+            : "bg-slate-900/80 border-slate-800 text-slate-300"
+        }`}>
+          <div className="flex items-center gap-2.5">
+            {activeProviderInfo.type !== 'offline' ? (
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse flex-shrink-0" />
+            ) : (
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-400 flex-shrink-0" />
+            )}
+            <div>
+              <span className="font-semibold text-white">AI Diagnostic Engine: </span>
+              <span className="text-slate-300">{activeProviderInfo.name} ({activeProviderInfo.model})</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {activeProviderInfo.type === 'offline' && (
+              <span className="text-[11px] text-amber-300/90 hidden sm:inline">
+                (Add API Key to run real models)
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={() => setSettingsOpen(true)}
+              className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-medium text-xs border border-slate-700 transition flex items-center gap-1.5 whitespace-nowrap"
+            >
+              <Settings className="w-3.5 h-3.5 text-emerald-400" />
+              <span>{activeProviderInfo.type === 'offline' ? "Connect API Key" : "Change Engine"}</span>
+            </button>
+          </div>
         </div>
 
         {/* Input Form Card */}
@@ -566,6 +659,14 @@ export default function ScanPage() {
             </div>
           </div>
         )}
+        <ProviderSettingsModal
+          isOpen={settingsOpen}
+          onClose={() => {
+            setSettingsOpen(false);
+            checkProviderStatus();
+          }}
+          onSave={() => checkProviderStatus()}
+        />
       </div>
     </div>
   );
