@@ -21,7 +21,9 @@ import {
   Cpu,
   Code,
   Info,
-  Lightbulb
+  Lightbulb,
+  GraduationCap,
+  FlaskConical
 } from "lucide-react";
 import { FullReviewReport, PriorityIssue, ReviewerPersonaFeedback, ProviderConfig } from "@/lib/types";
 import { ProviderSettingsModal } from "@/components/ProviderSettingsModal";
@@ -663,63 +665,177 @@ export default function ScanPage() {
 
             {/* 4-Persona Reviewer Simulation */}
             <div>
-              <h3 className="text-lg font-serif font-semibold text-white mb-4 flex items-center gap-2">
-                <Users className="w-5 h-5 text-blue-400" />
-                4-Persona Peer-Review Simulation
-              </h3>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                <div>
+                  <h3 className="text-lg font-serif font-semibold text-white flex items-center gap-2">
+                    <Users className="w-5 h-5 text-blue-400" />
+                    4-Persona Peer-Review Simulation
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Independent, critical evaluations from domain experts, experimental methodologists, senior journal editors, and biostatisticians.
+                  </p>
+                </div>
+                <div className="text-[11px] text-slate-400 font-mono bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-800 self-start sm:self-auto">
+                  Triage Standard: High-Impact Peer Review
+                </div>
+              </div>
 
               {/* Tabs */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
-                {report.reviewerPersonas.map((p: ReviewerPersonaFeedback, idx: number) => (
-                  <button
-                    key={p.persona}
-                    onClick={() => setSelectedPersona(idx)}
-                    className={`p-3 rounded-xl text-left border text-xs transition ${
-                      selectedPersona === idx
-                        ? "bg-slate-800 border-emerald-500 text-white shadow-sm"
-                        : "bg-slate-900/40 border-slate-800 text-slate-400 hover:text-slate-200"
-                    }`}
-                  >
-                    <div className="font-semibold truncate">{p.name}</div>
-                    <div className="text-[10px] text-slate-500 truncate">{p.roleDescription}</div>
-                  </button>
-                ))}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+                {report.reviewerPersonas.map((p: ReviewerPersonaFeedback, idx: number) => {
+                  const isReject = p.decisionRecommendation === "Reject / Resubmit" || p.decisionRecommendation === "Desk Reject";
+                  return (
+                    <button
+                      key={p.persona}
+                      onClick={() => setSelectedPersona(idx)}
+                      className={`p-3.5 rounded-2xl text-left border transition flex flex-col justify-between ${
+                        selectedPersona === idx
+                          ? "bg-slate-800/90 border-emerald-500 shadow-md shadow-emerald-500/10 ring-1 ring-emerald-500/40"
+                          : "bg-slate-900/40 border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-900/80"
+                      }`}
+                    >
+                      <div>
+                        <div className="flex items-center justify-between gap-1 mb-1.5">
+                          <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                            {p.persona === "methods_reviewer" ? "Methods Specialist" :
+                             p.persona === "domain_expert" ? "Domain Expert" :
+                             p.persona === "journal_editor" ? "Journal Editor" :
+                             "Biostatistician"}
+                          </span>
+                          {p.decisionRecommendation && (
+                            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
+                              isReject
+                                ? "bg-rose-500/20 text-rose-300 border border-rose-500/30"
+                                : "bg-amber-500/20 text-amber-300 border border-amber-500/30"
+                            }`}>
+                              {p.decisionRecommendation}
+                            </span>
+                          )}
+                        </div>
+                        <div className="font-semibold text-xs text-white truncate">{p.name}</div>
+                        <div className="text-[11px] text-slate-400 line-clamp-1">{p.title || p.roleDescription}</div>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
 
               {/* Active persona card */}
-              {report.reviewerPersonas[selectedPersona] && (
-                <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800">
-                  <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
-                    <div>
-                      <h4 className="text-sm font-semibold text-white">
-                        {report.reviewerPersonas[selectedPersona].name}
-                      </h4>
-                      <p className="text-xs text-slate-400">
-                        {report.reviewerPersonas[selectedPersona].roleDescription}
-                      </p>
-                    </div>
-                    <div className="text-xs text-amber-400 font-medium">
-                      Key Challenge: {report.reviewerPersonas[selectedPersona].keyChallenge}
-                    </div>
-                  </div>
-
-                  <p className="text-xs text-slate-300 leading-relaxed mb-4">
-                    {report.reviewerPersonas[selectedPersona].assessment}
-                  </p>
-
-                  <div className="space-y-1.5">
-                    <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
-                      Must-Address Points:
-                    </span>
-                    {report.reviewerPersonas[selectedPersona].mustAddressItems.map((item: string, i: number) => (
-                      <div key={i} className="flex items-start gap-2 text-xs text-slate-300">
-                        <ChevronRight className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0 mt-0.5" />
-                        <span>{item}</span>
+              {report.reviewerPersonas[selectedPersona] && (() => {
+                const active = report.reviewerPersonas[selectedPersona];
+                const isReject = active.decisionRecommendation === "Reject / Resubmit" || active.decisionRecommendation === "Desk Reject";
+                return (
+                  <div className="p-6 sm:p-8 rounded-2xl bg-slate-900/70 border border-slate-800 shadow-2xl space-y-6 animate-fade-in">
+                    {/* Header with Title, Affiliation, and Recommendation */}
+                    <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 pb-5 border-b border-slate-800">
+                      <div className="space-y-1.5">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h4 className="text-base sm:text-lg font-bold font-serif text-white">
+                            {active.name}
+                          </h4>
+                          {active.decisionRecommendation && (
+                            <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${
+                              isReject
+                                ? "bg-rose-500/20 text-rose-300 border-rose-500/30"
+                                : "bg-amber-500/20 text-amber-300 border-amber-500/30"
+                            }`}>
+                              Recommendation: {active.decisionRecommendation}
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-xs text-slate-300 font-medium">
+                          {active.title}
+                        </div>
+                        {active.affiliation && (
+                          <div className="text-[11px] text-slate-400 flex items-center gap-1.5">
+                            <GraduationCap className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+                            <span>{active.affiliation}</span>
+                          </div>
+                        )}
                       </div>
-                    ))}
+
+                      {active.expertise && (
+                        <div className="md:max-w-xs p-3 rounded-xl bg-slate-950/60 border border-slate-800 text-[11px] text-slate-300">
+                          <span className="font-semibold text-emerald-400 block mb-0.5">Specialized Domain Focus:</span>
+                          {active.expertise}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Core Critical Objection */}
+                    <div className="p-4 rounded-xl bg-rose-950/20 border border-rose-900/50 text-xs text-rose-200">
+                      <span className="font-semibold text-rose-400 block mb-1 uppercase tracking-wider text-[10px]">
+                        Fatal Reviewer Objection:
+                      </span>
+                      {active.keyChallenge}
+                    </div>
+
+                    {/* In-Depth Detailed Critique */}
+                    <div className="space-y-2">
+                      <h5 className="text-xs font-semibold text-slate-200 uppercase tracking-wider">
+                        Detailed Peer-Review Assessment:
+                      </h5>
+                      <div className="text-xs text-slate-300 leading-relaxed font-light space-y-2.5 whitespace-pre-line bg-slate-950/40 p-4 rounded-xl border border-slate-800/80">
+                        {active.assessment}
+                      </div>
+                    </div>
+
+                    {/* Major Flaws & Vulnerabilities */}
+                    {active.majorCritiques && active.majorCritiques.length > 0 && (
+                      <div className="space-y-2">
+                        <h5 className="text-xs font-semibold text-rose-300 uppercase tracking-wider flex items-center gap-1.5">
+                          <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
+                          Major Methodological &amp; Conceptual Vulnerabilities:
+                        </h5>
+                        <div className="space-y-2">
+                          {active.majorCritiques.map((critique: string, i: number) => (
+                            <div key={i} className="p-3 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-slate-300 flex items-start gap-2.5">
+                              <span className="w-5 h-5 rounded-full bg-rose-500/10 text-rose-400 font-bold text-[10px] flex items-center justify-center flex-shrink-0 mt-0.5">
+                                {i + 1}
+                              </span>
+                              <span className="leading-relaxed">{critique}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Missing Experimental Controls & Analyses */}
+                    {active.missingControlsOrAnalyses && active.missingControlsOrAnalyses.length > 0 && (
+                      <div className="space-y-2">
+                        <h5 className="text-xs font-semibold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
+                          <FlaskConical className="w-3.5 h-3.5 text-amber-400" />
+                          Missing Experimental Controls &amp; Requisite Analyses:
+                        </h5>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {active.missingControlsOrAnalyses.map((control: string, i: number) => (
+                            <div key={i} className="p-3 rounded-xl bg-amber-950/15 border border-amber-900/40 text-xs text-amber-200/90 flex items-start gap-2">
+                              <span className="text-amber-400 font-bold">•</span>
+                              <span className="leading-relaxed">{control}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Concrete Must-Address Action Items */}
+                    <div className="space-y-2 pt-2">
+                      <h5 className="text-xs font-semibold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                        Mandatory Revisions Demanded for Re-Review:
+                      </h5>
+                      <div className="space-y-2">
+                        {active.mustAddressItems.map((item: string, i: number) => (
+                          <div key={i} className="p-3 rounded-xl bg-slate-950/70 border border-emerald-950/60 text-xs text-slate-200 flex items-start gap-2.5">
+                            <ChevronRight className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                            <span className="leading-relaxed">{item}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
             </div>
 
             {/* Citation & Reference Integrity Section */}

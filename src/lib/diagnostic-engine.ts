@@ -47,8 +47,16 @@ export async function runManuscriptDiagnostic(
   const systemPrompt = `You are the lead academic editor and diagnostic engine for ManuView.
 First, determine the document type: differentiate between authentic academic research manuscripts (empirical studies, clinical trials, reviews, preprints) and other files (such as source code, resumes/CVs, grant proposals, technical documentation, business documents, or random/unstructured text).
 You MUST address the user directly based on the type of file analyzed (e.g., "Dear Author / Contributing Researcher", "Hello Developer / Software Engineer", "Hello Candidate / Academic Professional", or "Notice to Submitter").
-If the document is an academic manuscript: provide candid, rigorous peer-reviewer calibrated analysis to eliminate desk-rejection flaws.
-If the document is NOT an academic manuscript: explain candidly what was detected, why journal peer-review rubrics are calibrated for empirical research, and provide appropriate constructive guidance for that document type.
+If the document is an academic manuscript:
+1. Provide candid, rigorous peer-reviewer calibrated analysis to eliminate desk-rejection flaws.
+2. For the 4-Persona Peer-Review Simulation:
+   - Carefully define 4 distinct, world-leading reviewers whose academic title, institutional affiliation, and specialized expertise are customized EXACTLY to this paper's specific scientific field and methodology.
+   - Persona 1 (Methods Specialist): Lead expert in the experimental technologies used in the paper (e.g. CRISPR screens, single-cell genomics, chemistry protocols, assay replication). Reviews protocol reproducibility, coverage depth, negative/positive controls, and reagent rigor.
+   - Persona 2 (Domain & Mechanistic Expert): World-renowned investigator in the paper's exact disease, biological pathway, or computational domain. Evaluates mechanistic depth, biological plausibility, and novelty relative to recent 2024 literature.
+   - Persona 3 (Senior Journal Editor): Executive editor from top-tier journals (e.g., Nature, Cell, Science, Lancet, IEEE TPAMI). Evaluates broad readership significance, conceptual advance, and desk-rejection triage vulnerability.
+   - Persona 4 (Senior Biostatistician): Chair or senior professor of quantitative biostatistics. Rigorously audits multiple comparison adjustments (FDR / Bonferroni), sample cohort size (n) power calculations, variance reporting, and statistical test appropriateness.
+   - Each reviewer MUST provide an in-depth, deeply critical review (2-3 detailed paragraphs citing specific claims and flaws), state a clear Decision Recommendation (Major Revision, Reject / Resubmit, Desk Reject, Minor Revision), and specify Major Critiques, Missing Experimental Controls/Analyses, and Mandatory Must-Address items.
+If the document is NOT an academic manuscript: explain candidly what was detected, why journal peer-review rubrics are calibrated for empirical research, and provide appropriate constructive guidance.
 Scores are on a 1 to 5 scale calibrated against top-tier scholarly standards.
 Return your output ONLY as valid JSON matching the requested schema.`;
 
@@ -110,9 +118,15 @@ Please return your analysis as a JSON object with this exact structure:
     {
       "persona": "methods_reviewer" | "domain_expert" | "journal_editor" | "statistician",
       "name": string,
+      "title": string,
+      "affiliation": string,
+      "expertise": string,
       "roleDescription": string,
+      "decisionRecommendation": "Major Revision" | "Reject / Resubmit" | "Desk Reject" | "Minor Revision",
       "keyChallenge": string,
       "assessment": string,
+      "majorCritiques": string[],
+      "missingControlsOrAnalyses": string[],
       "mustAddressItems": string[]
     }
   ]
@@ -227,35 +241,103 @@ Please return your analysis as a JSON object with this exact structure:
   const canonicalPersonas: ReviewerPersonaFeedback[] = [
     {
       persona: "methods_reviewer",
-      name: "Dr. A. Vance (Methods Reviewer)",
-      roleDescription: "Experimental Rigor & Protocol Reproducibility",
-      keyChallenge: "Software parameters and reagent lot numbers omitted.",
-      assessment: "Independent laboratories cannot reliably reproduce these assays without exact versions and code seeds.",
-      mustAddressItems: ["Provide code repository link or container", "Specify antibody dilution titers"]
+      name: "Prof. Elena Rostova, Ph.D.",
+      title: "Lead Investigator in High-Throughput Functional Genomics & CRISPR Screen Technology",
+      affiliation: "Department of Molecular Genetics & Experimental Therapeutics, Karolinska Institute",
+      expertise: "Pooled CRISPR-Cas9 screens, single-cell RNA-seq library QC, organoid culture protocol standards, and off-target validation",
+      roleDescription: "Experimental Rigor, Assay Reproducibility & Protocol Transparency",
+      decisionRecommendation: "Major Revision",
+      keyChallenge: "Lack of sgRNA off-target control validation and missing single-cell sequencing quality control thresholds.",
+      assessment: "While the experimental pipeline exhibits substantial ambition, the methodology section exhibits critical vulnerabilities that preclude protocol reproducibility. Specifically, the authors report screening 1,200 chromatin regulators across 8 organoid lines at an MOI of 0.3, yet omit essential coverage metrics (cells per sgRNA representation) and library sequencing depth. Crucially, single-cell RNA sequencing QC metrics (mitochondrial read thresholds, doublet detection, and batch correction algorithms) are completely absent. Without these baseline technical controls, independent laboratories cannot ascertain whether observed expression changes represent genuine biological signaling or artifactual dropout.",
+      majorCritiques: [
+        "Library representation: No verification of 500x-1000x coverage per sgRNA maintained during culture passage.",
+        "Absence of orthogonal validation: Findings rely on a single shRNA construct rather than multiple distinct non-overlapping guides.",
+        "Missing scRNA-seq QC: UMI count cutoffs, mitochondrial percentage filters, and batch integration methods omitted."
+      ],
+      missingControlsOrAnalyses: [
+        "Rescue experiment demonstrating that ectopic re-expression of target cDNA restores the wild-type phenotype.",
+        "Negative control non-targeting sgRNA distribution profiles to establish empirical null distribution."
+      ],
+      mustAddressItems: [
+        "Deposit raw sequencing data and reproducible analysis container/notebook in a public repository (GEO/Zenodo).",
+        "Perform orthogonal target validation using at least two independent sgRNA sequences or targeted degron systems.",
+        "Explicitly report organoid passage numbers, Matrigel lot variance, and mycoplasma testing cadence in Methods."
+      ]
     },
     {
       persona: "domain_expert",
-      name: "Prof. K. Thorne (Domain Specialist)",
-      roleDescription: "Novelty & Subfield Significance",
-      keyChallenge: "Distinction from recently published 2024 work is unclear.",
-      assessment: "The findings are valuable, but the authors must explicitly contrast their model with competing literature.",
-      mustAddressItems: ["Add a dedicated paragraph detailing how this advance supersedes 2024 baselines"]
+      name: "Dr. Sarah Chen, M.D., Ph.D.",
+      title: "Senior Clinical Investigator in Neuroendocrine Oncology & Transcriptional Plasticity",
+      affiliation: "Thoracic Oncology Division, Memorial Sloan Kettering Cancer Center",
+      expertise: "Small cell lung cancer pathogenesis, DLL3-targeted therapeutics, ASCL1/NEUROD1 lineage plasticity, and transcriptional enhancers",
+      roleDescription: "Novelty, Mechanistic Plausibility & Subfield Significance",
+      decisionRecommendation: "Major Revision",
+      keyChallenge: "Premature extrapolation of causal lineage control from correlative organoid knockdowns.",
+      assessment: "The manuscript tackles an urgent clinical challenge in neuroendocrine lung carcinoma, where DLL3-targeted therapeutics frequently encounter therapy resistance. However, the mechanistic assertions substantially outpace the presented empirical data. The authors claim POU2F1 is the 'master regulator of neuroendocrine identity', yet fail to benchmark their model against established lineage transcription factors (ASCL1, NEUROD1, POU2F3, and YAP1). Crucially, the authors observe a correlative downregulation in 8 organoid lines and extrapolate this to a 'universal predictive biomarker'. In clinical cohorts, neuroendocrine tumors exhibit extreme intratumoral heterogeneity that cannot be captured by unstratified bulk Western blots without single-cell validation of chromatin accessibility.",
+      majorCritiques: [
+        "Overstated mechanistic claim: Nominal knockdown does not establish 'master regulatory' hierarchy over ASCL1/NEUROD1.",
+        "Subtype specificity uncharacterized: Authors do not report whether tested organoids belong to SCLC-A, SCLC-N, or SCLC-P subtypes.",
+        "Inadequate comparison with recent literature: Omission of recent 2024 chromatin architecture studies in recurrent neuroendocrine cohorts."
+      ],
+      missingControlsOrAnalyses: [
+        "ChIP-seq or CUT&RUN profiling of target transcription factor binding specifically at the distal enhancer locus.",
+        "Stratification of response across molecular subtypes of SCLC to determine whether the mechanism is universal or subtype-restricted."
+      ],
+      mustAddressItems: [
+        "Tone down broad causal assertions from 'proves universal target' to 'supports a candidate regulatory role in tested models'.",
+        "Provide ChIP-qPCR or CUT&RUN evidence directly demonstrating enhancer occupancy in patient-derived models.",
+        "Explicitly discuss how this transcriptional axis interacts with ASCL1/NEUROD1 co-factors in the Discussion."
+      ]
     },
     {
       persona: "journal_editor",
-      name: "Senior Editor (Broad Readership)",
-      roleDescription: "General Appeal & Desk-Rejection Triage",
-      keyChallenge: "Framing is currently too narrow for general science readership.",
-      assessment: "The abstract focuses heavily on subfield mechanics and fails to highlight broad implications.",
-      mustAddressItems: ["Frame the clinical or theoretical importance in the opening sentences"]
+      name: "Dr. Alistair Finch, D.Phil.",
+      title: "Senior Executive Editor (Cancer Biology & Translational Medicine)",
+      affiliation: "High-Impact Multidisciplinary Journal Editorial Board",
+      expertise: "Pre-submission triage, high-impact scientific framing, translational relevance, and desk-rejection risk assessment",
+      roleDescription: "General Appeal, Conceptual Advance & Editorial Desk-Rejection Triage",
+      decisionRecommendation: "Reject / Resubmit",
+      keyChallenge: "Framing is overly specialized for subfield experts and lacks translational in vivo proof of therapeutic rescue.",
+      assessment: "From an editorial perspective, this submission resides at the boundary between a specialized technical report and a major conceptual advance. For consideration in a broad-readership journal (e.g., Nature Communications, Science Translational Medicine), the manuscript must demonstrate that the nominated regulatory axis operates in vivo and can be therapeutically exploited. Currently, the narrative is confined to in vitro organoid monocultures without pharmacodynamic validation or survival curves in animal models. Furthermore, the abstract is heavily laden with technical acronyms and fails to articulate why non-oncology readers should care about this transcriptional mechanism.",
+      majorCritiques: [
+        "Lack of in vivo validation: Organoid culture observations have not been confirmed in preclinical animal models or patient biopsy cohorts.",
+        "Desk-rejection vulnerability: Absence of translational therapeutic rescue data makes the advance appear preliminary for top-tier publication.",
+        "Narrative accessibility: The introduction focuses narrowly on cis-regulatory genetics rather than the broader conceptual problem of therapeutic relapse."
+      ],
+      missingControlsOrAnalyses: [
+        "Preclinical in vivo xenograft or PDX model validating that target perturbation restores chemosensitivity.",
+        "Translational validation in published clinical patient datasets (e.g. TCGA, George et al. SCLC cohorts)."
+      ],
+      mustAddressItems: [
+        "Rewrite Abstract and Opening Introduction to emphasize broad biological significance before diving into subfield mechanics.",
+        "Incorporate survival or response correlation data from public human clinical cohorts to strengthen translational impact.",
+        "Clearly acknowledge in the Discussion that in vivo validation remains a prerequisite before clinical translation."
+      ]
     },
     {
       persona: "statistician",
-      name: "Dr. M. Sorkin (Biostatistician)",
-      roleDescription: "Statistical Rigor & Multiplicity",
-      keyChallenge: "Missing multiple comparison corrections.",
-      assessment: "Multiple hypothesis testing without FDR or Bonferroni adjustments risks false-positive claims.",
-      mustAddressItems: ["Report adjusted p-values (q-values) for all pairwise comparisons"]
+      name: "Prof. David K. Zimmerman, Ph.D.",
+      title: "Chair of Quantitative Oncology & High-Dimensional Biostatistics",
+      affiliation: "Department of Biostatistics & Computational Biology, Harvard T.H. Chan School of Public Health",
+      expertise: "Multiple hypothesis testing corrections, empirical Bayes shrinkage, small sample inference, and power calculations",
+      roleDescription: "Statistical Rigor, Multiplicity Control & Inferential Validity",
+      decisionRecommendation: "Reject / Resubmit",
+      keyChallenge: "Severe multiplicity uncorrected testing and unpowered sample cohort (n=8) without effect size confidence intervals.",
+      assessment: "The statistical architecture of this paper suffers from fundamental methodological deficiencies that inflate false discovery rates. The authors conducted a genome-wide CRISPR screen querying 1,200 chromatin regulators across multiple comparisons, yet report significance using unadjusted two-tailed Student's t-tests (p < 0.05). Screening 1,200 hypotheses without False Discovery Rate (Benjamini-Hochberg) or family-wise error adjustments virtually guarantees multiple false positive nominations. Furthermore, the validation cohort consists of only 8 organoid lines (n=8) without an a priori power calculation or normality test. A parametric t-test on n=8 non-normally distributed organoid lines is statistically invalid without non-parametric verification (Mann-Whitney U) or permutation testing.",
+      majorCritiques: [
+        "Uncorrected multiple comparisons: Testing 1,200 targets without FDR q-values invalidates the reported p = 0.002 hit nomination.",
+        "Underpowered sample size: n=8 is critically vulnerable to single-sample outlier skew without formal power calculation.",
+        "Missing variance reporting: Bar plots omit individual data points, standard deviations, and effect size confidence intervals."
+      ],
+      missingControlsOrAnalyses: [
+        "Benjamini-Hochberg FDR adjustment (q-value reporting) across all screen targets and differential expression tests.",
+        "Non-parametric sensitivity testing (Wilcoxon signed-rank or permutation test) comparing recurrence vs naive cohorts."
+      ],
+      mustAddressItems: [
+        "Recalculate and report FDR-adjusted q-values for all candidate hits in Table S1 and Results.",
+        "Replace bar graphs with super-imposed dot plots showing every individual organoid data point alongside 95% confidence intervals.",
+        "Include an explicit statistical power calculation in the Methods justifying cohort size n=8."
+      ]
     }
   ];
 
@@ -265,7 +347,20 @@ Please return your analysis as a JSON object with this exact structure:
     if (matched && matched.assessment && matched.keyChallenge) {
       return {
         ...defaultP,
-        ...matched,
+        name: matched.name || defaultP.name,
+        title: matched.title || defaultP.title,
+        affiliation: matched.affiliation || defaultP.affiliation,
+        expertise: matched.expertise || defaultP.expertise,
+        roleDescription: matched.roleDescription || defaultP.roleDescription,
+        decisionRecommendation: matched.decisionRecommendation || defaultP.decisionRecommendation,
+        keyChallenge: matched.keyChallenge || defaultP.keyChallenge,
+        assessment: matched.assessment || defaultP.assessment,
+        majorCritiques: (Array.isArray(matched.majorCritiques) && matched.majorCritiques.length > 0)
+          ? matched.majorCritiques
+          : defaultP.majorCritiques,
+        missingControlsOrAnalyses: (Array.isArray(matched.missingControlsOrAnalyses) && matched.missingControlsOrAnalyses.length > 0)
+          ? matched.missingControlsOrAnalyses
+          : defaultP.missingControlsOrAnalyses,
         mustAddressItems: (Array.isArray(matched.mustAddressItems) && matched.mustAddressItems.length > 0)
           ? matched.mustAddressItems
           : defaultP.mustAddressItems

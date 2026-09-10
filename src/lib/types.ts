@@ -30,9 +30,15 @@ export interface PriorityIssue {
 export interface ReviewerPersonaFeedback {
   persona: 'methods_reviewer' | 'domain_expert' | 'journal_editor' | 'statistician';
   name: string;
+  title: string;
+  affiliation: string;
+  expertise: string;
   roleDescription: string;
+  decisionRecommendation: 'Major Revision' | 'Reject / Resubmit' | 'Desk Reject' | 'Minor Revision';
   keyChallenge: string;
   assessment: string;
+  majorCritiques: string[];
+  missingControlsOrAnalyses: string[];
   mustAddressItems: string[];
 }
 
