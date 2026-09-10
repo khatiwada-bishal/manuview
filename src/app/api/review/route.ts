@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { parseManuscriptText, parseDocxBuffer, parsePdfBuffer } from "@/lib/parser";
-import { runManuscriptDiagnostic } from "@/lib/diagnostic-engine";
+import { runManuscriptDiagnostic, runBriefJournalFitAnalysis } from "@/lib/diagnostic-engine";
 import { ProviderConfig } from "@/lib/types";
 
 export async function POST(req: NextRequest) {
@@ -10,8 +10,11 @@ export async function POST(req: NextRequest) {
     let manuscriptText = "";
     let targetJournal = "";
     let providerConfig: ProviderConfig | undefined;
-
     let fileName: string | undefined;
+    let mode: string | undefined;
+    let title = "";
+    let abstract = "";
+    let keywords = "";
 
     if (contentType.includes("multipart/form-data")) {
       const formData = await req.formData();
@@ -19,6 +22,10 @@ export async function POST(req: NextRequest) {
       const textInput = formData.get("text") as string | null;
       targetJournal = (formData.get("targetJournal") as string) || "";
       const configStr = formData.get("providerConfig") as string | null;
+      mode = (formData.get("mode") as string) || "";
+      title = (formData.get("title") as string) || "";
+      abstract = (formData.get("abstract") as string) || "";
+      keywords = (formData.get("keywords") as string) || "";
 
       if (configStr) {
         try {
@@ -47,11 +54,27 @@ export async function POST(req: NextRequest) {
       targetJournal = body.targetJournal || "";
       providerConfig = body.providerConfig;
       fileName = body.fileName;
+      mode = body.mode;
+      title = body.title || "";
+      abstract = body.abstract || "";
+      keywords = body.keywords || "";
+    }
+
+    // If in brief journal fit mode (or title + abstract provided without uploaded full file)
+    if (mode === "brief_fit" || (title.trim() && abstract.trim() && !manuscriptText.trim())) {
+      const report = await runBriefJournalFitAnalysis({
+        title,
+        abstract,
+        keywords,
+        targetJournal: targetJournal || "Target Journal",
+        providerConfig,
+      });
+      return NextResponse.json({ success: true, report });
     }
 
     if (!manuscriptText.trim()) {
       return NextResponse.json(
-        { error: "No manuscript content or file provided." },
+        { error: "No manuscript content or document provided." },
         { status: 400 }
       );
     }

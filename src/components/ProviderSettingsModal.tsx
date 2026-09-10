@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ProviderConfig, LLMProvider, AvailableModel } from "@/lib/types";
-import { Settings, ShieldCheck, X, CheckCircle2, FileCode, Activity, RefreshCw, AlertCircle, Zap, Check, ChevronDown, Sparkles } from "lucide-react";
+import { Settings, ShieldCheck, X, CheckCircle2, FileCode, Activity, RefreshCw, AlertCircle, Zap, Check, ChevronDown, Sparkles, Search } from "lucide-react";
 import { GeminiLogo, OpenAILogo, GroqLogo, AnthropicLogo, OllamaLogo } from "./BrandLogos";
 
 interface Props {
@@ -25,6 +25,9 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
   const [loadingModels, setLoadingModels] = useState(false);
   const [availableModels, setAvailableModels] = useState<AvailableModel[]>([]);
   const [showCustomInput, setShowCustomInput] = useState(false);
+  const [modelDropdownOpen, setModelDropdownOpen] = useState(false);
+  const [modelSearchQuery, setModelSearchQuery] = useState("");
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const [testResult, setTestResult] = useState<{
     success: boolean;
     provider: string;
@@ -61,6 +64,16 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
     // Fetch models for current provider
     loadModelsForProvider(currentConfig);
   }, [isOpen]);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setModelDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const loadModelsForProvider = async (targetConfig: ProviderConfig) => {
     setLoadingModels(true);
@@ -383,8 +396,8 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
             </div>
           )}
 
-          {/* 3. Available Models Picker (No More Guessing!) */}
-          <div>
+          {/* 3. Available Models Picker (Dropdown Selector) */}
+          <div ref={dropdownRef} className="relative z-20">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-1.5">
                 <label className="text-xs font-semibold text-[#2F3437]">
@@ -399,7 +412,10 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
               </div>
               <button
                 type="button"
-                onClick={() => setShowCustomInput(!showCustomInput)}
+                onClick={() => {
+                  setShowCustomInput(!showCustomInput);
+                  setModelDropdownOpen(false);
+                }}
                 className="text-[11px] text-[#0A85EA] hover:underline font-medium"
               >
                 {showCustomInput ? "Show Preset Models" : "Custom Model ID"}
@@ -421,67 +437,139 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
                 </p>
               </div>
             ) : (
-              /* Available Model Cards Grid */
-              <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
-                {availableModels.map((m) => {
-                  const isSelected = config.model === m.id;
-                  return (
-                    <div
-                      key={m.id}
-                      onClick={() => setConfig({ ...config, model: m.id })}
-                      className={`p-3 rounded-xl border cursor-pointer transition flex items-start justify-between gap-3 ${
-                        isSelected
-                          ? "bg-[#F7F7F5] border-[#2F3437] ring-1 ring-[#2F3437] shadow-2xs"
-                          : "bg-white border-[#EBEBEA] hover:bg-[#F7F7F5] hover:border-[#D0D0CE]"
-                      }`}
-                    >
-                      <div className="flex items-start gap-2.5 flex-1 min-w-0">
-                        {/* Radio Check Indicator */}
-                        <div
-                          className={`w-4 h-4 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0 transition border ${
-                            isSelected
-                              ? "bg-[#2F3437] border-[#2F3437] text-white"
-                              : "border-[#D0D0CE] bg-white"
-                          }`}
-                        >
-                          {isSelected && <Check className="w-2.5 h-2.5 text-white stroke-[3]" />}
-                        </div>
-
-                        <div className="min-w-0 flex-1">
-                          <div className="flex flex-wrap items-center gap-1.5 mb-0.5">
-                            <span className="font-mono text-xs font-semibold text-[#2F3437]">
-                              {m.id}
+              /* Dropdown Trigger & Populated Models Menu */
+              <div className="relative">
+                {/* Dropdown Trigger Button */}
+                <button
+                  type="button"
+                  onClick={() => setModelDropdownOpen(!modelDropdownOpen)}
+                  className="w-full text-left p-3 rounded-xl bg-white hover:bg-[#F7F7F5] border border-[#EBEBEA] hover:border-[#D0D0CE] transition flex items-center justify-between gap-2 shadow-2xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#0075eb]/20"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs font-semibold text-[#2F3437]">
+                        {config.model || "Select a model..."}
+                      </span>
+                      {(() => {
+                        const cur = availableModels.find((m) => m.id === config.model);
+                        if (cur?.tag) {
+                          return (
+                            <span
+                              className={`text-[10px] font-semibold px-2 py-0.2 rounded-md border ${
+                                cur.recommended
+                                  ? "bg-[#EBF3FB] text-[#18569C] border-[#CDE1F8]"
+                                  : cur.tag.includes("Fast") || cur.tag.includes("Instant")
+                                  ? "bg-[#EDF6EE] text-[#1E5A2A] border-[#CBE7CE]"
+                                  : cur.tag.includes("Reasoning") || cur.tag.includes("Frontier")
+                                  ? "bg-[#F6F3F9] text-[#57338C] border-[#DFD5F5]"
+                                  : "bg-[#FBF3DB] text-[#78510E] border-[#F4E2B6]"
+                              }`}
+                            >
+                              {cur.tag}
                             </span>
-                            {m.tag && (
-                              <span
-                                className={`text-[10px] font-semibold px-2 py-0.2 rounded-md border ${
-                                  m.recommended
-                                    ? "bg-[#EBF3FB] text-[#18569C] border-[#CDE1F8]"
-                                    : m.tag.includes("Fast") || m.tag.includes("Instant")
-                                    ? "bg-[#EDF6EE] text-[#1E5A2A] border-[#CBE7CE]"
-                                    : m.tag.includes("Reasoning") || m.tag.includes("Frontier")
-                                    ? "bg-[#F6F3F9] text-[#57338C] border-[#DFD5F5]"
-                                    : "bg-[#FBF3DB] text-[#78510E] border-[#F4E2B6]"
-                                }`}
-                              >
-                                {m.tag}
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-[11px] text-[#787774] leading-snug truncate">
-                            {m.description || m.name}
-                          </p>
-                        </div>
-                      </div>
-
-                      {isSelected && (
-                        <span className="text-[10px] font-bold text-[#2F3437] flex-shrink-0 bg-white border border-[#EBEBEA] px-2 py-0.5 rounded-md">
-                          Selected
-                        </span>
-                      )}
+                          );
+                        }
+                        return null;
+                      })()}
                     </div>
-                  );
-                })}
+                    <p className="text-[11px] text-[#787774] truncate mt-0.5">
+                      {availableModels.find((m) => m.id === config.model)?.description ||
+                        "Click to view and choose from available models"}
+                    </p>
+                  </div>
+                  <ChevronDown
+                    className={`w-4 h-4 text-[#787774] flex-shrink-0 transition-transform ${
+                      modelDropdownOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+
+                {/* Populated Dropdown Menu */}
+                {modelDropdownOpen && (
+                  <div className="absolute left-0 top-full mt-1.5 w-full rounded-2xl bg-white border border-[#EBEBEA] shadow-2xl p-2 z-50 text-xs animate-fadeIn">
+                    {/* Search inside dropdown */}
+                    <div className="relative mb-2 px-1">
+                      <input
+                        type="text"
+                        value={modelSearchQuery}
+                        onChange={(e) => setModelSearchQuery(e.target.value)}
+                        placeholder={`Search ${availableModels.length} models...`}
+                        className="w-full pl-8 pr-3 py-1.5 rounded-lg bg-[#F7F7F5] border border-[#EBEBEA] text-xs text-[#2F3437] placeholder-[#9B9A97] focus:outline-none focus:bg-white focus:ring-1 focus:ring-[#0075eb]"
+                        autoFocus
+                      />
+                      <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-[#9B9A97] pointer-events-none" />
+                    </div>
+
+                    {/* Populated Models List */}
+                    <div className="max-h-60 overflow-y-auto divide-y divide-[#F7F7F5] overscroll-contain">
+                      {(() => {
+                        const filtered = availableModels.filter(
+                          (m) =>
+                            m.id.toLowerCase().includes(modelSearchQuery.toLowerCase()) ||
+                            (m.tag && m.tag.toLowerCase().includes(modelSearchQuery.toLowerCase())) ||
+                            (m.description && m.description.toLowerCase().includes(modelSearchQuery.toLowerCase()))
+                        );
+
+                        if (filtered.length === 0) {
+                          return (
+                            <div className="p-4 text-center text-xs text-[#787774]">
+                              No models matching "{modelSearchQuery}"
+                            </div>
+                          );
+                        }
+
+                        return filtered.map((m) => {
+                          const isSelected = config.model === m.id;
+                          return (
+                            <button
+                              key={m.id}
+                              type="button"
+                              onClick={() => {
+                                setConfig({ ...config, model: m.id });
+                                setModelDropdownOpen(false);
+                                setModelSearchQuery("");
+                              }}
+                              className={`w-full text-left p-2.5 rounded-xl transition flex items-start justify-between gap-2.5 ${
+                                isSelected
+                                  ? "bg-[#F7F7F5] text-[#2F3437] font-semibold"
+                                  : "text-[#2F3437] hover:bg-[#FAF9F7]"
+                              }`}
+                            >
+                              <div className="min-w-0 flex-1">
+                                <div className="flex flex-wrap items-center gap-1.5">
+                                  <span className="font-mono text-xs font-semibold text-[#2F3437]">
+                                    {m.id}
+                                  </span>
+                                  {m.tag && (
+                                    <span
+                                      className={`text-[9px] font-semibold px-1.5 py-0.2 rounded-md border ${
+                                        m.recommended
+                                          ? "bg-[#EBF3FB] text-[#18569C] border-[#CDE1F8]"
+                                          : m.tag.includes("Fast") || m.tag.includes("Instant")
+                                          ? "bg-[#EDF6EE] text-[#1E5A2A] border-[#CBE7CE]"
+                                          : m.tag.includes("Reasoning") || m.tag.includes("Frontier")
+                                          ? "bg-[#F6F3F9] text-[#57338C] border-[#DFD5F5]"
+                                          : "bg-[#FBF3DB] text-[#78510E] border-[#F4E2B6]"
+                                      }`}
+                                    >
+                                      {m.tag}
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-[11px] text-[#787774] truncate mt-0.5">
+                                  {m.description || m.name}
+                                </p>
+                              </div>
+                              {isSelected && (
+                                <Check className="w-4 h-4 text-[#0A85EA] flex-shrink-0 mt-1" />
+                              )}
+                            </button>
+                          );
+                        });
+                      })()}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>

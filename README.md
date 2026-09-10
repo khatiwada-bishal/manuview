@@ -122,12 +122,12 @@ graph TD
 ## 📋 Roadmap
 
 - [x] Initial repository structure & architecture blueprint
-- [ ] Manuscript Ingestion Engine (PDF & DOCX section extractor)
-- [ ] Reference Integrity & Retraction Verification Engine
-- [ ] 6-Dimension Diagnostic Scoring Engine
-- [ ] 4-Persona Reviewer Simulator
-- [ ] Standalone Submission Tools (Journal Fit, PRISMA, Cover Letter, Rebuttal Builder)
-- [ ] Report Export (.docx, .pdf, and interactive web report)
+- [x] Manuscript Ingestion Engine (PDF & DOCX section extractor)
+- [x] Reference Integrity & Retraction Verification Engine
+- [x] 6-Dimension Diagnostic Scoring Engine
+- [x] 4-Persona Reviewer Simulator
+- [x] Standalone Submission Tools (Journal Fit, PRISMA, Cover Letter, Rebuttal Builder)
+- [x] Report Export (.docx, .pdf, and interactive web report)
 - [ ] One-click Docker setup for 100% offline local deployment
 
 ---

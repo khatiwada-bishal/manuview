@@ -114,7 +114,7 @@ export async function callLLM(
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           contents,
-          generationConfig: { temperature: 0.2, maxOutputTokens: 4096 },
+          generationConfig: { temperature: 0.2, maxOutputTokens: 8192 },
         }),
       });
 
@@ -156,19 +156,25 @@ export async function callLLM(
     const chosenModel = model || process.env.OPENAI_MODEL || (provider === "groq" ? "llama-3.3-70b-versatile" : "gpt-4o-mini");
 
     try {
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
+        const requestPayload: any = {
           model: chosenModel,
           messages,
           temperature: 0.2,
+          max_tokens: 8192,
           stream: false,
-        }),
-      });
+        };
+        if (provider === "groq") {
+          requestPayload.response_format = { type: "json_object" };
+        }
+
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify(requestPayload),
+        });
 
       if (!response.ok) {
         let errMessage = `HTTP ${response.status}`;
@@ -210,7 +216,7 @@ export async function callLLM(
         },
         body: JSON.stringify({
           model: model || "claude-3-5-sonnet-20241022",
-          max_tokens: 4096,
+          max_tokens: 8192,
           system: systemMessage,
           messages: userAssistantMessages,
           temperature: 0.2,
@@ -250,7 +256,7 @@ export async function callLLM(
           model: model || process.env.OLLAMA_MODEL || "llama3.3",
           messages,
           stream: false,
-          options: { temperature: 0.2 },
+          options: { temperature: 0.2, num_predict: 8192 },
         }),
       });
 

@@ -53,6 +53,7 @@ coverage.xml
 out/
 build/
 dist/
+*.tsbuildinfo
 
 # Logs
 logs

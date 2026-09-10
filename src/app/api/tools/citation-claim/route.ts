@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchWorkByDOI } from "@/lib/openalex";
 import { callLLM } from "@/lib/llm";
+import { cleanAndRepairJson } from "@/lib/json-repair";
 
 export async function POST(req: NextRequest) {
   try {
@@ -55,10 +56,9 @@ Return a JSON object with:
       suggestedRewrite: sentence,
     };
 
-    const match = raw.match(/\{[\s\S]*\}/);
-    if (match) {
-      try { parsed = JSON.parse(match[0]); } catch {}
-    }
+    try {
+      parsed = cleanAndRepairJson(raw, parsed);
+    } catch {}
 
     return NextResponse.json({
       success: true,

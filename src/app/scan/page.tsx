@@ -34,11 +34,15 @@ import {
   Download,
   Printer
 } from "lucide-react";
-import { FullReviewReport, PriorityIssue, ReviewerPersonaFeedback, ProviderConfig, AvailableModel } from "@/lib/types";
+import { FullReviewReport, BriefJournalFitReport, ReviewReport, PriorityIssue, ReviewerPersonaFeedback, ProviderConfig, AvailableModel } from "@/lib/types";
 import { ProviderSettingsModal } from "@/components/ProviderSettingsModal";
+import JournalCombobox from "@/components/JournalCombobox";
+import { BriefJournalFitView, BriefJournalFitPrintView } from "@/components/BriefJournalFitView";
 
 // Sample preprint for instant one-click testing
 const SAMPLE_PREPRINT_TITLE = "Single-cell transcriptional profiling of DLL3 activation in neuroendocrine lung carcinoma";
+const SAMPLE_PREPRINT_ABSTRACT = "Small cell lung cancer (SCLC) exhibits rapid recurrence and therapy resistance. Delta-like ligand 3 (DLL3) is an established cell-surface target for antibody-drug conjugates and T-cell engagers. However, the precise cis-regulatory mechanisms controlling DLL3 transcription remain uncharacterized. Here, we perform marker-based CRISPR-Cas9 screens and identify the transcription factor POU2F1 as a primary driver of DLL3 expression. We demonstrate that POU2F1 directly binds the DLL3 distal enhancer element to drive chemoresistance in clinical isolates. Knockdown of POU2F1 caused significant downregulation of DLL3 mRNA across 8 patient-derived organoid lines. Our findings prove that targeting POU2F1 will rescue therapeutic efficacy in neuroendocrine lung carcinoma and provide a universal predictive biomarker for clinical stratification.";
+const SAMPLE_PREPRINT_KEYWORDS = "small cell lung cancer, DLL3, POU2F1, CRISPR screen, organoids, chemoresistance, antibody-drug conjugates";
 const SAMPLE_PREPRINT_TEXT = `Title: Single-cell transcriptional profiling of DLL3 activation in neuroendocrine lung carcinoma
 
 Abstract:
@@ -61,12 +65,15 @@ References:
 
 export default function ScanPage() {
   const [inputText, setInputText] = useState("");
+  const [manuscriptTitle, setManuscriptTitle] = useState("");
+  const [manuscriptAbstract, setManuscriptAbstract] = useState("");
+  const [manuscriptKeywords, setManuscriptKeywords] = useState("");
   const [targetJournal, setTargetJournal] = useState("");
   const [targetJournalError, setTargetJournalError] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingStep, setLoadingStep] = useState("");
-  const [report, setReport] = useState<FullReviewReport | null>(null);
+  const [report, setReport] = useState<ReviewReport | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedPersona, setSelectedPersona] = useState<number>(0);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -253,6 +260,9 @@ export default function ScanPage() {
   };
 
   const handleLoadSample = () => {
+    setManuscriptTitle(SAMPLE_PREPRINT_TITLE);
+    setManuscriptAbstract(SAMPLE_PREPRINT_ABSTRACT);
+    setManuscriptKeywords(SAMPLE_PREPRINT_KEYWORDS);
     setInputText(SAMPLE_PREPRINT_TEXT);
     setTargetJournal("Nature Communications");
     setTargetJournalError(false);
@@ -277,13 +287,17 @@ export default function ScanPage() {
       );
       return;
     }
-        if (!targetJournal.trim()) {
+    if (!targetJournal.trim()) {
       setTargetJournalError(true);
       setError("Target Journal is required. Please specify the journal you intend to submit to (e.g., Nature Genetics, Cancer Discovery, IEEE TPAMI).");
       return;
     }
-    if (!inputText.trim() && !file) {
-      setError("Please paste your manuscript text or upload a document file.");
+
+    const isFileScan = !!file;
+    const hasMetadata = !!(manuscriptTitle.trim() && manuscriptAbstract.trim());
+
+    if (!isFileScan && !hasMetadata && !inputText.trim()) {
+      setError("Please either upload a manuscript document (.pdf, .docx, .txt) or provide Manuscript Title and Abstract.");
       return;
     }
 
@@ -291,12 +305,21 @@ export default function ScanPage() {
     setLoading(true);
     setReport(null);
 
-    // Progressive status updates
-    setLoadingStep("Extracting sections and parsing bibliography...");
-    const t1 = setTimeout(() => setLoadingStep("Resolving references against Crossref & Retraction Watch..."), 1200);
-    const t2 = setTimeout(() => setLoadingStep("Auditing causal claims against experimental controls..."), 2400);
-    const t3 = setTimeout(() => setLoadingStep("Evaluating methodology, sample power, and statistics..."), 3600);
-    const t4 = setTimeout(() => setLoadingStep("Simulating 4 peer-reviewer personas..."), 4800);
+    let t1: any, t2: any, t3: any, t4: any;
+
+    if (isFileScan) {
+      // Progressive status updates for full document audit
+      setLoadingStep("Extracting sections and parsing bibliography...");
+      t1 = setTimeout(() => setLoadingStep("Resolving references against Crossref & Retraction Watch..."), 1200);
+      t2 = setTimeout(() => setLoadingStep("Auditing causal claims against experimental controls..."), 2400);
+      t3 = setTimeout(() => setLoadingStep("Evaluating methodology, sample power, and statistics..."), 3600);
+      t4 = setTimeout(() => setLoadingStep("Simulating 4 peer-reviewer personas..."), 4800);
+    } else {
+      // Fast editorial scope validation
+      setLoadingStep("Evaluating manuscript title & abstract scope...");
+      t1 = setTimeout(() => setLoadingStep(`Calibrating against ${targetJournal}'s aims and editorial criteria...`), 1000);
+      t2 = setTimeout(() => setLoadingStep("Auditing keyword resonance and potential desk-reject hazards..."), 2000);
+    }
 
     try {
       // Get user's provider config from localStorage if any
@@ -304,9 +327,13 @@ export default function ScanPage() {
 
       const formData = new FormData();
       if (file) formData.append("file", file);
-      if (inputText) formData.append("text", inputText);
+      if (manuscriptTitle) formData.append("title", manuscriptTitle);
+      if (manuscriptAbstract) formData.append("abstract", manuscriptAbstract);
+      if (manuscriptKeywords) formData.append("keywords", manuscriptKeywords);
+      if (inputText && !manuscriptTitle) formData.append("text", inputText);
       if (targetJournal) formData.append("targetJournal", targetJournal);
       if (savedConfig) formData.append("providerConfig", savedConfig);
+      formData.append("mode", isFileScan ? "full" : "brief_fit");
 
       const res = await fetch("/api/review", {
         method: "POST",
@@ -374,26 +401,19 @@ export default function ScanPage() {
         {/* Notion Properties Block (Database metadata rows) */}
         <div className="mb-8 rounded-xl bg-[#F7F7F5] print:hidden border border-[#EBEBEA] p-4 text-xs divide-y divide-[#eaeaea]">
           {/* Property 1: Target Journal (Mandatory) */}
-          <div className="py-2.5 px-1 space-y-1.5">
+          <div className="relative z-20 py-2.5 px-1 space-y-1.5">
             <div className="flex items-center">
-              <div className="w-40 flex items-center gap-1.5 text-[#787774]">
+              <div className="w-40 flex items-center gap-1.5 text-[#787774] flex-shrink-0">
                 <Tag className="w-3.5 h-3.5" />
                 <span className="font-medium">Target Journal</span>
-                <span className="text-[10px] font-semibold text-[#7C2D2B] bg-[#FDF0EF] border border-[#F7CECC] px-1.5 py-0.5 rounded">
-                  Required
-                </span>
+                <span className="text-[#E03E3E] font-bold text-sm leading-none" title="Required">*</span>
               </div>
               <div className="flex-1">
-                <input
-                  type="text"
+                <JournalCombobox
                   value={targetJournal}
-                  onChange={(e) => handleTargetJournalChange(e.target.value)}
-                  placeholder="e.g., Cancer Discovery, Nature Genetics, IEEE TPAMI, Cell Reports..."
-                  className={`w-full text-xs px-2.5 py-1.5 rounded-lg transition ${
-                    targetJournalError
-                      ? "bg-[#FDF0EF] border border-[#F7CECC] text-[#7C2D2B] placeholder-[#A05E5C] focus:outline-none ring-1 ring-[#F7CECC]"
-                      : "bg-transparent hover:bg-white text-[#2F3437] placeholder-[#888888] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#0075eb]"
-                  }`}
+                  onChange={handleTargetJournalChange}
+                  hasError={targetJournalError}
+                  placeholder="Search 1,390+ academic journals or type to add custom title..."
                 />
               </div>
             </div>
@@ -401,28 +421,6 @@ export default function ScanPage() {
               <div className="ml-40 text-[11px] text-[#7C2D2B] font-medium flex items-center gap-1">
                 <AlertCircle className="w-3 h-3 text-[#7C2D2B]" />
                 <span>Target Journal is required for calibrated rubric evaluation.</span>
-              </div>
-            )}
-            {!targetJournal && (
-              <div className="ml-40 flex flex-wrap items-center gap-1 text-[10px] text-[#787774] pt-0.5">
-                <span className="text-[#9B9A97]">Quick Pick:</span>
-                {[
-                  "Nature Medicine",
-                  "Cancer Discovery",
-                  "IEEE TPAMI",
-                  "Cell Reports",
-                  "Nature Communications",
-                  "PNAS"
-                ].map((s) => (
-                  <button
-                    key={s}
-                    type="button"
-                    onClick={() => handleTargetJournalChange(s)}
-                    className="px-1.5 py-0.5 rounded bg-white border border-[#EBEBEA] hover:border-[#787774] text-[#2F3437] transition cursor-pointer"
-                  >
-                    {s}
-                  </button>
-                ))}
               </div>
             )}
           </div>
@@ -623,17 +621,24 @@ export default function ScanPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* File Upload Box */}
-                  <div>
-                    <label className="text-xs text-[#787774] mb-1.5 block font-medium">
-                      Upload Document (.pdf, .docx, .txt)
-                    </label>
-                    <label className="flex flex-col items-center justify-center border border-dashed border-[#d0d0d0] hover:border-[#0A85EA] rounded-xl p-6 bg-white hover:bg-[#EBF3FB]/20 cursor-pointer transition group">
-                      <Upload className="w-6 h-6 text-[#9B9A97] group-hover:text-[#18569C] transition mb-2" />
-                      <span className="text-xs text-[#2F3437] font-semibold text-center truncate max-w-full px-2">
-                        {file ? file.name : "Click to choose file or drag & drop"}
+                  <div className="flex flex-col">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="text-xs text-[#787774] font-medium">
+                        Upload Full Manuscript (.pdf, .docx, .txt)
+                      </label>
+                      <span className="text-[10px] text-[#0F6B43] bg-[#EBF8F2] px-2 py-0.2 rounded font-medium border border-[#BDEBD6]">
+                        Full Audit
                       </span>
-                      <span className="text-[11px] text-[#787774] mt-1">
-                        {file ? `${(file.size / 1024).toFixed(1)} KB • Click to change file` : "PDF (.pdf), Word (.docx), or Text file"}
+                    </div>
+                    <label className="flex-1 flex flex-col items-center justify-center border border-dashed border-[#d0d0d0] hover:border-[#0A85EA] rounded-xl p-6 bg-white hover:bg-[#EBF3FB]/20 cursor-pointer transition group min-h-[220px]">
+                      <Upload className="w-7 h-7 text-[#9B9A97] group-hover:text-[#18569C] transition mb-2" />
+                      <span className="text-xs text-[#2F3437] font-semibold text-center truncate max-w-full px-2">
+                        {file ? file.name : "Choose full manuscript file"}
+                      </span>
+                      <span className="text-[11px] text-[#787774] mt-1 text-center max-w-xs px-2">
+                        {file
+                          ? `${(file.size / 1024).toFixed(1)} KB • Click to change file`
+                          : "Enables 6-dimension rubric, simulated reviewer personas & citation audit"}
                       </span>
                       <input
                         type="file"
@@ -642,20 +647,72 @@ export default function ScanPage() {
                         className="hidden"
                       />
                     </label>
+                    {file && (
+                      <button
+                        type="button"
+                        onClick={() => setFile(null)}
+                        className="text-[11px] text-[#7C2D2B] hover:underline self-end mt-1 cursor-pointer"
+                      >
+                        Remove file &amp; use Title / Abstract
+                      </button>
+                    )}
                   </div>
 
-                  {/* Direct Paste Box */}
-                  <div>
-                    <label className="text-xs text-[#787774] mb-1.5 block font-medium">
-                      Or Paste Manuscript Text
-                    </label>
-                    <textarea
-                      rows={6}
-                      value={inputText}
-                      onChange={(e) => setInputText(e.target.value)}
-                      placeholder="Paste Title, Abstract, Methods, and References here..."
-                      className="w-full p-3 rounded-xl bg-white border border-[#EBEBEA] text-xs text-[#2F3437] placeholder-[#888888] focus:outline-none focus:border-[#0A85EA] font-mono leading-relaxed transition resize-y shadow-2xs"
-                    />
+                  {/* Title, Abstract & Keywords Box */}
+                  <div className="space-y-2.5 bg-white p-4 rounded-xl border border-[#EBEBEA] shadow-2xs">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs text-[#2F3437] font-semibold">
+                        Or Provide Title, Abstract &amp; Keywords
+                      </label>
+                      <span className="text-[10px] font-medium bg-[#EBF3FB] text-[#18569C] px-2 py-0.2 rounded border border-[#CDE1F8]">
+                        Quick Journal Fit
+                      </span>
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] text-[#787774] font-medium mb-1 block">
+                        Manuscript Title <span className="text-[#E03E3E] font-bold">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={manuscriptTitle}
+                        onChange={(e) => {
+                          setManuscriptTitle(e.target.value);
+                          if (error) setError(null);
+                        }}
+                        placeholder="e.g. Single-cell transcriptional profiling of DLL3..."
+                        className="w-full px-3 py-1.5 rounded-lg bg-[#F7F7F5] border border-[#EBEBEA] text-xs text-[#2F3437] placeholder-[#888888] focus:outline-none focus:bg-white focus:border-[#0A85EA] focus:ring-1 focus:ring-[#0A85EA] transition"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] text-[#787774] font-medium mb-1 block">
+                        Abstract <span className="text-[#E03E3E] font-bold">*</span>
+                      </label>
+                      <textarea
+                        rows={4}
+                        value={manuscriptAbstract}
+                        onChange={(e) => {
+                          setManuscriptAbstract(e.target.value);
+                          if (error) setError(null);
+                        }}
+                        placeholder="Paste or summarize background, main findings, methodology, and conclusions..."
+                        className="w-full p-2.5 rounded-lg bg-[#F7F7F5] border border-[#EBEBEA] text-xs text-[#2F3437] placeholder-[#888888] focus:outline-none focus:bg-white focus:border-[#0A85EA] focus:ring-1 focus:ring-[#0A85EA] leading-relaxed transition resize-y"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] text-[#787774] font-medium mb-1 block">
+                        Keywords <span className="text-[#9B9A97] font-normal">(comma-separated)</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={manuscriptKeywords}
+                        onChange={(e) => setManuscriptKeywords(e.target.value)}
+                        placeholder="e.g. small cell lung cancer, DLL3, CRISPR screen, organoids"
+                        className="w-full px-3 py-1.5 rounded-lg bg-[#F7F7F5] border border-[#EBEBEA] text-xs text-[#2F3437] placeholder-[#888888] focus:outline-none focus:bg-white focus:border-[#0A85EA] focus:ring-1 focus:ring-[#0A85EA] transition"
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -745,7 +802,7 @@ export default function ScanPage() {
                 ) : (
                   <>
                     <Sparkles className={`w-4 h-4 ${apiStatus === 'connected' ? "text-emerald-400" : "text-[#6b6a67]"}`} />
-                    <span>Run Pre-Submission Diagnostic Scan</span>
+                    <span>{file ? "Run Pre-Submission Diagnostic Scan" : "Validate Target Journal Scope & Fit"}</span>
                   </>
                 )}
               </button>
@@ -755,7 +812,15 @@ export default function ScanPage() {
 
         {/* Diagnostic Report Results (Interactive Notion Web View) */}
         {report && (
-          <div className="space-y-8 animate-fade-in print:hidden">
+          report.mode === "brief_fit" ? (
+            <BriefJournalFitView
+              report={report as BriefJournalFitReport}
+              onBack={() => setReport(null)}
+              onDownloadPDF={handleDownloadPDF}
+              activeProviderInfo={activeProviderInfo}
+            />
+          ) : (
+            <div className="space-y-8 animate-fade-in print:hidden">
 
 
             {/* Top Navigation Bar in Results */}
@@ -1338,7 +1403,8 @@ export default function ScanPage() {
               </>
             )}
           </div>
-        )}
+        )
+      )}
 
 
         {/* ================================================================= */}
@@ -1346,7 +1412,14 @@ export default function ScanPage() {
         {/* ================================================================= */}
         {report && (
           <div className="hidden print:block print-only-report text-[#111111] bg-white p-0 space-y-6">
-            {/* 1. Official Academic Header */}
+            {report.mode === "brief_fit" ? (
+              <BriefJournalFitPrintView
+                report={report as BriefJournalFitReport}
+                activeProviderInfo={activeProviderInfo}
+              />
+            ) : (
+              <>
+                {/* 1. Official Academic Header */}
             <div className="border-b-2 border-[#111111] pb-4 space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -1635,6 +1708,8 @@ export default function ScanPage() {
               <span>ManuView Academic Pre-Submission Diagnostic Audit &bull; Confidential Research Document</span>
               <span>Generated locally with zero data retention &bull; {report.id}</span>
             </div>
+              </>
+            )}
           </div>
         )}
 

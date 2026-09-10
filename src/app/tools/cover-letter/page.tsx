@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { FileText, Copy, Check, Sparkles, RefreshCw, AlertCircle } from "lucide-react";
+import JournalCombobox from "@/components/JournalCombobox";
 
 export default function CoverLetterPage() {
   const [title, setTitle] = useState("");
@@ -110,12 +111,10 @@ export default function CoverLetterPage() {
                 <label className="block text-xs font-semibold uppercase tracking-wider text-[#374151] mb-1">
                   Target Journal
                 </label>
-                <input
-                  type="text"
+                <JournalCombobox
                   value={targetJournal}
-                  onChange={(e) => setTargetJournal(e.target.value)}
+                  onChange={(val) => setTargetJournal(val)}
                   placeholder="e.g. Nature Communications, Cell"
-                  className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-teal-500"
                 />
               </div>
             </div>

@@ -123,6 +123,7 @@ export interface ParsedManuscript {
 }
 
 export interface FullReviewReport {
+  mode?: 'full';
   id: string;
   createdAt: string;
   title: string;
@@ -136,6 +137,38 @@ export interface FullReviewReport {
   journalRecommendations: JournalRecommendation[];
   citationIntegrity: CitationIntegritySummary;
 }
+
+export interface BriefJournalFitReport {
+  mode: 'brief_fit';
+  id: string;
+  createdAt: string;
+  title: string;
+  abstract: string;
+  keywords: string[];
+  targetJournal: string;
+  fitScore: number; // 0 to 100
+  verdict: 'Strong Editorial Fit' | 'Moderate Scope Match' | 'Scope Mismatch / High Desk-Reject Hazard';
+  verdictColor: 'green' | 'amber' | 'red';
+  summary: string;
+  dimensions: {
+    domainMatch: { score: number; feedback: string };
+    noveltySignificance: { score: number; feedback: string };
+    readershipAlignment: { score: number; feedback: string };
+    keywordRelevance: { score: number; feedback: string };
+  };
+  keyHighlights: string[];
+  deskRejectHazards: string[];
+  framingSuggestions: string[];
+  alternativeJournals: {
+    name: string;
+    publisher?: string;
+    impactFactor?: number;
+    tier: 'Reach' | 'Realistic' | 'Safe Fallback';
+    matchReason: string;
+  }[];
+}
+
+export type ReviewReport = FullReviewReport | BriefJournalFitReport;
 
 export type LLMProvider = 'ollama' | 'gemini' | 'groq' | 'openai' | 'anthropic';
 
