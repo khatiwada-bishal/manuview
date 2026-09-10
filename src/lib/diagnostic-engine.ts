@@ -1,7 +1,8 @@
-import { FullReviewReport, ParsedManuscript, ProviderConfig, CitationIntegritySummary, ReviewerPersonaFeedback } from "./types";
+import { FullReviewReport, ParsedManuscript, ProviderConfig, CitationIntegritySummary, ReviewerPersonaFeedback, DocumentClassification } from "./types";
 import { callLLM } from "./llm";
 import { batchVerifyReferences } from "./crossref";
 import { findMatchingJournals } from "./journals";
+import { classifyDocument } from "./parser";
 
 export async function runManuscriptDiagnostic(
   manuscript: ParsedManuscript,
@@ -36,17 +37,27 @@ export async function runManuscriptDiagnostic(
     references: verifiedRefs,
   };
 
-  // 2. Journal Matching
+  // 2. Document Classification
+  const heuristicClassification = manuscript.classification || classifyDocument(manuscript.rawText);
+
+  // 3. Journal Matching
   const journalMatches = findMatchingJournals(manuscript.title, manuscript.abstract);
 
-  // 3. Multi-Stage LLM Evaluation
-  const systemPrompt = `You are the lead academic editor and pre-submission peer-review diagnostic engine for ManuView.
-Your mission is to provide rigorous, candid, peer-reviewer calibrated analysis of academic manuscripts to help researchers eliminate desk-rejection flaws before formal journal submission.
-Do NOT be agreeable or polite. Surface the hardest methodological, causal, and statistical objections that real peer reviewers and journal editors will raise.
-Scores are on a 1 to 5 scale calibrated against top-tier journals (Nature, Cell, Science, Lancet, IEEE TPAMI).
+  // 4. Multi-Stage LLM Evaluation
+  const systemPrompt = `You are the lead academic editor and diagnostic engine for ManuView.
+First, determine the document type: differentiate between authentic academic research manuscripts (empirical studies, clinical trials, reviews, preprints) and other files (such as source code, resumes/CVs, grant proposals, technical documentation, business documents, or random/unstructured text).
+You MUST address the user directly based on the type of file analyzed (e.g., "Dear Author / Contributing Researcher", "Hello Developer / Software Engineer", "Hello Candidate / Academic Professional", or "Notice to Submitter").
+If the document is an academic manuscript: provide candid, rigorous peer-reviewer calibrated analysis to eliminate desk-rejection flaws.
+If the document is NOT an academic manuscript: explain candidly what was detected, why journal peer-review rubrics are calibrated for empirical research, and provide appropriate constructive guidance for that document type.
+Scores are on a 1 to 5 scale calibrated against top-tier scholarly standards.
 Return your output ONLY as valid JSON matching the requested schema.`;
 
-  const userPrompt = `Evaluate the following manuscript draft:
+  const userPrompt = `Evaluate the following submission:
+
+DOCUMENT CLASSIFICATION DETECTED:
+Category: ${heuristicClassification.category} (${heuristicClassification.categoryLabel})
+Is Academic Manuscript: ${heuristicClassification.isAcademicManuscript}
+Detected Characteristics: ${heuristicClassification.detectedFeatures.join("; ")}
 
 TITLE: ${manuscript.title}
 TARGET JOURNAL: ${targetJournalName || "Top-tier multidisciplinary / field-specific journal"}
@@ -55,6 +66,8 @@ WORD COUNT: ${manuscript.wordCount}
 METHODS EXTRACT: ${manuscript.sections.methods || "Not provided separately; check main text"}
 RESULTS EXTRACT: ${manuscript.sections.results || "Not provided separately; check main text"}
 DISCUSSION EXTRACT: ${manuscript.sections.discussion || "Not provided separately; check main text"}
+TEXT EXCERPT:
+${manuscript.rawText.slice(0, 3000)}
 
 BIBLIOGRAPHY INTEGRITY METRICS:
 Total References: ${citationIntegrity.totalReferences}
@@ -63,8 +76,17 @@ Retracted References Flagged: ${citationIntegrity.retractedCount}
 
 Please return your analysis as a JSON object with this exact structure:
 {
+  "classification": {
+    "category": "academic_manuscript" | "source_code" | "resume_cv" | "grant_proposal" | "technical_doc" | "business_or_admin" | "general_or_creative" | "random_unstructured",
+    "categoryLabel": string,
+    "isAcademicManuscript": boolean,
+    "confidence": number,
+    "salutation": string,
+    "advisoryMessage": string,
+    "customGuidance": string
+  },
   "overallScore": number (0-100),
-  "summary": string (concise editorial synthesis of core strengths and primary rejection risks),
+  "summary": string (editorial synthesis addressing the user directly and analyzing this specific document type),
   "dimensions": {
     "originality": { "score": 1-5, "label": "Originality & Novelty", "verdict": string, "strengths": string[], "vulnerabilities": string[] },
     "broad_interest": { "score": 1-5, "label": "Importance & Broad Interest", "verdict": string, "strengths": string[], "vulnerabilities": string[] },
@@ -115,15 +137,33 @@ Please return your analysis as a JSON object with this exact structure:
     console.error("Diagnostic engine parse error:", err);
   }
 
+  // Finalize Document Classification (LLM validated or heuristic fallback)
+  const finalClassification: DocumentClassification = {
+    category: parsedLLM?.classification?.category || heuristicClassification.category,
+    categoryLabel: parsedLLM?.classification?.categoryLabel || heuristicClassification.categoryLabel,
+    isAcademicManuscript: parsedLLM?.classification?.isAcademicManuscript !== undefined
+      ? Boolean(parsedLLM.classification.isAcademicManuscript)
+      : heuristicClassification.isAcademicManuscript,
+    confidence: parsedLLM?.classification?.confidence || heuristicClassification.confidence,
+    detectedFeatures: heuristicClassification.detectedFeatures,
+    salutation: parsedLLM?.classification?.salutation || heuristicClassification.salutation,
+    advisoryMessage: parsedLLM?.classification?.advisoryMessage || heuristicClassification.advisoryMessage,
+    customGuidance: parsedLLM?.classification?.customGuidance || heuristicClassification.customGuidance,
+  };
+
   // Fallback defaults if LLM output fails to parse
-  const fallbackOverall = 70;
+  const fallbackOverall = finalClassification.isAcademicManuscript ? 70 : 35;
+  const fallbackSummary = finalClassification.isAcademicManuscript
+    ? "The manuscript demonstrates sound conceptual promise, but requires targeted adjustments to causal framing, statistical power reporting, and reference integrity before journal submission."
+    : `${finalClassification.salutation}: This document has been classified as ${finalClassification.categoryLabel} rather than an academic research manuscript. ${finalClassification.advisoryMessage}`;
+
   const finalDimensions = parsedLLM?.dimensions || {
-    originality: { score: 4, label: "Originality & Novelty", verdict: "Strong conceptual advance", strengths: ["Unique angle"], vulnerabilities: ["Competitor comparisons brief"] },
-    broad_interest: { score: 3, label: "Importance & Broad Interest", verdict: "Good subfield interest", strengths: ["Clear relevance"], vulnerabilities: ["Broader appeal needs framing"] },
-    claims_vs_evidence: { score: 2, label: "Strength of Claims vs. Evidence", verdict: "Causal overclaim risk detected", strengths: ["Empirical findings clear"], vulnerabilities: ["Causal language without rescue control"] },
-    methodology: { score: 3, label: "Methodological & Statistical Soundness", verdict: "Moderate rigor", strengths: ["Replicates included"], vulnerabilities: ["Missing power analysis"] },
-    clarity: { score: 4, label: "Clarity & Presentation", verdict: "Logical flow", strengths: ["Clean abstract"], vulnerabilities: ["Abbreviations undefined"] },
-    prior_work: { score: 3, label: "Prior Work & Reference Integrity", verdict: "Adequate bibliography", strengths: ["Foundational papers cited"], vulnerabilities: ["Recent citations underrepresented"] },
+    originality: { score: finalClassification.isAcademicManuscript ? 4 : 2, label: "Originality & Novelty", verdict: finalClassification.isAcademicManuscript ? "Strong conceptual advance" : "Document is non-academic", strengths: [finalClassification.categoryLabel], vulnerabilities: finalClassification.isAcademicManuscript ? ["Competitor comparisons brief"] : ["Not an academic manuscript"] },
+    broad_interest: { score: finalClassification.isAcademicManuscript ? 3 : 2, label: "Importance & Broad Interest", verdict: finalClassification.isAcademicManuscript ? "Good subfield interest" : "Scope does not match scholarly journals", strengths: ["Clear relevance"], vulnerabilities: ["Broader appeal needs framing"] },
+    claims_vs_evidence: { score: finalClassification.isAcademicManuscript ? 2 : 1, label: "Strength of Claims vs. Evidence", verdict: finalClassification.isAcademicManuscript ? "Causal overclaim risk detected" : "No empirical scientific claims supported by data", strengths: ["Structured presentation"], vulnerabilities: [finalClassification.isAcademicManuscript ? "Causal language without rescue control" : "Lacks scientific evidence"] },
+    methodology: { score: finalClassification.isAcademicManuscript ? 3 : 1, label: "Methodological & Statistical Soundness", verdict: finalClassification.isAcademicManuscript ? "Moderate rigor" : "No scientific methodology or statistical power reported", strengths: ["Technical structure"], vulnerabilities: ["Lacks empirical research methods"] },
+    clarity: { score: 4, label: "Clarity & Presentation", verdict: "Readable structure", strengths: ["Clear syntax and layout"], vulnerabilities: [] },
+    prior_work: { score: finalClassification.isAcademicManuscript ? 3 : 1, label: "Prior Work & Reference Integrity", verdict: finalClassification.isAcademicManuscript ? "Adequate bibliography" : "Absence of peer-reviewed scholarly citations", strengths: ["References checked"], vulnerabilities: [finalClassification.isAcademicManuscript ? "Recent citations underrepresented" : "No scholarly bibliography"] },
   };
 
   const finalPriorityIssues = parsedLLM?.priorityIssues || [
@@ -169,6 +209,18 @@ Please return your analysis as a JSON object with this exact structure:
       description: "DOIs in the reference list failed resolution against the Crossref registry. This pattern is commonly flagged by editors as an AI-hallucinated reference.",
       reviewerQuote: "'Several cited DOIs return 404 in Crossref. Are these valid citations or hallucinated citations?'",
       actionableFix: "Verify each cited paper's official DOI directly on the publisher's journal website."
+    });
+  }
+
+  if (!finalClassification.isAcademicManuscript) {
+    finalPriorityIssues.unshift({
+      id: "iss-doctype",
+      priority: "A",
+      title: `Non-Manuscript Detected: ${finalClassification.categoryLabel}`,
+      category: "Scope/Fit",
+      description: `The submission is structured as ${finalClassification.categoryLabel} rather than an empirical academic manuscript. It lacks scientific hypothesis framing, experimental methodology, and peer-reviewed literature citations.`,
+      reviewerQuote: `'This document is outside scholarly peer-review scope. It does not present empirical academic findings.'`,
+      actionableFix: finalClassification.customGuidance
     });
   }
 
@@ -228,7 +280,8 @@ Please return your analysis as a JSON object with this exact structure:
     title: manuscript.title,
     targetJournal: targetJournalName,
     overallScore: parsedLLM?.overallScore || fallbackOverall,
-    summary: parsedLLM?.summary || "The manuscript demonstrates sound conceptual promise, but requires targeted adjustments to causal framing, statistical power reporting, and reference integrity before journal submission.",
+    summary: parsedLLM?.summary || fallbackSummary,
+    classification: finalClassification,
     dimensions: finalDimensions,
     priorityIssues: finalPriorityIssues,
     reviewerPersonas: finalPersonas,

@@ -11,6 +11,8 @@ export async function POST(req: NextRequest) {
     let targetJournal = "";
     let providerConfig: ProviderConfig | undefined;
 
+    let fileName: string | undefined;
+
     if (contentType.includes("multipart/form-data")) {
       const formData = await req.formData();
       const file = formData.get("file") as File | null;
@@ -25,6 +27,7 @@ export async function POST(req: NextRequest) {
       }
 
       if (file && file.size > 0) {
+        fileName = file.name;
         const buffer = Buffer.from(await file.arrayBuffer());
         if (file.name.endsWith(".docx")) {
           manuscriptText = await parseDocxBuffer(buffer);
@@ -40,6 +43,7 @@ export async function POST(req: NextRequest) {
       manuscriptText = body.text || "";
       targetJournal = body.targetJournal || "";
       providerConfig = body.providerConfig;
+      fileName = body.fileName;
     }
 
     if (!manuscriptText.trim()) {
@@ -49,8 +53,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Parse sections
-    const parsed = parseManuscriptText(manuscriptText);
+    // Parse sections with filename-aware classification
+    const parsed = parseManuscriptText(manuscriptText, fileName);
 
     // Run multi-stage diagnostic engine
     const report = await runManuscriptDiagnostic(parsed, providerConfig, targetJournal);

@@ -73,6 +73,27 @@ export interface JournalRecommendation {
   requiredRevisionsForFit: string[];
 }
 
+export type DocumentCategory = 
+  | 'academic_manuscript'        // Research paper, empirical study, review, clinical study, preprint
+  | 'source_code'                // Programming scripts (Python, JS, C++, etc.), configs
+  | 'resume_cv'                  // Resume, Curriculum Vitae, bio
+  | 'grant_proposal'             // Grant application, project proposal, funding narrative
+  | 'technical_doc'              // Technical spec, API docs, release notes, manual
+  | 'business_or_admin'          // Invoice, financial report, business memo, agreement
+  | 'general_or_creative'        // Essay, fiction, journalism, blog post
+  | 'random_unstructured';       // Shopping list, notes, fragments, disorganized text
+
+export interface DocumentClassification {
+  category: DocumentCategory;
+  categoryLabel: string;
+  isAcademicManuscript: boolean;
+  confidence: number; // 0 to 1
+  detectedFeatures: string[];
+  salutation: string; // e.g. "Dear Author / Researcher", "Hello Developer / Software Engineer"
+  advisoryMessage: string; // Direct address explaining the file classification and context
+  customGuidance: string; // Actionable advice tailored to this specific file type
+}
+
 export interface ManuscriptSection {
   title: string;
   content: string;
@@ -92,6 +113,7 @@ export interface ParsedManuscript {
   };
   rawText: string;
   references: string[];
+  classification?: DocumentClassification;
 }
 
 export interface FullReviewReport {
@@ -101,6 +123,7 @@ export interface FullReviewReport {
   targetJournal?: string;
   overallScore: number; // 0 to 100
   summary: string;
+  classification: DocumentClassification;
   dimensions: Record<ScoreDimension, DimensionScore>;
   priorityIssues: PriorityIssue[];
   reviewerPersonas: ReviewerPersonaFeedback[];

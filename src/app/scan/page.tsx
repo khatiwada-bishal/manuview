@@ -18,7 +18,10 @@ import {
   FileCheck,
   Settings,
   Key,
-  Cpu
+  Cpu,
+  Code,
+  Info,
+  Lightbulb
 } from "lucide-react";
 import { FullReviewReport, PriorityIssue, ReviewerPersonaFeedback, ProviderConfig } from "@/lib/types";
 import { ProviderSettingsModal } from "@/components/ProviderSettingsModal";
@@ -352,6 +355,107 @@ export default function ScanPage() {
                 Scan Another Draft
               </button>
             </div>
+
+            {/* Document Type & Personalized User Address Banner */}
+            {report.classification && (
+              <div className={`p-6 rounded-2xl border ${
+                report.classification.isAcademicManuscript
+                  ? "bg-gradient-to-br from-emerald-950/30 via-slate-900/70 to-slate-950 border-emerald-500/30 shadow-lg shadow-emerald-950/10"
+                  : report.classification.category === "source_code"
+                  ? "bg-gradient-to-br from-indigo-950/30 via-slate-900/70 to-slate-950 border-indigo-500/30 shadow-lg shadow-indigo-950/10"
+                  : report.classification.category === "resume_cv"
+                  ? "bg-gradient-to-br from-blue-950/30 via-slate-900/70 to-slate-950 border-blue-500/30 shadow-lg shadow-blue-950/10"
+                  : "bg-gradient-to-br from-rose-950/20 via-slate-900/70 to-slate-950 border-rose-500/30 shadow-lg shadow-rose-950/10"
+              }`}>
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800/80">
+                  <div className="flex items-center gap-3.5">
+                    <div className={`p-3 rounded-xl border ${
+                      report.classification.isAcademicManuscript
+                        ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                        : report.classification.category === "source_code"
+                        ? "bg-indigo-500/10 text-indigo-400 border-indigo-500/20"
+                        : report.classification.category === "resume_cv"
+                        ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
+                        : "bg-rose-500/10 text-rose-400 border-rose-500/20"
+                    }`}>
+                      {report.classification.isAcademicManuscript ? (
+                        <BookOpen className="w-5 h-5" />
+                      ) : report.classification.category === "source_code" ? (
+                        <Code className="w-5 h-5" />
+                      ) : report.classification.category === "resume_cv" ? (
+                        <Users className="w-5 h-5" />
+                      ) : (
+                        <AlertTriangle className="w-5 h-5" />
+                      )}
+                    </div>
+                    <div>
+                      <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                        Document Classification
+                      </div>
+                      <div className="text-base font-bold text-white flex items-center gap-2">
+                        {report.classification.categoryLabel}
+                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold border ${
+                          report.classification.isAcademicManuscript
+                            ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
+                            : "bg-amber-500/20 text-amber-300 border-amber-500/30"
+                        }`}>
+                          {report.classification.isAcademicManuscript ? "Academic Research" : "Non-Manuscript File"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {!report.classification.isAcademicManuscript && (
+                    <button
+                      type="button"
+                      onClick={handleLoadSample}
+                      className="px-3.5 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-medium transition flex items-center gap-1.5 self-start md:self-center"
+                    >
+                      <RefreshCw className="w-3 h-3" />
+                      Test with Sample Research Preprint
+                    </button>
+                  )}
+                </div>
+
+                <div className="pt-4 space-y-3">
+                  <div className="text-sm font-semibold text-white flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full ${
+                      report.classification.isAcademicManuscript ? "bg-emerald-400 animate-pulse" : "bg-amber-400"
+                    }`} />
+                    {report.classification.salutation}
+                  </div>
+                  <p className="text-xs text-slate-300 leading-relaxed font-light">
+                    {report.classification.advisoryMessage}
+                  </p>
+
+                  {/* Detected Features Chips */}
+                  {report.classification.detectedFeatures && report.classification.detectedFeatures.length > 0 && (
+                    <div className="pt-1 flex flex-wrap gap-2">
+                      {report.classification.detectedFeatures.map((feat, idx) => (
+                        <span key={idx} className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-950/70 border border-slate-800 text-slate-300 flex items-center gap-1.5">
+                          {report.classification.isAcademicManuscript ? (
+                            <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                          ) : (
+                            <Info className="w-3 h-3 text-amber-400" />
+                          )}
+                          {feat}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {report.classification.customGuidance && (
+                    <div className="mt-2 p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 text-xs text-slate-300 flex items-start gap-2">
+                      <Lightbulb className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <span className="font-semibold text-slate-200">Recommended Action: </span>
+                        {report.classification.customGuidance}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Score & Summary Banner */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
