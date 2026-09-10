@@ -2,7 +2,6 @@
 
 import React from "react";
 import { Sidebar as SidebarIcon, Zap } from "lucide-react";
-import { isDesktopApp } from "@/lib/desktop";
 
 interface DesktopHeaderProps {
   workspaceName: string;
@@ -23,16 +22,14 @@ export function DesktopHeader({
   onToggleSidebar,
   sidebarOpen = true,
 }: DesktopHeaderProps) {
-  const isDesktop = isDesktopApp();
-
   return (
     <header
       data-tauri-drag-region
       className="h-12 border-b border-[#E5E7EB] bg-white flex items-center justify-between px-4 select-none shrink-0 z-20"
     >
       <div className="flex items-center gap-3 min-w-0">
-        {/* macOS traffic light spacer if in desktop app */}
-        {isDesktop && <div className="w-16 shrink-0" />}
+        {/* macOS traffic light spacer */}
+        <div className="w-16 shrink-0" />
 
         {onToggleSidebar && (
           <button
