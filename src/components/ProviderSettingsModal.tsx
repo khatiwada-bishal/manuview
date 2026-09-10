@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { ProviderConfig, LLMProvider } from "@/lib/types";
-import { Settings, ShieldCheck, X, CheckCircle2, FileCode } from "lucide-react";
+import { Settings, ShieldCheck, X, CheckCircle2, FileCode, Activity, RefreshCw, AlertCircle, Zap } from "lucide-react";
 import { GeminiLogo, OpenAILogo, GroqLogo, AnthropicLogo, OllamaLogo } from "./BrandLogos";
 
 interface Props {
@@ -21,6 +21,15 @@ export const DEFAULT_CONFIG: ProviderConfig = {
 export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
   const [config, setConfig] = useState<ProviderConfig>(DEFAULT_CONFIG);
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [testing, setTesting] = useState(false);
+  const [testResult, setTestResult] = useState<{
+    success: boolean;
+    provider: string;
+    model: string;
+    latencyMs: number;
+    message: string;
+    error?: string;
+  } | null>(null);
   const [serverStatus, setServerStatus] = useState<{
     hasServerKey: boolean;
     activeProvider: string;
@@ -36,6 +45,8 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
       } catch {}
     }
 
+    setTestResult(null);
+
     // Check server-side .env status
     fetch("/api/config/status")
       .then(res => res.json())
@@ -44,6 +55,31 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
   }, [isOpen]);
 
   if (!isOpen) return null;
+
+  const handleCheckConnection = async () => {
+    setTesting(true);
+    setTestResult(null);
+    try {
+      const res = await fetch("/api/config/test", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ config }),
+      });
+      const data = await res.json();
+      setTestResult(data);
+    } catch (err: any) {
+      setTestResult({
+        success: false,
+        provider: config.provider,
+        model: config.model,
+        latencyMs: 0,
+        message: "Connection failed",
+        error: err.message || "Failed to reach diagnostic test server",
+      });
+    } finally {
+      setTesting(false);
+    }
+  };
 
   const handleSave = () => {
     localStorage.setItem("manuview_provider_config", JSON.stringify(config));
@@ -295,22 +331,86 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
           <span>Zero data retention &bull; Processed in-memory, never stored or trained on.</span>
         </div>
 
-        {/* Save buttons */}
-        <div className="mt-5 flex items-center justify-end gap-2">
+        {/* Connection Test Result Callout */}
+        {testResult && (
+          <div className={`mt-3.5 p-3 rounded-md border text-xs animate-fade-in ${
+            testResult.success
+              ? "bg-[#1c2e24] border-[#284a36] text-[#a1d6b8]"
+              : "bg-[#2d1f1f] border-[#4a2b2b] text-[#ff9999]"
+          }`}>
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                {testResult.success ? (
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                ) : (
+                  <AlertCircle className="w-4 h-4 text-[#ff7373] flex-shrink-0" />
+                )}
+                <div>
+                  <span className="font-semibold text-white">
+                    {testResult.success ? "Connection Verified" : "Connection Failed"}
+                  </span>
+                  <span className="text-[11px] opacity-85 block sm:inline sm:ml-2">
+                    {testResult.message}
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-1.5 flex-shrink-0">
+                <span className={`font-mono text-[11px] px-2 py-0.5 rounded border font-semibold flex items-center gap-1 ${
+                  testResult.success
+                    ? "bg-[#233f2f] text-emerald-300 border-[#325a43]"
+                    : "bg-[#3d2424] text-[#ff8080] border-[#5a3232]"
+                }`}>
+                  <Zap className="w-3 h-3" />
+                  {testResult.latencyMs} ms
+                </span>
+              </div>
+            </div>
+            {!testResult.success && testResult.error && (
+              <div className="mt-2 pt-2 border-t border-[#4a2b2b]/60 text-[11px] text-[#ffb3b3] font-mono leading-relaxed break-words">
+                {testResult.error}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Action buttons */}
+        <div className="mt-5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pt-2 border-t border-[#2a2a2a]">
+          {/* Check connection button */}
           <button
             type="button"
-            onClick={onClose}
-            className="px-3 py-1.5 text-xs text-[#8a8a86] hover:text-white rounded hover:bg-[#282828] transition"
+            onClick={handleCheckConnection}
+            disabled={testing}
+            className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded bg-[#252525] hover:bg-[#2d2d2d] disabled:opacity-50 text-white font-medium text-xs border border-[#3e3e3e] transition"
           >
-            Cancel
+            {testing ? (
+              <>
+                <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-400" />
+                <span>Pinging Engine...</span>
+              </>
+            ) : (
+              <>
+                <Activity className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Check Connection</span>
+              </>
+            )}
           </button>
-          <button
-            type="button"
-            onClick={handleSave}
-            className="px-3.5 py-1.5 rounded bg-[#252525] hover:bg-[#2f2f2f] text-white font-medium text-xs border border-[#3e3e3e] transition"
-          >
-            {savedSuccess ? "Saved!" : "Save & Activate"}
-          </button>
+
+          <div className="flex items-center justify-end gap-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-3 py-1.5 text-xs text-[#8a8a86] hover:text-white rounded hover:bg-[#282828] transition"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleSave}
+              className="px-3.5 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs border border-emerald-500/40 transition shadow-sm"
+            >
+              {savedSuccess ? "Saved!" : "Save & Activate"}
+            </button>
+          </div>
         </div>
       </div>
     </div>

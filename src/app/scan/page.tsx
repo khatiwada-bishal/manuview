@@ -26,7 +26,9 @@ import {
   Code,
   Info,
   Lightbulb,
-  ArrowLeft
+  ArrowLeft,
+  Activity,
+  Zap
 } from "lucide-react";
 import { FullReviewReport, PriorityIssue, ReviewerPersonaFeedback, ProviderConfig } from "@/lib/types";
 import { ProviderSettingsModal } from "@/components/ProviderSettingsModal";
@@ -63,6 +65,13 @@ export default function ScanPage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedPersona, setSelectedPersona] = useState<number>(0);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [pinging, setPinging] = useState(false);
+  const [scanPingResult, setScanPingResult] = useState<{
+    success: boolean;
+    latencyMs: number;
+    message: string;
+    error?: string;
+  } | null>(null);
   const [activeProviderInfo, setActiveProviderInfo] = useState<{
     type: 'server' | 'browser' | 'offline';
     name: string;
@@ -116,6 +125,46 @@ export default function ScanPage() {
       name: 'Offline Demo Fallback',
       model: 'Deterministic Diagnostic',
     });
+  };
+
+  const handleCheckConnectionScanPage = async () => {
+    setPinging(true);
+    setScanPingResult(null);
+    try {
+      const saved = localStorage.getItem("manuview_provider_config");
+      let browserConfig: ProviderConfig | null = null;
+      if (saved) {
+        try { browserConfig = JSON.parse(saved); } catch {}
+      }
+
+      let res: Response;
+      if (browserConfig && (browserConfig.apiKey || browserConfig.provider === 'ollama')) {
+        res = await fetch("/api/config/test", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(browserConfig),
+        });
+      } else {
+        res = await fetch("/api/config/test", { method: "GET" });
+      }
+
+      const data = await res.json();
+      setScanPingResult({
+        success: !!data.success,
+        latencyMs: data.latencyMs || 0,
+        message: data.message || (data.success ? "Connection operational" : "Connection failed"),
+        error: data.error,
+      });
+    } catch (err: any) {
+      setScanPingResult({
+        success: false,
+        latencyMs: 0,
+        message: "Network error checking connection",
+        error: err?.message || String(err),
+      });
+    } finally {
+      setPinging(false);
+    }
   };
 
   const handleLoadSample = () => {
@@ -241,7 +290,7 @@ export default function ScanPage() {
               <SlidersHorizontal className="w-3.5 h-3.5" />
               <span>AI Engine</span>
             </div>
-            <div className="flex-1 flex items-center gap-2">
+            <div className="flex-1 flex flex-wrap items-center gap-2">
               <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium ${
                 activeProviderInfo.type !== 'offline'
                   ? "bg-[#1c2e24] text-[#4dab83] border border-[#284a36]"
@@ -259,6 +308,35 @@ export default function ScanPage() {
               >
                 Configure
               </button>
+
+              <button
+                type="button"
+                onClick={handleCheckConnectionScanPage}
+                disabled={pinging}
+                className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded bg-[#262626] hover:bg-[#2e2e2e] border border-[#333333] text-[#cfcfcd] hover:text-white transition disabled:opacity-50"
+                title="Test API connection & ping latency"
+              >
+                <Activity className={`w-3 h-3 ${pinging ? "animate-spin text-emerald-400" : "text-[#8a8a86]"}`} />
+                <span>{pinging ? "Testing Ping..." : "Check Connection"}</span>
+              </button>
+
+              {scanPingResult && (
+                <span
+                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-mono border ${
+                    scanPingResult.success
+                      ? "bg-[#1c2e24] text-[#4dab83] border-[#284a36]"
+                      : "bg-[#2d1f1f] text-[#eb5757] border-[#4a2828]"
+                  }`}
+                  title={scanPingResult.error || scanPingResult.message}
+                >
+                  <Zap className="w-3 h-3" />
+                  <span>
+                    {scanPingResult.success
+                      ? `⚡ ${scanPingResult.latencyMs}ms (${scanPingResult.message})`
+                      : `Failed: ${scanPingResult.error || scanPingResult.message}`}
+                  </span>
+                </span>
+              )}
             </div>
           </div>
 

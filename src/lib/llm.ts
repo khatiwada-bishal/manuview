@@ -358,3 +358,315 @@ function generateOfflineReview(messages: LLMMessage[]): string {
     ]
   });
 }
+
+export interface ConnectionTestResult {
+  success: boolean;
+  provider: LLMProvider;
+  model: string;
+  latencyMs: number;
+  message: string;
+  error?: string;
+  details?: {
+    endpoint?: string;
+    statusCode?: number;
+  };
+}
+
+export async function testLLMConnection(
+  config?: ProviderConfig
+): Promise<ConnectionTestResult> {
+  // 1. Resolve Provider and Credentials
+  const serverStatus = getServerConfigStatus();
+  let provider: LLMProvider = config?.provider || (serverStatus.activeProvider !== 'none' ? serverStatus.activeProvider : "ollama");
+  let apiKey: string = config?.apiKey?.trim() || "";
+  let model: string = config?.model?.trim() || "";
+  let baseUrl: string = (config?.baseUrl || (provider === 'openai' ? process.env.OPENAI_BASE_URL : undefined) || process.env.OLLAMA_BASE_URL || "http://localhost:11434").trim();
+
+  // If no apiKey provided, resolve from server environment
+  if (!apiKey && provider !== "ollama") {
+    if (provider === "gemini") {
+      apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || "";
+      model = model || process.env.GEMINI_MODEL || "gemini-1.5-flash";
+    } else if (provider === "groq") {
+      apiKey = process.env.GROQ_API_KEY || "";
+      model = model || process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
+    } else if (provider === "openai") {
+      apiKey = process.env.OPENAI_API_KEY || "";
+      model = model || process.env.OPENAI_MODEL || "gpt-4o-mini";
+      if (!config?.baseUrl && process.env.OPENAI_BASE_URL) {
+        baseUrl = process.env.OPENAI_BASE_URL;
+      }
+    } else if (provider === "anthropic") {
+      apiKey = process.env.ANTHROPIC_API_KEY || "";
+      model = model || process.env.ANTHROPIC_MODEL || "claude-3-5-sonnet-20241022";
+    }
+  }
+
+  // If still no API key and provider requires one:
+  if (!apiKey && provider !== "ollama") {
+    return {
+      success: false,
+      provider,
+      model: model || "unknown",
+      latencyMs: 0,
+      message: `No API key provided for ${provider.toUpperCase()}`,
+      error: `Please provide a valid ${provider.toUpperCase()} API key or configure it in .env.local`,
+    };
+  }
+
+  const startTime = Date.now();
+  const timeoutMs = 15000;
+
+  try {
+    // -----------------------------------------------------------
+    // 1. Google Gemini Ping Probe
+    // -----------------------------------------------------------
+    if (provider === "gemini") {
+      const geminiModel = model || "gemini-1.5-flash";
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${apiKey}`;
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: "ping" }] }],
+          generationConfig: { maxOutputTokens: 2 },
+        }),
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      const latencyMs = Date.now() - startTime;
+
+      if (response.ok) {
+        return {
+          success: true,
+          provider: "gemini",
+          model: geminiModel,
+          latencyMs,
+          message: `Connected to Google Gemini (${geminiModel}) in ${latencyMs}ms`,
+          details: { statusCode: response.status },
+        };
+      } else {
+        let errMessage = `HTTP ${response.status}`;
+        try {
+          const errJson = await response.json();
+          errMessage = errJson.error?.message || errMessage;
+        } catch {
+          errMessage = await response.text() || errMessage;
+        }
+        return {
+          success: false,
+          provider: "gemini",
+          model: geminiModel,
+          latencyMs,
+          message: `Gemini API returned error ${response.status}`,
+          error: errMessage,
+          details: { statusCode: response.status },
+        };
+      }
+    }
+
+    // -----------------------------------------------------------
+    // 2. OpenAI / Compatible Proxy / Groq Ping Probe
+    // -----------------------------------------------------------
+    if (provider === "openai" || provider === "groq") {
+      let endpoint = "https://api.openai.com/v1/chat/completions";
+      if (provider === "groq") {
+        endpoint = "https://api.groq.com/openai/v1/chat/completions";
+      } else {
+        const customBase = config?.baseUrl || process.env.OPENAI_BASE_URL;
+        if (customBase) {
+          const cleanBase = customBase.replace(/\/+$/, "");
+          endpoint = cleanBase.endsWith("/chat/completions") ? cleanBase : `${cleanBase}/chat/completions`;
+        }
+      }
+
+      const chosenModel = model || (provider === "groq" ? "llama-3.3-70b-versatile" : "gpt-4o-mini");
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: chosenModel,
+          messages: [{ role: "user", content: "ping" }],
+          max_tokens: 2,
+        }),
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      const latencyMs = Date.now() - startTime;
+
+      if (response.ok) {
+        return {
+          success: true,
+          provider,
+          model: chosenModel,
+          latencyMs,
+          message: `Connected to ${provider.toUpperCase()} (${chosenModel}) in ${latencyMs}ms`,
+          details: { endpoint, statusCode: response.status },
+        };
+      } else {
+        let errMessage = `HTTP ${response.status}`;
+        try {
+          const errJson = await response.json();
+          errMessage = errJson.error?.message || errJson.message || errMessage;
+        } catch {
+          errMessage = await response.text() || errMessage;
+        }
+        return {
+          success: false,
+          provider,
+          model: chosenModel,
+          latencyMs,
+          message: `${provider.toUpperCase()} connection failed (${response.status})`,
+          error: errMessage,
+          details: { endpoint, statusCode: response.status },
+        };
+      }
+    }
+
+    // -----------------------------------------------------------
+    // 3. Anthropic Claude Ping Probe
+    // -----------------------------------------------------------
+    if (provider === "anthropic") {
+      const chosenModel = model || "claude-3-5-sonnet-20241022";
+      const endpoint = "https://api.anthropic.com/v1/messages";
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": apiKey,
+          "anthropic-version": "2023-06-01",
+        },
+        body: JSON.stringify({
+          model: chosenModel,
+          max_tokens: 2,
+          messages: [{ role: "user", content: "ping" }],
+        }),
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      const latencyMs = Date.now() - startTime;
+
+      if (response.ok) {
+        return {
+          success: true,
+          provider: "anthropic",
+          model: chosenModel,
+          latencyMs,
+          message: `Connected to Anthropic (${chosenModel}) in ${latencyMs}ms`,
+          details: { statusCode: response.status },
+        };
+      } else {
+        let errMessage = `HTTP ${response.status}`;
+        try {
+          const errJson = await response.json();
+          errMessage = errJson.error?.message || errMessage;
+        } catch {
+          errMessage = await response.text() || errMessage;
+        }
+        return {
+          success: false,
+          provider: "anthropic",
+          model: chosenModel,
+          latencyMs,
+          message: `Anthropic API returned error ${response.status}`,
+          error: errMessage,
+          details: { statusCode: response.status },
+        };
+      }
+    }
+
+    // -----------------------------------------------------------
+    // 4. Local Ollama Ping Probe
+    // -----------------------------------------------------------
+    if (provider === "ollama") {
+      const cleanBase = baseUrl.replace(/\/+$/, "");
+      const tagsUrl = `${cleanBase}/api/tags`;
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 6000);
+
+      const response = await fetch(tagsUrl, {
+        method: "GET",
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      const latencyMs = Date.now() - startTime;
+
+      if (response.ok) {
+        let installedModels: string[] = [];
+        try {
+          const data = await response.json();
+          if (Array.isArray(data.models)) {
+            installedModels = data.models.map((m: any) => m.name);
+          }
+        } catch {}
+
+        const chosenModel = model || "llama3.3";
+        const hasModel = installedModels.some(m => m.includes(chosenModel));
+
+        return {
+          success: true,
+          provider: "ollama",
+          model: chosenModel,
+          latencyMs,
+          message: hasModel
+            ? `Local Ollama is active with ${chosenModel} (${latencyMs}ms)`
+            : `Local Ollama is reachable (${latencyMs}ms). ${installedModels.length} models installed.`,
+          details: { endpoint: cleanBase, statusCode: response.status },
+        };
+      } else {
+        return {
+          success: false,
+          provider: "ollama",
+          model: model || "llama3.3",
+          latencyMs,
+          message: `Ollama service returned status ${response.status}`,
+          error: `Ollama at ${cleanBase} responded with status ${response.status}`,
+        };
+      }
+    }
+
+    return {
+      success: false,
+      provider,
+      model: model || "unknown",
+      latencyMs: 0,
+      message: `Unsupported provider: ${provider}`,
+      error: `Unknown provider ${provider}`,
+    };
+  } catch (err: any) {
+    const latencyMs = Date.now() - startTime;
+    const isTimeout = err.name === "AbortError" || err.message?.includes("abort");
+
+    return {
+      success: false,
+      provider,
+      model: model || "unknown",
+      latencyMs,
+      message: isTimeout ? `Connection timed out after ${timeoutMs / 1000}s` : `Connection failed`,
+      error: isTimeout
+        ? `Request timed out. Ensure the endpoint and network are reachable.`
+        : err.message || "Network error: Unable to reach the API server.",
+    };
+  }
+}
+
