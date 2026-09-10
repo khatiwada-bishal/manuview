@@ -22,21 +22,50 @@ export function Navbar() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [toolsDropdown, setToolsDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    setToolsDropdown(true);
+  };
+
+  const handleMouseLeave = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => {
+      setToolsDropdown(false);
+    }, 250);
+  };
+
+  const toggleDropdown = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    setToolsDropdown((prev) => !prev);
+  };
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
         setToolsDropdown(false);
       }
     }
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
         setToolsDropdown(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("keydown", handleKeyDown);
     return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleKeyDown);
     };
@@ -86,12 +115,12 @@ export function Navbar() {
               <div 
                 ref={dropdownRef} 
                 className="relative" 
-                onMouseLeave={() => setToolsDropdown(false)}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
               >
                 <button
                   type="button"
-                  onClick={() => setToolsDropdown(!toolsDropdown)}
-                  onMouseEnter={() => setToolsDropdown(true)}
+                  onClick={toggleDropdown}
                   aria-expanded={toolsDropdown}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition ${
                     toolsDropdown 
@@ -104,10 +133,15 @@ export function Navbar() {
                 </button>
 
                 {toolsDropdown && (
-                  <div className="absolute top-full -left-6 sm:-left-12 mt-2 w-[92vw] max-w-[580px] sm:w-[580px] rounded-2xl bg-[#0F121C]/95 backdrop-blur-2xl border border-white/15 shadow-[0_24px_60px_rgba(0,0,0,0.7)] p-4 z-50 text-xs animate-fade-in text-neutral-200">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {/* Column 1: Diagnostic & Verification */}
-                      <div className="space-y-1">
+                  <div 
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                    className="absolute top-full -left-6 sm:-left-12 pt-2 w-[92vw] max-w-[580px] sm:w-[580px] z-50 animate-fade-in"
+                  >
+                    <div className="rounded-2xl bg-[#0F121C]/95 backdrop-blur-2xl border border-white/15 shadow-[0_24px_60px_rgba(0,0,0,0.7)] p-4 text-xs text-neutral-200">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {/* Column 1: Diagnostic & Verification */}
+                        <div className="space-y-1">
                         <div className="px-2 py-1 text-[10px] font-mono uppercase tracking-wider text-neutral-400 font-semibold">
                           Auditing &amp; Verification
                         </div>
@@ -217,8 +251,9 @@ export function Navbar() {
                       </Link>
                     </div>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
+            </div>
 
               <Link 
                 href="/examples" 
