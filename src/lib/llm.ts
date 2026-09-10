@@ -93,6 +93,10 @@ export async function callLLM(
     }
   }
 
+  if (!apiKey && provider !== "ollama") {
+    throw new Error(`No API key configured for ${provider.toUpperCase()}. Please configure your API key in AI Settings.`);
+  }
+
   // -----------------------------------------------------------
   // 1. Google Gemini API
   // -----------------------------------------------------------
@@ -115,16 +119,23 @@ export async function callLLM(
       });
 
       if (!response.ok) {
-        const errText = await response.text();
+        let errText = `HTTP ${response.status}`;
+        try {
+          const errJson = await response.json();
+          errText = errJson.error?.message || errText;
+        } catch {
+          errText = await response.text() || errText;
+        }
         console.error("Gemini API error:", response.status, errText);
         throw new Error(`Gemini API error (${response.status}): ${errText}`);
       }
       const data = await response.json();
       const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
       if (text) return text;
+      throw new Error("Gemini returned empty candidate response.");
     } catch (err: any) {
       console.error("Gemini call failed:", err.message);
-      return generateOfflineReview(messages);
+      throw new Error(`Google Gemini call failed: ${err.message}`);
     }
   }
 
@@ -160,15 +171,23 @@ export async function callLLM(
       });
 
       if (!response.ok) {
-        const errText = await response.text();
-        console.error(`${provider} API error:`, response.status, errText);
-        throw new Error(`${provider} API error: ${errText}`);
+        let errMessage = `HTTP ${response.status}`;
+        try {
+          const errJson = await response.json();
+          errMessage = errJson.error?.message || errJson.message || errMessage;
+        } catch {
+          errMessage = await response.text() || errMessage;
+        }
+        console.error(`${provider} API error:`, response.status, errMessage);
+        throw new Error(`${provider.toUpperCase()} API error (${response.status}): ${errMessage}`);
       }
       const data = await response.json();
-      return data.choices?.[0]?.message?.content || "";
+      const content = data.choices?.[0]?.message?.content;
+      if (content) return content;
+      throw new Error(`${provider.toUpperCase()} returned empty completion response.`);
     } catch (err: any) {
       console.error(`${provider} call failed:`, err.message);
-      return generateOfflineReview(messages);
+      throw new Error(`${provider.toUpperCase()} call failed: ${err.message}`);
     }
   }
 
@@ -199,15 +218,23 @@ export async function callLLM(
       });
 
       if (!response.ok) {
-        const errText = await response.text();
-        console.error("Anthropic API error:", response.status, errText);
-        throw new Error(`Anthropic API error: ${errText}`);
+        let errMessage = `HTTP ${response.status}`;
+        try {
+          const errJson = await response.json();
+          errMessage = errJson.error?.message || errMessage;
+        } catch {
+          errMessage = await response.text() || errMessage;
+        }
+        console.error("Anthropic API error:", response.status, errMessage);
+        throw new Error(`Anthropic API error (${response.status}): ${errMessage}`);
       }
       const data = await response.json();
-      return data.content?.[0]?.text || "";
+      const text = data.content?.[0]?.text;
+      if (text) return text;
+      throw new Error("Anthropic returned empty message response.");
     } catch (err: any) {
       console.error("Anthropic call failed:", err.message);
-      return generateOfflineReview(messages);
+      throw new Error(`Anthropic call failed: ${err.message}`);
     }
   }
 
@@ -231,15 +258,13 @@ export async function callLLM(
         const data = await response.json();
         return data.message?.content || "";
       }
+      throw new Error(`Ollama service returned HTTP ${response.status}`);
     } catch (err: any) {
-      // Ollama not reachable
+      throw new Error(`Local Ollama service unreachable at ${baseUrl}: ${err.message}`);
     }
   }
 
-  // -----------------------------------------------------------
-  // 5. Fallback deterministic review
-  // -----------------------------------------------------------
-  return generateOfflineReview(messages);
+  throw new Error(`Unable to complete AI evaluation. Provider ${provider} is not configured.`);
 }
 
 // Deterministic offline fallback diagnostic when no LLM is connected

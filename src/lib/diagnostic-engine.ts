@@ -146,9 +146,12 @@ Please return your analysis as a JSON object with this exact structure:
     const jsonMatch = rawResult.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
       parsedLLM = JSON.parse(jsonMatch[0]);
+    } else {
+      throw new Error("Unable to extract structured JSON evaluation from AI model output.");
     }
-  } catch (err) {
-    console.error("Diagnostic engine parse error:", err);
+  } catch (err: any) {
+    console.error("Diagnostic engine error:", err);
+    throw new Error(`Manuscript review failed: ${err.message || "Failed to generate LLM evaluation"}`);
   }
 
   // Finalize Document Classification (LLM validated or heuristic fallback)

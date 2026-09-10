@@ -66,6 +66,8 @@ export default function ScanPage() {
   const [selectedPersona, setSelectedPersona] = useState<number>(0);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [pinging, setPinging] = useState(false);
+  const [apiStatus, setApiStatus] = useState<'checking' | 'connected' | 'unconfigured' | 'error'>('checking');
+  const [apiErrorMessage, setApiErrorMessage] = useState<string>("");
   const [scanPingResult, setScanPingResult] = useState<{
     success: boolean;
     latencyMs: number;
@@ -76,69 +78,73 @@ export default function ScanPage() {
     type: 'server' | 'browser' | 'offline';
     name: string;
     model: string;
-  }>({ type: 'offline', name: 'Offline Demo Mode', model: 'Deterministic Diagnostic' });
+  }>({ type: 'offline', name: 'AI Engine', model: 'Checking status...' });
 
   React.useEffect(() => {
     checkProviderStatus();
   }, []);
 
   const checkProviderStatus = async () => {
+    setPinging(true);
+    setApiStatus('checking');
+    setApiErrorMessage("");
+
     const saved = localStorage.getItem("manuview_provider_config");
     let browserConfig: ProviderConfig | null = null;
     if (saved) {
       try { browserConfig = JSON.parse(saved); } catch {}
     }
 
-    if (browserConfig && browserConfig.apiKey) {
-      setActiveProviderInfo({
-        type: 'browser',
-        name: browserConfig.provider.toUpperCase(),
-        model: browserConfig.model,
-      });
-      return;
-    }
-
+    let hasServerKey = false;
+    let serverProvider = "";
     try {
       const res = await fetch("/api/config/status");
       const data = await res.json();
-      if (data.hasServerKey) {
-        setActiveProviderInfo({
-          type: 'server',
-          name: `${data.activeProvider.toUpperCase()}`,
-          model: 'from .env.local',
-        });
-        return;
-      }
+      hasServerKey = !!data.hasServerKey;
+      serverProvider = data.activeProvider || "";
     } catch {}
 
-    if (browserConfig && browserConfig.provider === 'ollama') {
+    const hasClientKey = !!(browserConfig && browserConfig.apiKey?.trim());
+    const isOllama = browserConfig?.provider === 'ollama';
+
+    // 1. If no key configured anywhere and not local ollama -> unconfigured (Orange state)
+    if (!hasClientKey && !hasServerKey && !isOllama) {
       setActiveProviderInfo({
-        type: 'browser',
-        name: 'Local Ollama',
-        model: browserConfig.model || 'llama3.3',
+        type: 'offline',
+        name: 'No Provider',
+        model: 'Requires API Key',
       });
+      setApiStatus('unconfigured');
+      setScanPingResult(null);
+      setPinging(false);
       return;
     }
 
-    setActiveProviderInfo({
-      type: 'offline',
-      name: 'Offline Demo Fallback',
-      model: 'Deterministic Diagnostic',
-    });
-  };
+    // Set initial display name
+    if (hasClientKey) {
+      setActiveProviderInfo({
+        type: 'browser',
+        name: browserConfig!.provider.toUpperCase(),
+        model: browserConfig!.model || 'configured',
+      });
+    } else if (isOllama) {
+      setActiveProviderInfo({
+        type: 'browser',
+        name: 'Local Ollama',
+        model: browserConfig!.model || 'llama3.3',
+      });
+    } else if (hasServerKey) {
+      setActiveProviderInfo({
+        type: 'server',
+        name: serverProvider.toUpperCase(),
+        model: 'from .env.local',
+      });
+    }
 
-  const handleCheckConnectionScanPage = async () => {
-    setPinging(true);
-    setScanPingResult(null);
+    // 2. Perform live connection test via /api/config/test
     try {
-      const saved = localStorage.getItem("manuview_provider_config");
-      let browserConfig: ProviderConfig | null = null;
-      if (saved) {
-        try { browserConfig = JSON.parse(saved); } catch {}
-      }
-
       let res: Response;
-      if (browserConfig && (browserConfig.apiKey || browserConfig.provider === 'ollama')) {
+      if (hasClientKey || isOllama) {
         res = await fetch("/api/config/test", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -149,18 +155,33 @@ export default function ScanPage() {
       }
 
       const data = await res.json();
-      setScanPingResult({
-        success: !!data.success,
-        latencyMs: data.latencyMs || 0,
-        message: data.message || (data.success ? "Connection operational" : "Connection failed"),
-        error: data.error,
-      });
+      if (data.success) {
+        setApiStatus('connected');
+        setScanPingResult({
+          success: true,
+          latencyMs: data.latencyMs || 0,
+          message: data.message || "Connection operational",
+        });
+      } else {
+        setApiStatus('error');
+        const errMsg = data.error || data.message || "Connection failed";
+        setApiErrorMessage(errMsg);
+        setScanPingResult({
+          success: false,
+          latencyMs: data.latencyMs || 0,
+          message: data.message || "Connection failed",
+          error: errMsg,
+        });
+      }
     } catch (err: any) {
+      setApiStatus('error');
+      const errMsg = err?.message || "Network error checking connection";
+      setApiErrorMessage(errMsg);
       setScanPingResult({
         success: false,
         latencyMs: 0,
-        message: "Network error checking connection",
-        error: err?.message || String(err),
+        message: "Network test failed",
+        error: errMsg,
       });
     } finally {
       setPinging(false);
@@ -171,16 +192,26 @@ export default function ScanPage() {
     setInputText(SAMPLE_PREPRINT_TEXT);
     setTargetJournal("Nature Communications");
     setFile(null);
+    setError(null);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setFile(e.target.files[0]);
+      setError(null);
     }
   };
 
   const handleRunScan = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (apiStatus !== 'connected') {
+      setError(
+        apiStatus === 'unconfigured'
+          ? "Pre-submission scan is disabled: No LLM API connection configured. Please set your API key in AI Settings."
+          : "Pre-submission scan is disabled: The configured LLM connection is not working. Please fix your credentials in AI Settings."
+      );
+      return;
+    }
     if (!inputText.trim() && !file) {
       setError("Please paste your manuscript text or upload a document file.");
       return;
@@ -291,16 +322,44 @@ export default function ScanPage() {
               <span>AI Engine</span>
             </div>
             <div className="flex-1 flex flex-wrap items-center gap-2">
-              <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium ${
-                activeProviderInfo.type !== 'offline'
-                  ? "bg-[#1c2e24] text-[#4dab83] border border-[#284a36]"
-                  : "bg-[#2e281b] text-[#f1b854] border border-[#4a3e26]"
-              }`}>
-                <span className={`w-1.5 h-1.5 rounded-full ${
-                  activeProviderInfo.type !== 'offline' ? "bg-[#4dab83]" : "bg-[#f1b854]"
-                }`} />
-                {activeProviderInfo.name} ({activeProviderInfo.model})
-              </span>
+              {/* 1. Connected & Operational -> Green */}
+              {apiStatus === 'connected' && (
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-[#1c2e24] text-[#4dab83] border border-[#284a36]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#4dab83]" />
+                  {activeProviderInfo.name} ({activeProviderInfo.model})
+                </span>
+              )}
+
+              {/* 2. Unconfigured / Missing Key -> Orange */}
+              {apiStatus === 'unconfigured' && (
+                <span 
+                  className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-[#2e2316] text-[#e09f3e] border border-[#53391d]"
+                  title="No API key configured in browser settings or .env.local"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#e09f3e]" />
+                  No API Key (Setup Required)
+                </span>
+              )}
+
+              {/* 3. Invalid Key / Connection Failed -> Red */}
+              {apiStatus === 'error' && (
+                <span 
+                  className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-[#2d1f1f] text-[#eb5757] border border-[#4a2828]"
+                  title={apiErrorMessage || "Connection probe failed"}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#eb5757]" />
+                  {activeProviderInfo.name}: Connection Failed
+                </span>
+              )}
+
+              {/* 4. Probing / Testing -> Blue */}
+              {apiStatus === 'checking' && (
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-[#1c2430] text-[#58a6ff] border border-[#263850]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#58a6ff] animate-pulse" />
+                  Testing {activeProviderInfo.name}...
+                </span>
+              )}
+
               <button
                 type="button"
                 onClick={() => setSettingsOpen(true)}
@@ -311,7 +370,7 @@ export default function ScanPage() {
 
               <button
                 type="button"
-                onClick={handleCheckConnectionScanPage}
+                onClick={checkProviderStatus}
                 disabled={pinging}
                 className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded bg-[#262626] hover:bg-[#2e2e2e] border border-[#333333] text-[#cfcfcd] hover:text-white transition disabled:opacity-50"
                 title="Test API connection & ping latency"
@@ -435,11 +494,75 @@ export default function ScanPage() {
                 )}
               </div>
 
+              {/* Connection Status Callout Banners */}
+              {apiStatus === 'unconfigured' && (
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-lg bg-[#2e2316] border border-[#53391d] text-xs text-[#f1b854]">
+                  <div className="flex items-start gap-2.5">
+                    <AlertTriangle className="w-4 h-4 text-[#e09f3e] flex-shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-semibold text-white block">LLM API Connection Required:</span>
+                      <span className="text-[#d8c39f]">
+                        Pre-submission diagnostic scans require an active AI model to generate peer-review simulation and editorial triage. You can upload files or paste text now, but must configure an API key to run the scan.
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSettingsOpen(true)}
+                    className="px-3 py-1.5 rounded bg-[#3d2f1f] hover:bg-[#4d3b26] text-white font-medium text-xs border border-[#6b4a26] transition whitespace-nowrap self-start sm:self-auto"
+                  >
+                    Configure AI Settings
+                  </button>
+                </div>
+              )}
+
+              {apiStatus === 'error' && (
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-lg bg-[#2d1f1f] border border-[#4a2828] text-xs text-[#ff9999]">
+                  <div className="flex items-start gap-2.5">
+                    <AlertCircle className="w-4 h-4 text-[#eb5757] flex-shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-semibold text-white block">API Key Not Working / Unreachable:</span>
+                      <span className="font-mono text-[11px] text-[#ffb3b3] block mt-0.5 break-words">
+                        {apiErrorMessage || "Unable to communicate with the configured model. Please verify your credentials."}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 self-start sm:self-auto flex-shrink-0">
+                    <button
+                      type="button"
+                      onClick={checkProviderStatus}
+                      className="px-2.5 py-1.5 rounded bg-[#382323] hover:bg-[#472b2b] text-white font-medium text-xs border border-[#5c3333] transition whitespace-nowrap"
+                    >
+                      Retry Ping
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSettingsOpen(true)}
+                      className="px-3 py-1.5 rounded bg-[#4a2828] hover:bg-[#5a3232] text-white font-medium text-xs border border-[#6e3b3b] transition whitespace-nowrap"
+                    >
+                      Fix in Settings
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {apiStatus === 'checking' && (
+                <div className="p-3 rounded-lg bg-[#1c2430] border border-[#263850] text-xs text-[#8cb4f5] flex items-center gap-2">
+                  <RefreshCw className="w-4 h-4 animate-spin text-[#58a6ff] flex-shrink-0" />
+                  <span>Verifying LLM API connection status...</span>
+                </div>
+              )}
+
               {/* Submit Action */}
               <button
                 type="submit"
-                disabled={loading}
-                className="w-full py-3 px-4 rounded-lg bg-[#252525] hover:bg-[#2d2d2d] disabled:opacity-50 text-white font-medium text-xs sm:text-sm border border-[#3d3d3d] hover:border-[#555555] active:scale-[0.99] transition flex items-center justify-center gap-2 shadow-sm"
+                disabled={loading || apiStatus !== 'connected'}
+                className={`w-full py-3 px-4 rounded-lg font-medium text-xs sm:text-sm border transition flex items-center justify-center gap-2 shadow-sm ${
+                  apiStatus === 'connected' && !loading
+                    ? "bg-[#252525] hover:bg-[#2d2d2d] text-white border-[#3d3d3d] hover:border-[#555555] active:scale-[0.99] cursor-pointer"
+                    : "bg-[#1c1c1c] text-[#6b6a67] border-[#2c2c2c] opacity-60 cursor-not-allowed"
+                }`}
+                title={apiStatus !== 'connected' ? "Valid LLM API connection required to run diagnostic scan" : "Run Pre-Submission Diagnostic Scan"}
               >
                 {loading ? (
                   <>
@@ -448,7 +571,7 @@ export default function ScanPage() {
                   </>
                 ) : (
                   <>
-                    <Sparkles className="w-4 h-4 text-emerald-400" />
+                    <Sparkles className={`w-4 h-4 ${apiStatus === 'connected' ? "text-emerald-400" : "text-[#6b6a67]"}`} />
                     <span>Run Pre-Submission Diagnostic Scan</span>
                   </>
                 )}
