@@ -101,20 +101,20 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="pt-6 border-t border-[#eaeaea] flex flex-col sm:flex-row items-center justify-between gap-3 text-[#888888] text-[11px]">
+        <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-neutral-400 text-[11px]">
           <div className="flex flex-wrap items-center gap-4">
             <span>&copy; 2026 ManuView. Dedicated to open scientific inquiry.</span>
-            <span className="hover:text-neutral-200 cursor-pointer transition">Do Not Share My Info</span>
-            <span className="hover:text-neutral-200 cursor-pointer transition">Cookie settings</span>
+            <span className="hover:text-neutral-200 cursor-pointer transition">Zero Data Retention</span>
+            <span className="hover:text-neutral-200 cursor-pointer transition">MIT Open Source</span>
           </div>
 
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1 text-neutral-400">
               <span>Made with</span>
-              <Heart className="w-3 h-3 text-red-500 fill-red-500 inline" />
+              <Heart className="w-3 h-3 text-rose-500 fill-rose-500 inline" />
               <span>for science</span>
             </div>
-            <span className="px-2 py-0.5 rounded border border-[#ddddda] bg-white text-[#555555] font-medium text-[10px]">
+            <span className="px-2 py-0.5 rounded border border-white/10 bg-white/[0.05] text-neutral-300 font-medium text-[10px]">
               🌐 English (US)
             </span>
           </div>

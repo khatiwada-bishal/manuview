@@ -332,7 +332,7 @@ export default function ScanPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0A0B0E] text-white py-8 sm:py-12 print:bg-white print:p-0">
+    <div className="min-h-screen bg-[#08090D] text-white py-8 sm:py-12 print:bg-white print:p-0 aura-bg-gradient aura-grid-pattern">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 print:max-w-none print:p-0">
         
         {/* Top Breadcrumb & Page Controls */}
@@ -348,15 +348,15 @@ export default function ScanPage() {
           <button
             type="button"
             onClick={() => setSettingsOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#12151B] hover:bg-[#181D26] border border-white/10 text-xs text-neutral-300 hover:text-white transition cursor-pointer"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 text-xs text-neutral-300 hover:text-white transition shadow-sm cursor-pointer"
           >
-            <Settings className="w-3.5 h-3.5" />
+            <Settings className="w-3.5 h-3.5 text-neutral-400" />
             <span>{activeProviderInfo.name}</span>
           </button>
         </div>
 
-        {/* Workspace Card Container (White Paper Sheet on Dark Canvas) */}
-        <div className="rounded-2xl border border-[#EBEBEA] bg-white text-[#2F3437] shadow-2xl p-6 sm:p-10 print:border-none print:shadow-none print:p-0 print:rounded-none">
+        {/* Workspace Card Container (Elevated White Paper Sheet on Dark Canvas) */}
+        <div className="aura-paper-sheet rounded-2xl p-6 sm:p-10 shadow-[0_35px_90px_-15px_rgba(0,0,0,0.85),0_0_0_1px_rgba(255,255,255,0.08)] print:border-none print:shadow-none print:p-0 print:rounded-none">
         
 
 

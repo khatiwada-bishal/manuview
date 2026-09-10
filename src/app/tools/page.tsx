@@ -78,15 +78,15 @@ export default function ToolsIndexPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white text-[#2F3437] py-14">
+    <div className="min-h-screen bg-[#08090D] text-white py-14 aura-bg-gradient aura-grid-pattern">
       <div className="mx-auto max-w-5xl px-4 sm:px-6">
         <div className="text-center max-w-xl mx-auto mb-14">
           <div className="text-4xl mb-3 select-none">🧰</div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-[#F7F7F5] text-[#787774] border border-[#EBEBEA] mb-3">
-            <Sliders className="w-3.5 h-3.5 text-[#0A85EA]" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-white/[0.06] text-neutral-300 border border-white/10 mb-3 shadow-sm">
+            <Sliders className="w-3.5 h-3.5 text-emerald-400" />
             <span>100% Free Research Utilities</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-[#2F3437] tracking-tight mb-3 font-serif">
+          <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-3 font-serif">
             Single-Purpose Submission Tools
           </h1>
           <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed">
@@ -94,37 +94,37 @@ export default function ToolsIndexPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-14">
           {tools.map((t) => {
             const Icon = t.icon;
             return (
               <Link
                 key={t.id}
                 href={t.href}
-                className="group flex flex-col justify-between p-5 rounded-xl bg-white border border-[#EBEBEA] hover:border-[#D0D0CE] hover:shadow-sm transition"
+                className="group flex flex-col justify-between p-6 rounded-2xl bg-white text-[#111827] border border-[#E5E7EB] shadow-xl hover:shadow-2xl hover:border-neutral-300 transition"
               >
                 <div>
-                  <div className="flex items-center justify-between mb-3.5">
-                    <div className="p-2.5 rounded-lg bg-[#EBF3FB] text-[#18569C]">
-                      <Icon className="w-4 h-4" />
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="p-2.5 rounded-xl bg-[#EBF3FB] text-[#1D4ED8]">
+                      <Icon className="w-5 h-5" />
                     </div>
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-[#F7F7F5] text-[#787774] border border-[#EBEBEA] font-medium">
+                    <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-md bg-[#F9FAFB] text-[#4B5563] border border-[#E5E7EB] font-medium">
                       {t.runtime}
                     </span>
                   </div>
 
-                  <span className="text-[11px] font-semibold text-[#18569C] block mb-1">
+                  <span className="text-[11px] font-semibold text-[#1D4ED8] block mb-1">
                     {t.badge}
                   </span>
-                  <h3 className="text-sm font-bold text-[#2F3437] mb-1.5 group-hover:text-[#0A85EA] transition">
+                  <h3 className="text-base font-bold text-[#111827] mb-2 group-hover:text-[#2563EB] transition">
                     {t.title}
                   </h3>
-                  <p className="text-xs text-[#787774] leading-relaxed mb-4">
+                  <p className="text-xs text-[#4B5563] leading-relaxed mb-4">
                     {t.description}
                   </p>
                 </div>
 
-                <div className="flex items-center gap-1 text-xs font-semibold text-[#18569C] group-hover:translate-x-0.5 transition-transform pt-2 border-t border-[#EBEBEA]">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-[#1D4ED8] group-hover:translate-x-1 transition-transform pt-3 border-t border-[#E5E7EB]">
                   <span>Open tool</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </div>
@@ -133,22 +133,22 @@ export default function ToolsIndexPage() {
           })}
         </div>
 
-        {/* Banner to Full Scan in Notion Callout style */}
-        <div className="p-6 rounded-2xl bg-[#12151B] border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xs">
-          <div className="flex items-start gap-3.5">
-            <span className="text-2xl select-none">📄</span>
+        {/* Banner to Full Scan in Frosted Glass style */}
+        <div className="p-6 sm:p-7 rounded-2xl aura-glass border border-white/15 flex flex-col sm:flex-row items-center justify-between gap-5 shadow-2xl">
+          <div className="flex items-start gap-4">
+            <span className="text-3xl select-none">📄</span>
             <div>
-              <h3 className="text-sm font-bold text-white mb-0.5">
+              <h3 className="text-base font-bold text-white mb-1">
                 Need a comprehensive pre-submission diagnostic?
               </h3>
-              <p className="text-xs text-[#787774]">
+              <p className="text-xs text-neutral-400 leading-relaxed">
                 The Pre-Submission Scan evaluates claims, statistics, controls, and 4 reviewer personas in one pass.
               </p>
             </div>
           </div>
           <Link
             href="/scan"
-            className="flex-shrink-0 px-4 py-2 rounded-lg bg-white hover:bg-neutral-200 text-black font-semibold text-xs font-medium shadow-xs transition"
+            className="flex-shrink-0 px-5 py-2.5 rounded-lg bg-white hover:bg-neutral-200 text-black font-semibold text-xs shadow-md transition active:scale-[0.98]"
           >
             Run Pre-Submission Scan &rarr;
           </Link>

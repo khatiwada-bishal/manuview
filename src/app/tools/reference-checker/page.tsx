@@ -51,24 +51,24 @@ export default function ReferenceCheckerPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#090d16] text-slate-100 py-12">
+    <div className="min-h-screen bg-[#08090D] text-white py-12 aura-bg-gradient aura-grid-pattern">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <div className="mb-10 text-center max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-300 border border-blue-500/20 mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-white/[0.06] text-neutral-300 border border-white/10 shadow-sm mb-3">
             <CheckCircle2 className="w-3.5 h-3.5" />
             Live Crossref &amp; Retraction Watch Audit
           </div>
           <h1 className="text-3xl font-serif font-bold text-white mb-2">
             Reference &amp; Retraction Checker
           </h1>
-          <p className="text-slate-400 text-xs">
+          <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed">
             Checks each cited paper against official Crossref metadata and Retraction Watch. Catch unresolvable AI hallucinations before editors do.
           </p>
         </div>
 
-        <div className="rounded-2xl bg-slate-900/60 border border-slate-800 p-6 shadow-xl mb-10">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
-            <span className="text-xs font-semibold text-slate-300">Paste Bibliography / DOIs</span>
+        <div className="aura-paper-sheet rounded-2xl p-6 sm:p-8 shadow-2xl mb-10 text-[#111827]">
+          <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-3 mb-4">
+            <span className="text-xs font-semibold text-[#111827]">Paste Bibliography / DOIs</span>
             <button
               type="button"
               onClick={handleSample}
@@ -84,7 +84,7 @@ export default function ReferenceCheckerPage() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Paste your references (BibTeX, plain text, or DOIs)..."
-              className="w-full p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-blue-500 font-mono"
+              className="w-full p-3 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-mono"
             />
 
             {error && (
@@ -97,7 +97,7 @@ export default function ReferenceCheckerPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-semibold text-xs shadow-lg transition flex items-center justify-center gap-2"
+              className="w-full py-3 rounded-xl bg-black hover:bg-neutral-800 disabled:opacity-50 text-white font-semibold text-xs shadow-lg transition flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -119,19 +119,19 @@ export default function ReferenceCheckerPage() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-center">
                 <div className="text-2xl font-bold font-serif text-white">{results.total}</div>
-                <div className="text-xs text-slate-400">Total Parsed</div>
+                <div className="text-xs text-[#6B7280]">Total Parsed</div>
               </div>
               <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-center">
                 <div className={`text-2xl font-bold font-serif ${results.retractedCount > 0 ? "text-rose-400" : "text-emerald-400"}`}>
                   {results.retractedCount}
                 </div>
-                <div className="text-xs text-slate-400">Retracted Literature</div>
+                <div className="text-xs text-[#6B7280]">Retracted Literature</div>
               </div>
               <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-center">
                 <div className={`text-2xl font-bold font-serif ${results.unresolvableCount > 0 ? "text-amber-400" : "text-emerald-400"}`}>
                   {results.unresolvableCount}
                 </div>
-                <div className="text-xs text-slate-400">Unresolvable / AI Risk</div>
+                <div className="text-xs text-[#6B7280]">Unresolvable / AI Risk</div>
               </div>
             </div>
 
@@ -140,7 +140,7 @@ export default function ReferenceCheckerPage() {
                 <div key={idx} className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
                   <div className="space-y-1 max-w-xl">
                     <div className="text-slate-200 font-medium">{v.title || v.raw}</div>
-                    <div className="text-[11px] text-slate-400 flex items-center gap-2">
+                    <div className="text-[11px] text-[#6B7280] flex items-center gap-2">
                       {v.doi && <span>DOI: {v.doi}</span>}
                       {v.journal && <span>&bull; {v.journal}</span>}
                       {v.year && <span>&bull; {v.year}</span>}

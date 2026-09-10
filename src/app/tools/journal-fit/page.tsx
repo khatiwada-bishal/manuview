@@ -48,24 +48,24 @@ export default function JournalFitPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#090d16] text-slate-100 py-12">
+    <div className="min-h-screen bg-[#08090D] text-white py-12 aura-bg-gradient aura-grid-pattern">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <div className="mb-10 text-center max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-white/[0.06] text-neutral-300 border border-white/10 shadow-sm mb-3">
             <BookOpen className="w-3.5 h-3.5" />
             Journal Fit Predictor
           </div>
           <h1 className="text-3xl font-serif font-bold text-white mb-2">
             Target Journal &amp; Backup Strategy
           </h1>
-          <p className="text-slate-400 text-xs">
+          <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed">
             Match your title and abstract against high-impact journals with editorial fit reasoning and desk-rejection hazards.
           </p>
         </div>
 
-        <div className="rounded-2xl bg-slate-900/60 border border-slate-800 p-6 shadow-xl mb-10">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
-            <span className="text-xs font-semibold text-slate-300">Manuscript Details</span>
+        <div className="aura-paper-sheet rounded-2xl p-6 sm:p-8 shadow-2xl mb-10 text-[#111827]">
+          <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-3 mb-4">
+            <span className="text-xs font-semibold text-[#111827]">Manuscript Details</span>
             <button
               type="button"
               onClick={handleSample}
@@ -77,7 +77,7 @@ export default function JournalFitPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#374151] mb-1">
                 Manuscript Title
               </label>
               <input
@@ -85,12 +85,12 @@ export default function JournalFitPage() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. Single-cell transcriptional profiling of..."
-                className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-emerald-500"
+                className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-emerald-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#374151] mb-1">
                 Abstract
               </label>
               <textarea
@@ -98,7 +98,7 @@ export default function JournalFitPage() {
                 value={abstract}
                 onChange={(e) => setAbstract(e.target.value)}
                 placeholder="Paste abstract here..."
-                className="w-full p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-emerald-500"
+                className="w-full p-3 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-emerald-500"
               />
             </div>
 
@@ -112,7 +112,7 @@ export default function JournalFitPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-semibold text-xs shadow-lg transition flex items-center justify-center gap-2"
+              className="w-full py-3 rounded-xl bg-black hover:bg-neutral-800 disabled:opacity-50 text-white font-semibold text-xs shadow-lg transition flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -134,16 +134,16 @@ export default function JournalFitPage() {
             <h3 className="text-base font-serif font-bold text-white">Recommended Venue Tiers</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Reach */}
-              <div className="p-5 rounded-2xl bg-slate-900/50 border border-slate-800 flex flex-col justify-between">
+              <div className="p-5 rounded-2xl bg-white border border-[#E5E7EB] shadow-lg text-[#111827] flex flex-col justify-between">
                 <div>
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 uppercase">
                     Reach Tier
                   </span>
                   <h4 className="text-lg font-serif font-bold text-white mt-2 mb-1">{results.reach.name}</h4>
-                  <div className="text-xs text-slate-400 mb-3">Impact Factor: {results.reach.impactFactor} &bull; {results.reach.publisher}</div>
+                  <div className="text-xs text-[#6B7280] mb-3">Impact Factor: {results.reach.impactFactor} &bull; {results.reach.publisher}</div>
                   <p className="text-xs text-slate-300 leading-relaxed mb-4">{results.reach.aimsAndScope}</p>
                 </div>
-                <div className="p-3 rounded-xl bg-slate-950 text-[11px] text-rose-300/90 border border-slate-800">
+                <div className="p-3 rounded-xl bg-[#F9FAFB] text-[11px] text-rose-300/90 border border-slate-800">
                   <span className="font-semibold block mb-0.5 text-rose-400">Desk-Reject Hazard:</span>
                   {results.reach.deskRejectHazards[0]}
                 </div>
@@ -156,26 +156,26 @@ export default function JournalFitPage() {
                     Realistic Match
                   </span>
                   <h4 className="text-lg font-serif font-bold text-white mt-2 mb-1">{results.realistic.name}</h4>
-                  <div className="text-xs text-slate-400 mb-3">Impact Factor: {results.realistic.impactFactor} &bull; {results.realistic.publisher}</div>
+                  <div className="text-xs text-[#6B7280] mb-3">Impact Factor: {results.realistic.impactFactor} &bull; {results.realistic.publisher}</div>
                   <p className="text-xs text-slate-300 leading-relaxed mb-4">{results.realistic.aimsAndScope}</p>
                 </div>
-                <div className="p-3 rounded-xl bg-slate-950 text-[11px] text-amber-300/90 border border-slate-800">
+                <div className="p-3 rounded-xl bg-[#F9FAFB] text-[11px] text-amber-300/90 border border-slate-800">
                   <span className="font-semibold block mb-0.5 text-amber-400">Reviewer Expectation:</span>
                   {results.realistic.keyExpectations[0]}
                 </div>
               </div>
 
               {/* Fallback */}
-              <div className="p-5 rounded-2xl bg-slate-900/50 border border-slate-800 flex flex-col justify-between">
+              <div className="p-5 rounded-2xl bg-white border border-[#E5E7EB] shadow-lg text-[#111827] flex flex-col justify-between">
                 <div>
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 uppercase">
                     Safe Harbor / Fallback
                   </span>
                   <h4 className="text-lg font-serif font-bold text-white mt-2 mb-1">{results.fallback.name}</h4>
-                  <div className="text-xs text-slate-400 mb-3">Impact Factor: {results.fallback.impactFactor} &bull; {results.fallback.publisher}</div>
+                  <div className="text-xs text-[#6B7280] mb-3">Impact Factor: {results.fallback.impactFactor} &bull; {results.fallback.publisher}</div>
                   <p className="text-xs text-slate-300 leading-relaxed mb-4">{results.fallback.aimsAndScope}</p>
                 </div>
-                <div className="p-3 rounded-xl bg-slate-950 text-[11px] text-slate-300 border border-slate-800">
+                <div className="p-3 rounded-xl bg-[#F9FAFB] text-[11px] text-slate-300 border border-slate-800">
                   <span className="font-semibold block mb-0.5 text-emerald-400">Acceptance Rate:</span>
                   {results.fallback.acceptanceRate}
                 </div>

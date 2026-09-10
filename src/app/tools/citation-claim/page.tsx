@@ -56,24 +56,24 @@ export default function CitationClaimPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#090d16] text-slate-100 py-12">
+    <div className="min-h-screen bg-[#08090D] text-white py-12 aura-bg-gradient aura-grid-pattern">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         <div className="mb-10 text-center max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-300 border border-amber-500/20 mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-white/[0.06] text-neutral-300 border border-white/10 shadow-sm mb-3">
             <Sparkles className="w-3.5 h-3.5" />
             Citation Claim Alignment
           </div>
           <h1 className="text-3xl font-serif font-bold text-white mb-2">
             Citation Claim Validator
           </h1>
-          <p className="text-slate-400 text-xs">
+          <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed">
             Does the paper you cited actually support your assertion? We fetch the paper&apos;s abstract via OpenAlex and audit the claim against the real evidence.
           </p>
         </div>
 
-        <div className="rounded-2xl bg-slate-900/60 border border-slate-800 p-6 shadow-xl mb-10">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
-            <span className="text-xs font-semibold text-slate-300">Test Claim vs. Citation</span>
+        <div className="aura-paper-sheet rounded-2xl p-6 sm:p-8 shadow-2xl mb-10 text-[#111827]">
+          <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-3 mb-4">
+            <span className="text-xs font-semibold text-[#111827]">Test Claim vs. Citation</span>
             <button
               type="button"
               onClick={handleSample}
@@ -85,7 +85,7 @@ export default function CitationClaimPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#374151] mb-1">
                 Manuscript Sentence
               </label>
               <textarea
@@ -93,12 +93,12 @@ export default function CitationClaimPage() {
                 value={sentence}
                 onChange={(e) => setSentence(e.target.value)}
                 placeholder="e.g. Factor X has been proven to trigger phenotype Y in patients..."
-                className="w-full p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-amber-500 font-serif"
+                className="w-full p-3 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-amber-500 font-serif"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#374151] mb-1">
                 Cited DOI
               </label>
               <input
@@ -106,7 +106,7 @@ export default function CitationClaimPage() {
                 value={doi}
                 onChange={(e) => setDoi(e.target.value)}
                 placeholder="e.g. 10.1126/scitranslmed.aac9459"
-                className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-amber-500 font-mono"
+                className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-amber-500 font-mono"
               />
             </div>
 
@@ -120,7 +120,7 @@ export default function CitationClaimPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-slate-950 font-bold text-xs shadow-lg transition flex items-center justify-center gap-2"
+              className="w-full py-3 rounded-xl bg-black hover:bg-neutral-800 disabled:opacity-50 text-slate-950 font-bold text-xs shadow-lg transition flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -139,9 +139,9 @@ export default function CitationClaimPage() {
 
         {result && (
           <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-3">
               <div>
-                <span className="text-xs text-slate-400">Cited Paper:</span>
+                <span className="text-xs text-[#6B7280]">Cited Paper:</span>
                 <h4 className="text-sm font-semibold text-white">{result.paperTitle || doi}</h4>
               </div>
               <span className={`px-3 py-1 rounded-full text-xs font-bold ${

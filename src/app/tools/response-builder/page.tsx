@@ -65,24 +65,24 @@ export default function ResponseBuilderPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#090d16] text-slate-100 py-12">
+    <div className="min-h-screen bg-[#08090D] text-white py-12 aura-bg-gradient aura-grid-pattern">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <div className="mb-10 text-center max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-300 border border-rose-500/20 mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-white/[0.06] text-neutral-300 border border-white/10 shadow-sm mb-3">
             <Users className="w-3.5 h-3.5" />
             Rebuttal &amp; Revision Matrix
           </div>
           <h1 className="text-3xl font-serif font-bold text-white mb-2">
             Response to Reviewers Workspace
           </h1>
-          <p className="text-slate-400 text-xs">
+          <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed">
             Turn an unstructured decision letter into an itemized point-by-point rebuttal table, revision checklist, and polite draft responses.
           </p>
         </div>
 
-        <div className="rounded-2xl bg-slate-900/60 border border-slate-800 p-6 shadow-xl mb-10">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
-            <span className="text-xs font-semibold text-slate-300">Paste Reviewer Comments</span>
+        <div className="aura-paper-sheet rounded-2xl p-6 sm:p-8 shadow-2xl mb-10 text-[#111827]">
+          <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-3 mb-4">
+            <span className="text-xs font-semibold text-[#111827]">Paste Reviewer Comments</span>
             <button
               type="button"
               onClick={handleSample}
@@ -98,7 +98,7 @@ export default function ResponseBuilderPage() {
               value={letterText}
               onChange={(e) => setLetterText(e.target.value)}
               placeholder="Paste editor decision letter and reviewer comments..."
-              className="w-full p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-rose-500 font-mono"
+              className="w-full p-3 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-rose-500 font-mono"
             />
 
             {error && (
@@ -111,7 +111,7 @@ export default function ResponseBuilderPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-rose-600 hover:bg-rose-500 disabled:opacity-50 text-white font-semibold text-xs shadow-lg transition flex items-center justify-center gap-2"
+              className="w-full py-3 rounded-xl bg-black hover:bg-neutral-800 disabled:opacity-50 text-white font-semibold text-xs shadow-lg transition flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -151,7 +151,7 @@ export default function ResponseBuilderPage() {
 
                     <button
                       onClick={() => handleCopyItem(item.draftResponse, idx)}
-                      className="flex items-center gap-1 text-xs text-slate-400 hover:text-white transition"
+                      className="flex items-center gap-1 text-xs text-[#6B7280] hover:text-white transition"
                     >
                       {copiedIdx === idx ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                       <span>{copiedIdx === idx ? "Copied" : "Copy Rebuttal"}</span>

@@ -45,17 +45,17 @@ export default function PrismaPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#090d16] text-slate-100 py-12">
+    <div className="min-h-screen bg-[#08090D] text-white py-12 aura-bg-gradient aura-grid-pattern">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="mb-10 text-center max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-purple-500/10 text-purple-300 border border-purple-500/20 mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-white/[0.06] text-neutral-300 border border-white/10 shadow-sm mb-3">
             <Layers className="w-3.5 h-3.5" />
             Systematic Review Standard
           </div>
           <h1 className="text-3xl font-serif font-bold text-white mb-2">
             PRISMA 2020 Flow Diagram Generator
           </h1>
-          <p className="text-slate-400 text-xs">
+          <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed">
             Enter screening and eligibility numbers. The generator reconciles arithmetic across stages and generates an editable, publication-ready SVG.
           </p>
         </div>
@@ -80,7 +80,7 @@ export default function PrismaPage() {
                 setAssessed(expAss);
                 setIncluded(expAss - Number(excludedEligibility));
               }}
-              className="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold text-[11px] transition whitespace-nowrap"
+              className="px-3 py-1.5 rounded-xl bg-black hover:bg-neutral-800 text-slate-950 font-bold text-[11px] transition whitespace-nowrap"
             >
               Auto-Reconcile Math
             </button>
@@ -95,110 +95,110 @@ export default function PrismaPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Inputs Column */}
           <div className="space-y-6 bg-slate-900/60 border border-slate-800 p-6 rounded-2xl h-fit">
-            <h3 className="text-sm font-semibold text-white border-b border-slate-800 pb-3">
+            <h3 className="text-sm font-semibold text-white border-b border-[#E5E7EB] pb-3">
               1. Identification &amp; Duplicates
             </h3>
             <div className="space-y-3 text-xs">
               <div>
-                <label className="block text-slate-400 mb-1">Databases identified (n):</label>
+                <label className="block text-[#374151] mb-1">Databases identified (n):</label>
                 <input
                   type="number"
                   value={dbIdentified}
                   onChange={(e) => setDbIdentified(Number(e.target.value))}
-                  className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-white"
+                  className="w-full px-3 py-1.5 rounded-lg bg-white border border-[#D1D5DB] text-[#111827]"
                 />
               </div>
               <div>
-                <label className="block text-slate-400 mb-1">Registers identified (n):</label>
+                <label className="block text-[#374151] mb-1">Registers identified (n):</label>
                 <input
                   type="number"
                   value={registersIdentified}
                   onChange={(e) => setRegistersIdentified(Number(e.target.value))}
-                  className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-white"
+                  className="w-full px-3 py-1.5 rounded-lg bg-white border border-[#D1D5DB] text-[#111827]"
                 />
               </div>
               <div>
-                <label className="block text-slate-400 mb-1">Duplicates removed (n):</label>
+                <label className="block text-[#374151] mb-1">Duplicates removed (n):</label>
                 <input
                   type="number"
                   value={duplicatesRemoved}
                   onChange={(e) => setDuplicatesRemoved(Number(e.target.value))}
-                  className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-white"
+                  className="w-full px-3 py-1.5 rounded-lg bg-white border border-[#D1D5DB] text-[#111827]"
                 />
               </div>
             </div>
 
-            <h3 className="text-sm font-semibold text-white border-b border-slate-800 pb-3 pt-2">
+            <h3 className="text-sm font-semibold text-white border-b border-[#E5E7EB] pb-3 pt-2">
               2. Screening &amp; Retrieval
             </h3>
             <div className="space-y-3 text-xs">
               <div>
-                <label className="block text-slate-400 mb-1">Records screened (n):</label>
+                <label className="block text-[#374151] mb-1">Records screened (n):</label>
                 <input
                   type="number"
                   value={screened}
                   onChange={(e) => setScreened(Number(e.target.value))}
-                  className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-white"
+                  className="w-full px-3 py-1.5 rounded-lg bg-white border border-[#D1D5DB] text-[#111827]"
                 />
               </div>
               <div>
-                <label className="block text-slate-400 mb-1">Records excluded (n):</label>
+                <label className="block text-[#374151] mb-1">Records excluded (n):</label>
                 <input
                   type="number"
                   value={screenExcluded}
                   onChange={(e) => setScreenExcluded(Number(e.target.value))}
-                  className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-white"
+                  className="w-full px-3 py-1.5 rounded-lg bg-white border border-[#D1D5DB] text-[#111827]"
                 />
               </div>
               <div>
-                <label className="block text-slate-400 mb-1">Reports sought (n):</label>
+                <label className="block text-[#374151] mb-1">Reports sought (n):</label>
                 <input
                   type="number"
                   value={sought}
                   onChange={(e) => setSought(Number(e.target.value))}
-                  className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-white"
+                  className="w-full px-3 py-1.5 rounded-lg bg-white border border-[#D1D5DB] text-[#111827]"
                 />
               </div>
               <div>
-                <label className="block text-slate-400 mb-1">Reports not retrieved (n):</label>
+                <label className="block text-[#374151] mb-1">Reports not retrieved (n):</label>
                 <input
                   type="number"
                   value={notRetrieved}
                   onChange={(e) => setNotRetrieved(Number(e.target.value))}
-                  className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-white"
+                  className="w-full px-3 py-1.5 rounded-lg bg-white border border-[#D1D5DB] text-[#111827]"
                 />
               </div>
             </div>
 
-            <h3 className="text-sm font-semibold text-white border-b border-slate-800 pb-3 pt-2">
+            <h3 className="text-sm font-semibold text-white border-b border-[#E5E7EB] pb-3 pt-2">
               3. Eligibility &amp; Included
             </h3>
             <div className="space-y-3 text-xs">
               <div>
-                <label className="block text-slate-400 mb-1">Reports assessed (n):</label>
+                <label className="block text-[#374151] mb-1">Reports assessed (n):</label>
                 <input
                   type="number"
                   value={assessed}
                   onChange={(e) => setAssessed(Number(e.target.value))}
-                  className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-white"
+                  className="w-full px-3 py-1.5 rounded-lg bg-white border border-[#D1D5DB] text-[#111827]"
                 />
               </div>
               <div>
-                <label className="block text-slate-400 mb-1">Reports excluded with reason (n):</label>
+                <label className="block text-[#374151] mb-1">Reports excluded with reason (n):</label>
                 <input
                   type="number"
                   value={excludedEligibility}
                   onChange={(e) => setExcludedEligibility(Number(e.target.value))}
-                  className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-white"
+                  className="w-full px-3 py-1.5 rounded-lg bg-white border border-[#D1D5DB] text-[#111827]"
                 />
               </div>
               <div>
-                <label className="block text-slate-400 mb-1">Studies included in review (n):</label>
+                <label className="block text-[#374151] mb-1">Studies included in review (n):</label>
                 <input
                   type="number"
                   value={included}
                   onChange={(e) => setIncluded(Number(e.target.value))}
-                  className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-white"
+                  className="w-full px-3 py-1.5 rounded-lg bg-white border border-[#D1D5DB] text-[#111827]"
                 />
               </div>
             </div>
@@ -207,10 +207,10 @@ export default function PrismaPage() {
           {/* Diagram Preview Column */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-300">Live PRISMA 2020 SVG Diagram</span>
+              <span className="text-xs font-semibold text-[#111827]">Live PRISMA 2020 SVG Diagram</span>
               <button
                 onClick={handleDownloadSVG}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold text-xs shadow-lg transition"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-black hover:bg-neutral-800 text-white font-semibold text-xs shadow-lg transition"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Export SVG</span>

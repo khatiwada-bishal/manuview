@@ -64,24 +64,24 @@ export default function CoverLetterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#090d16] text-slate-100 py-12">
+    <div className="min-h-screen bg-[#08090D] text-white py-12 aura-bg-gradient aura-grid-pattern">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         <div className="mb-10 text-center max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-teal-500/10 text-teal-300 border border-teal-500/20 mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-white/[0.06] text-neutral-300 border border-white/10 shadow-sm mb-3">
             <FileText className="w-3.5 h-3.5" />
             Editor-Calibrated Submissions
           </div>
           <h1 className="text-3xl font-serif font-bold text-white mb-2">
             Journal Cover Letter Generator
           </h1>
-          <p className="text-slate-400 text-xs">
+          <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed">
             Generate an editor-ready formal submission letter highlighting why your paper matters to the journal&apos;s specific readership.
           </p>
         </div>
 
-        <div className="rounded-2xl bg-slate-900/60 border border-slate-800 p-6 shadow-xl mb-10">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
-            <span className="text-xs font-semibold text-slate-300">Letter Specifications</span>
+        <div className="aura-paper-sheet rounded-2xl p-6 sm:p-8 shadow-2xl mb-10 text-[#111827]">
+          <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-3 mb-4">
+            <span className="text-xs font-semibold text-[#111827]">Letter Specifications</span>
             <button
               type="button"
               onClick={handleSample}
@@ -94,7 +94,7 @@ export default function CoverLetterPage() {
           <form onSubmit={handleGenerate} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#374151] mb-1">
                   Manuscript Title
                 </label>
                 <input
@@ -102,12 +102,12 @@ export default function CoverLetterPage() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. Single-cell transcriptional..."
-                  className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-teal-500"
+                  className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-teal-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#374151] mb-1">
                   Target Journal
                 </label>
                 <input
@@ -115,13 +115,13 @@ export default function CoverLetterPage() {
                   value={targetJournal}
                   onChange={(e) => setTargetJournal(e.target.value)}
                   placeholder="e.g. Nature Communications, Cell"
-                  className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-teal-500"
+                  className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-teal-500"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#374151] mb-1">
                 Primary Findings &amp; Evidence
               </label>
               <textarea
@@ -129,12 +129,12 @@ export default function CoverLetterPage() {
                 value={mainFindings}
                 onChange={(e) => setMainFindings(e.target.value)}
                 placeholder="What was discovered? What experimental proof was provided?"
-                className="w-full p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-teal-500"
+                className="w-full p-3 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-teal-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#374151] mb-1">
                 Broader Impact / Fit with Journal Readership
               </label>
               <textarea
@@ -142,7 +142,7 @@ export default function CoverLetterPage() {
                 value={broadSignificance}
                 onChange={(e) => setBroadSignificance(e.target.value)}
                 placeholder="Why should the journal's audience care about this today?"
-                className="w-full p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-teal-500"
+                className="w-full p-3 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-teal-500"
               />
             </div>
 
@@ -156,7 +156,7 @@ export default function CoverLetterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-white font-semibold text-xs shadow-lg transition flex items-center justify-center gap-2"
+              className="w-full py-3 rounded-xl bg-black hover:bg-neutral-800 disabled:opacity-50 text-white font-semibold text-xs shadow-lg transition flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -175,7 +175,7 @@ export default function CoverLetterPage() {
 
         {letter && (
           <div className="rounded-2xl bg-slate-900/60 border border-slate-800 p-6 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-3">
               <span className="text-xs font-semibold text-white">Generated Cover Letter Draft</span>
               <button
                 onClick={handleCopy}
@@ -186,7 +186,7 @@ export default function CoverLetterPage() {
               </button>
             </div>
 
-            <div className="p-6 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 whitespace-pre-wrap font-serif leading-relaxed">
+            <div className="p-6 rounded-xl bg-white border border-[#D1D5DB] text-xs text-slate-300 whitespace-pre-wrap font-serif leading-relaxed">
               {letter}
             </div>
           </div>
