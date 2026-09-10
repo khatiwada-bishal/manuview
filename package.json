@@ -4,6 +4,8 @@
   "private": true,
   "description": "Free & Open-Source AI Pre-Submission Manuscript Review & Research Suite",
   "scripts": {
+    "clean": "node -e \"fs.rmSync('.next', { recursive: true, force: true })\"",
+    "predev": "npm run clean",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
