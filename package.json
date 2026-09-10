@@ -10,9 +10,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "tauri": "tauri",
-    "desktop:dev": "tauri dev",
-    "desktop:build": "tauri build"
+    "tauri": "PATH=\"$HOME/.cargo/bin:$PATH\" tauri",
+    "desktop:dev": "PATH=\"$HOME/.cargo/bin:$PATH\" tauri dev",
+    "desktop:build": "PATH=\"$HOME/.cargo/bin:$PATH\" tauri build"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.11.1",
