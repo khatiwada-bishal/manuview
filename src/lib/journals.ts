@@ -2,7 +2,7 @@ export interface JournalEntry {
   name: string;
   publisher: string;
   impactFactor: number;
-  discipline: 'Oncology' | 'Biomedicine' | 'Computer Science' | 'Clinical' | 'Neuroscience' | 'Multidisciplinary';
+  discipline: 'Oncology' | 'Biomedicine' | 'Computer Science' | 'Clinical' | 'Neuroscience' | 'Operations Research & Management' | 'Multidisciplinary';
   acceptanceRate: string;
   reviewSpeed: string;
   openAccess: 'Hybrid' | 'Gold OA' | 'Subscription';
@@ -566,6 +566,149 @@ export const JOURNAL_CATALOG: JournalEntry[] = [
     keyExpectations: [
       "High methodological rigor, comprehensive statistical transparency, and proper controls"
     ]
+  },
+  // ==========================================
+  // OPERATIONS RESEARCH & MANAGEMENT
+  // ==========================================
+  {
+    name: "European Journal of Operational Research",
+    publisher: "Elsevier",
+    impactFactor: 6.4,
+    discipline: "Operations Research & Management",
+    acceptanceRate: "12-15%",
+    reviewSpeed: "6-8 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes high-quality, original papers that contribute to the methodology of operational research (OR) and to the practice of decision making in management, economics, and engineering.",
+    deskRejectHazards: [
+      "Mathematical models without analytical proof of convexity or global optimality",
+      "Absence of managerial insights or practical decision-support value",
+      "Omission of realistic cost or emissions parameter benchmarking against recent literature"
+    ],
+    keyExpectations: [
+      "Rigorous mathematical formulation with clear optimality conditions",
+      "Thorough numerical experiments and sensitivity analysis under varying market conditions",
+      "Substantive discussion of operational and policy implications"
+    ]
+  },
+  {
+    name: "Journal of Cleaner Production",
+    publisher: "Elsevier",
+    impactFactor: 11.1,
+    discipline: "Operations Research & Management",
+    acceptanceRate: "14-16%",
+    reviewSpeed: "5-7 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Focuses on cleaner production, environmental and sustainability research, and supply chain closed-loop / circular economy systems.",
+    deskRejectHazards: [
+      "Theoretical modeling divorced from practical environmental regulation (carbon tax, cap-and-trade)",
+      "Lack of life-cycle or multi-source emissions accounting in reverse logistics",
+      "Incremental contribution over existing circular economy frameworks"
+    ],
+    keyExpectations: [
+      "Clear articulation of environmental emissions reduction mechanisms",
+      "Practical case study or multi-item numerical demonstration with policy insights",
+      "Direct relevance to sustainable development goals and industrial practice"
+    ]
+  },
+  {
+    name: "Transportation Research Part E: Logistics and Transportation Review",
+    publisher: "Elsevier",
+    impactFactor: 10.6,
+    discipline: "Operations Research & Management",
+    acceptanceRate: "10-13%",
+    reviewSpeed: "6-8 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes high-quality scholarly research in the fields of logistics, reverse supply chains, and freight transportation network optimization.",
+    deskRejectHazards: [
+      "Simplistic reverse logistics assumptions without closed-loop operational constraints",
+      "Lack of computational algorithmic benchmarking or convergence analysis",
+      "Insufficient comparison against recent supply chain carbon policy models"
+    ],
+    keyExpectations: [
+      "Advanced optimization modeling for multi-echelon or reverse logistics networks",
+      "Robust solution algorithms with proven computational efficiency",
+      "Rigorous sensitivity testing on regulatory policy parameters"
+    ]
+  },
+  {
+    name: "International Journal of Production Economics",
+    publisher: "Elsevier",
+    impactFactor: 12.0,
+    discipline: "Operations Research & Management",
+    acceptanceRate: "10-12%",
+    reviewSpeed: "6-9 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Focuses on the interface between engineering and management in manufacturing, inventory systems, sustainable production, and supply chain economics.",
+    deskRejectHazards: [
+      "Failure to model price-dependent demand or market equilibrium realistically",
+      "Lack of budget constraint analysis on green technology investments",
+      "Deterministic assumptions without sensitivity or robustness boundaries"
+    ],
+    keyExpectations: [
+      "Methodological rigor integrating economic profitability and environmental compliance",
+      "Comprehensive analytical derivations of decision variables",
+      "Managerial guidelines for industrial decision-makers"
+    ]
+  },
+  {
+    name: "Annals of Operations Research",
+    publisher: "Springer Nature",
+    impactFactor: 4.8,
+    discipline: "Operations Research & Management",
+    acceptanceRate: "18-22%",
+    reviewSpeed: "7-10 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes peer-reviewed original articles dealing with key aspects of operations research including theory, applications, and computational methods.",
+    deskRejectHazards: [
+      "Heuristic solution methods without optimality bounds or proofs",
+      "Absence of structured step-by-step algorithms",
+      "Superficial literature review omitting core foundational OR works"
+    ],
+    keyExpectations: [
+      "Detailed analytical proofs (KKT conditions, Hessian matrix positive-definiteness)",
+      "Structured algorithm presentation with pseudo-code and parameter tables",
+      "Comparative numerical analysis"
+    ]
+  },
+  {
+    name: "Opsearch",
+    publisher: "Springer (Operational Research Society of India)",
+    impactFactor: 1.4,
+    discipline: "Operations Research & Management",
+    acceptanceRate: "20-25%",
+    reviewSpeed: "6-8 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "The official journal of the Operational Research Society of India, publishing theoretical, computational, and applied developments across operations research, inventory theory, and optimization.",
+    deskRejectHazards: [
+      "Lack of sufficient mathematical rigor or missing second-order sufficiency conditions",
+      "Unclear notation or undefined decision variables in model development",
+      "Failure to benchmark against classic inventory and carbon policy literature"
+    ],
+    keyExpectations: [
+      "Clear statement of assumptions and notation table",
+      "Complete derivation of optimal decision variables and existence conditions",
+      "Numerical illustrations demonstrating model tractability"
+    ]
+  },
+  {
+    name: "Computers & Operations Research",
+    publisher: "Elsevier",
+    impactFactor: 4.6,
+    discipline: "Operations Research & Management",
+    acceptanceRate: "15-18%",
+    reviewSpeed: "6-8 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Provides an international forum for the application of computer science and operations research methods to problem solving in business, industry, and government.",
+    deskRejectHazards: [
+      "Optimization formulations without computational run-time or algorithmic complexity reporting",
+      "Inadequate parameter sensitivity analysis",
+      "Lack of reproducible implementation details (e.g., Python / SciPy numerical solvers)"
+    ],
+    keyExpectations: [
+      "Algorithm design with computational complexity and runtime analysis",
+      "Numerical validation across multiple item instances and regulatory scenarios",
+      "Clear decision-support applicability for modern automated supply chains"
+    ]
   }
 ];
 
@@ -574,6 +717,15 @@ export const JOURNAL_CATALOG: JournalEntry[] = [
  */
 function detectDiscipline(title: string, abstract: string, targetJournal?: string): JournalEntry['discipline'] {
   const text = `${title} ${abstract} ${targetJournal || ''}`.toLowerCase();
+
+  // Operations Research, Supply Chain & Environmental Management
+  const orTerms = [
+    'supply chain', 'e-waste', 'carbon tax', 'cap-and-trade', 'inventory model', 'reverse logistics',
+    'green investment', 'remanufacturing', 'operations research', 'opsearch', 'eoq', 'holding cost',
+    'decision variable', 'nonlinear optimization', 'sensitivity analysis', 'replenishment',
+    'carbon policy', 'refurbishment', 'circular economy', 'production planning', 'remodeling', 'emissions'
+  ];
+  const orScore = orTerms.filter(t => text.includes(t)).length;
 
   // Computer Science & AI
   const csTerms = [
@@ -615,6 +767,7 @@ function detectDiscipline(title: string, abstract: string, targetJournal?: strin
 
   // Evaluate scores with priority weighting
   const scores = [
+    { discipline: 'Operations Research & Management' as const, score: orScore * 2.2 },
     { discipline: 'Computer Science' as const, score: csScore * 2.0 },
     { discipline: 'Oncology' as const, score: oncoScore * 2.2 },
     { discipline: 'Neuroscience' as const, score: neuroScore * 2.0 },
