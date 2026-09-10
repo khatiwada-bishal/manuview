@@ -47,15 +47,25 @@ export interface DesktopDashboardData {
 interface DesktopDashboardProps {
   data: DesktopDashboardData;
   activeView: DesktopActiveView;
+  isConnected?: boolean;
+  isLoading?: boolean;
+  activeModelName?: string | null;
+  latencyMs?: number | null;
   onSelectView: (view: DesktopActiveView) => void;
   onNewScan: () => void;
+  onOpenSettings?: () => void;
 }
 
 export function DesktopDashboard({
   data,
   activeView,
+  isConnected = false,
+  isLoading = false,
+  activeModelName,
+  latencyMs,
   onSelectView,
   onNewScan,
+  onOpenSettings,
 }: DesktopDashboardProps) {
   return (
     <div className="flex-1 overflow-y-auto bg-white p-6 sm:p-10 text-[#111827]">
@@ -89,14 +99,38 @@ export function DesktopDashboard({
               <Cpu className="w-4 h-4 text-[#9CA3AF]" />
               AI Engine
             </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#ECFDF5] border border-[#A7F3D0] text-[#065F46] font-semibold text-xs tracking-wide">
-              <span className="w-2 h-2 rounded-full bg-[#10B981]" />
-              {data.aiEngine}
-              <span className="text-emerald-700/80 font-mono text-[11px] flex items-center">
-                ( <Zap className="w-3 h-3 text-amber-500 fill-amber-500 inline mr-0.5" />
-                {data.latencyMs}ms )
+            {isLoading ? (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-neutral-100 border border-neutral-200 text-neutral-500 text-xs font-semibold">
+                <RefreshCw className="w-3 h-3 animate-spin text-neutral-400" />
+                Connecting...
               </span>
-            </span>
+            ) : !isConnected ? (
+              <button
+                type="button"
+                onClick={onOpenSettings}
+                title="Click to configure API connection"
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#FEF2F2] border border-[#FECACA] hover:bg-[#FEE2E2] text-[#991B1B] text-xs font-semibold transition cursor-pointer"
+              >
+                <span className="w-2 h-2 rounded-full bg-[#EF4444]" />
+                Not Connected
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={onOpenSettings}
+                title="Click to configure AI Engine & Models"
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#ECFDF5] border border-[#A7F3D0] hover:bg-[#D1FAE5] text-[#065F46] font-semibold text-xs tracking-wide transition cursor-pointer"
+              >
+                <span className="w-2 h-2 rounded-full bg-[#10B981]" />
+                {activeModelName || data.aiEngine}
+                {latencyMs !== undefined && latencyMs !== null && (
+                  <span className="text-emerald-700/80 font-mono text-[11px] flex items-center">
+                    ( <Zap className="w-3 h-3 text-amber-500 fill-amber-500 inline mr-0.5" />
+                    {latencyMs}ms )
+                  </span>
+                )}
+              </button>
+            )}
           </div>
 
           {/* Triage Readiness */}

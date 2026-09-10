@@ -16,6 +16,7 @@ import {
   DesktopNewReviewModal,
 } from "@/components/desktop/DesktopModals";
 import { ProviderSettingsModal } from "@/components/ProviderSettingsModal";
+import { useApiConnection } from "@/lib/useApiConnection";
 
 // Default reference paper from the screenshot
 const INITIAL_PAPERS: PaperItem[] = [
@@ -112,6 +113,15 @@ export default function DesktopAppPage() {
   const [activeView, setActiveView] = useState<DesktopActiveView>("overview");
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
+  // Live API Connection state
+  const {
+    isConnected,
+    isLoading: isApiLoading,
+    modelName,
+    latencyMs,
+    provider,
+  } = useApiConnection();
+
   // Modals state
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isNewReviewOpen, setIsNewReviewOpen] = useState(false);
@@ -154,8 +164,8 @@ export default function DesktopAppPage() {
       paperTitle: newPaper.title,
       headlineTitle: `${journal} Pre-Submission`,
       targetJournal: journal,
-      aiEngine: "GEMINI 2.5 FLASH",
-      latencyMs: 148,
+      aiEngine: modelName || "AI ENGINE",
+      latencyMs: latencyMs || 140,
       score: 82,
       statusText: "Ready for Polish",
       vulnerabilities: [
@@ -193,8 +203,10 @@ export default function DesktopAppPage() {
       <DesktopHeader
         workspaceName="Oncology Institute"
         paperTitle={currentPaper?.title || "Manuscript Pre-Submission"}
-        activeModelName={dashboardData.aiEngine}
-        latencyMs={dashboardData.latencyMs}
+        isConnected={isConnected}
+        isLoading={isApiLoading}
+        activeModelName={modelName}
+        latencyMs={latencyMs}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
         sidebarOpen={sidebarOpen}
@@ -208,6 +220,8 @@ export default function DesktopAppPage() {
             papers={papers}
             activePaperId={activePaperId}
             activeView={activeView}
+            isConnected={isConnected}
+            provider={provider}
             onSelectPaper={(id) => setActivePaperId(id)}
             onSelectView={(view) => setActiveView(view)}
             onOpenSearch={() => setIsSearchOpen(true)}
@@ -219,8 +233,13 @@ export default function DesktopAppPage() {
         <DesktopDashboard
           data={dashboardData}
           activeView={activeView}
+          isConnected={isConnected}
+          isLoading={isApiLoading}
+          activeModelName={modelName}
+          latencyMs={latencyMs}
           onSelectView={(view) => setActiveView(view)}
           onNewScan={() => setIsNewReviewOpen(true)}
+          onOpenSettings={() => setIsSettingsOpen(true)}
         />
       </div>
 

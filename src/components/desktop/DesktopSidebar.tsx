@@ -32,6 +32,8 @@ interface DesktopSidebarProps {
   papers: PaperItem[];
   activePaperId: string;
   activeView: DesktopActiveView;
+  isConnected?: boolean;
+  provider?: string | null;
   onSelectPaper: (id: string) => void;
   onSelectView: (view: DesktopActiveView) => void;
   onOpenSearch: () => void;
@@ -44,6 +46,8 @@ export function DesktopSidebar({
   papers,
   activePaperId,
   activeView,
+  isConnected = false,
+  provider,
   onSelectPaper,
   onSelectView,
   onOpenSearch,
@@ -203,10 +207,21 @@ export function DesktopSidebar({
       {/* Footer Info */}
       <div className="p-3 border-t border-[#E5E7EB] bg-white/50 text-[11px] text-neutral-500 flex items-center justify-between">
         <span className="font-medium text-neutral-600">ManuView Desktop</span>
-        <span className="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-          Offline Ready
-        </span>
+        {isConnected ? (
+          <span className="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            Connected
+          </span>
+        ) : (
+          <button
+            type="button"
+            onClick={onOpenSettings}
+            className="inline-flex items-center gap-1 text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200 hover:bg-rose-100 transition cursor-pointer"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+            Not Connected
+          </button>
+        )}
       </div>
     </aside>
   );

@@ -158,6 +158,9 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
 
   const handleSave = () => {
     localStorage.setItem("manuview_provider_config", JSON.stringify(config));
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("manuview_config_changed"));
+    }
     if (onSave) onSave(config);
     setSavedSuccess(true);
     setTimeout(() => {

@@ -1,13 +1,15 @@
 "use client";
 
 import React from "react";
-import { Sidebar as SidebarIcon, Zap } from "lucide-react";
+import { Sidebar as SidebarIcon, Zap, RefreshCw } from "lucide-react";
 
 interface DesktopHeaderProps {
   workspaceName: string;
   paperTitle: string;
-  activeModelName?: string;
-  latencyMs?: number;
+  isConnected: boolean;
+  isLoading?: boolean;
+  activeModelName?: string | null;
+  latencyMs?: number | null;
   onOpenSettings: () => void;
   onToggleSidebar?: () => void;
   sidebarOpen?: boolean;
@@ -16,8 +18,10 @@ interface DesktopHeaderProps {
 export function DesktopHeader({
   workspaceName,
   paperTitle,
-  activeModelName = "GEMINI 2.5 FLASH",
-  latencyMs = 142,
+  isConnected,
+  isLoading = false,
+  activeModelName,
+  latencyMs,
   onOpenSettings,
   onToggleSidebar,
   sidebarOpen = true,
@@ -62,21 +66,44 @@ export function DesktopHeader({
         </nav>
       </div>
 
-      {/* Model & Latency Pill */}
+      {/* Model & Latency Pill / Not Connected Pill */}
       <div className="flex items-center gap-2 shrink-0">
-        <button
-          type="button"
-          onClick={onOpenSettings}
-          title="Click to configure AI Engine & Models"
-          className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ECFDF5] border border-[#A7F3D0] hover:bg-[#D1FAE5] text-[#065F46] text-xs font-semibold tracking-wide transition cursor-pointer shadow-2xs"
-        >
-          <span className="inline-block w-2 h-2 rounded-full bg-[#10B981] animate-pulse" />
-          <span>{activeModelName}</span>
-          <span className="text-emerald-700/80 font-mono text-[11px] flex items-center">
-            ( <Zap className="w-3 h-3 text-amber-500 fill-amber-500 inline mr-0.5" />
-            {latencyMs}ms )
-          </span>
-        </button>
+        {isLoading ? (
+          <button
+            type="button"
+            onClick={onOpenSettings}
+            className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-100 border border-neutral-200 text-neutral-500 text-xs font-semibold tracking-wide transition cursor-pointer shadow-2xs"
+          >
+            <RefreshCw className="w-3 h-3 animate-spin text-neutral-400" />
+            <span>Checking...</span>
+          </button>
+        ) : !isConnected ? (
+          <button
+            type="button"
+            onClick={onOpenSettings}
+            title="No AI API connection. Click to configure API keys."
+            className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FEF2F2] border border-[#FECACA] hover:bg-[#FEE2E2] text-[#991B1B] text-xs font-semibold tracking-wide transition cursor-pointer shadow-2xs"
+          >
+            <span className="inline-block w-2 h-2 rounded-full bg-[#EF4444]" />
+            <span>Not Connected</span>
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={onOpenSettings}
+            title="Click to configure AI Engine & Models"
+            className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ECFDF5] border border-[#A7F3D0] hover:bg-[#D1FAE5] text-[#065F46] text-xs font-semibold tracking-wide transition cursor-pointer shadow-2xs"
+          >
+            <span className="inline-block w-2 h-2 rounded-full bg-[#10B981] animate-pulse" />
+            <span>{activeModelName || "AI MODEL"}</span>
+            {latencyMs !== undefined && latencyMs !== null && (
+              <span className="text-emerald-700/80 font-mono text-[11px] flex items-center">
+                ( <Zap className="w-3 h-3 text-amber-500 fill-amber-500 inline mr-0.5" />
+                {latencyMs}ms )
+              </span>
+            )}
+          </button>
+        )}
       </div>
     </header>
   );
