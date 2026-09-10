@@ -1,4 +1,4 @@
-import { FullReviewReport, ParsedManuscript, ProviderConfig, CitationIntegritySummary, ReviewerPersonaFeedback, DocumentClassification } from "./types";
+import { FullReviewReport, ParsedManuscript, ProviderConfig, CitationIntegritySummary, ReviewerPersonaFeedback, DocumentClassification, JournalRecommendation } from "./types";
 import { callLLM } from "./llm";
 import { batchVerifyReferences } from "./crossref";
 import { findMatchingJournals } from "./journals";
@@ -41,7 +41,7 @@ export async function runManuscriptDiagnostic(
   const heuristicClassification = manuscript.classification || classifyDocument(manuscript.rawText);
 
   // 3. Journal Matching
-  const journalMatches = findMatchingJournals(manuscript.title, manuscript.abstract);
+  const journalMatches = findMatchingJournals(manuscript.title, manuscript.abstract, targetJournalName);
 
   // 4. Multi-Stage LLM Evaluation
   const systemPrompt = `You are the lead academic editor and diagnostic engine for ManuView.
@@ -52,10 +52,22 @@ If the document is an academic manuscript:
 2. For the 4-Persona Peer-Review Simulation:
    - Carefully define 4 distinct, world-leading reviewers whose academic title, institutional affiliation, and specialized expertise are customized EXACTLY to this paper's specific scientific field and methodology.
    - Persona 1 (Methods Specialist): Lead expert in the experimental technologies used in the paper (e.g. CRISPR screens, single-cell genomics, chemistry protocols, assay replication). Reviews protocol reproducibility, coverage depth, negative/positive controls, and reagent rigor.
-   - Persona 2 (Domain & Mechanistic Expert): World-renowned investigator in the paper's exact disease, biological pathway, or computational domain. Evaluates mechanistic depth, biological plausibility, and novelty relative to recent 2024 literature.
-   - Persona 3 (Senior Journal Editor): Executive editor from top-tier journals (e.g., Nature, Cell, Science, Lancet, IEEE TPAMI). Evaluates broad readership significance, conceptual advance, and desk-rejection triage vulnerability.
+   - Persona 2 (Domain & Mechanistic Expert): World-renowned investigator in the paper's exact disease, biological pathway, or computational domain. Evaluates mechanistic depth, biological plausibility, and novelty relative to recent literature.
+   - Persona 3 (Senior Journal Editor): Executive editor from top-tier journals in this field. Evaluates broad readership significance, conceptual advance, and desk-rejection triage vulnerability.
    - Persona 4 (Senior Biostatistician): Chair or senior professor of quantitative biostatistics. Rigorously audits multiple comparison adjustments (FDR / Bonferroni), sample cohort size (n) power calculations, variance reporting, and statistical test appropriateness.
    - Each reviewer MUST provide an in-depth, deeply critical review (2-3 detailed paragraphs citing specific claims and flaws), state a clear Decision Recommendation (Major Revision, Reject / Resubmit, Desk Reject, Minor Revision), and specify Major Critiques, Missing Experimental Controls/Analyses, and Mandatory Must-Address items.
+3. For Target Journal Recommendations:
+   - Analyze the manuscript's exact scientific domain, methodology, model system, findings, and the author's specified TARGET JOURNAL: "${targetJournalName || "Not specified"}".
+   - Recommend 3 GENUINE, authentic, peer-reviewed journals strictly in the manuscript's domain:
+     * Reach Tier: Premier aspirational journal with high impact and rigorous thresholds.
+     * Realistic Tier: Ideal specialist or multidisciplinary journal with strong acceptance alignment.
+     * Fallback Tier: Solid indexed peer-reviewed journal offering reliable publication.
+   - ABSOLUTE MANDATORY RULES:
+     * Never hallucinate journal names or mix unrelated disciplines (e.g., NEVER recommend computer science journals like IEEE TPAMI for oncology, and NEVER recommend clinical medicine journals like The Lancet for machine learning algorithms or pure basic biochemistry).
+     * Provide authentic, realistic Impact Factors.
+     * Provide a specific, content-driven Scope Rationale explaining why this manuscript's findings match the journal's editorial aims.
+     * State authentic Desk-Reject Hazards specific to this exact study at each journal.
+     * State concrete Required Revisions to satisfy referees at each tier.
 If the document is NOT an academic manuscript: explain candidly what was detected, why journal peer-review rubrics are calibrated for empirical research, and provide appropriate constructive guidance.
 Scores are on a 1 to 5 scale calibrated against top-tier scholarly standards.
 Return your output ONLY as valid JSON matching the requested schema.`;
@@ -128,6 +140,18 @@ Please return your analysis as a JSON object with this exact structure:
       "majorCritiques": string[],
       "missingControlsOrAnalyses": string[],
       "mustAddressItems": string[]
+    }
+  ],
+  "journalRecommendations": [
+    {
+      "tier": "Reach" | "Realistic" | "Fallback",
+      "journalName": string,
+      "impactFactor": number,
+      "publisher": string,
+      "fitScore": number,
+      "scopeRationale": string,
+      "rejectionRisks": string[],
+      "requiredRevisionsForFit": string[]
     }
   ]
 }`;
@@ -372,6 +396,64 @@ Please return your analysis as a JSON object with this exact structure:
     return defaultP;
   });
 
+  // 5. Journal Recommendations (Prioritize genuine LLM recommendations, fall back to discipline catalog)
+  const rawLLMRecs = Array.isArray(parsedLLM?.journalRecommendations) ? parsedLLM.journalRecommendations : [];
+  const validLLMRecs = rawLLMRecs.filter((r: any) => r && r.journalName && r.tier && r.scopeRationale);
+
+  let finalRecommendations: JournalRecommendation[];
+  if (validLLMRecs.length >= 3) {
+    finalRecommendations = validLLMRecs.slice(0, 3).map((r: any, idx: number) => {
+      const defaultTier = idx === 0 ? 'Reach' : idx === 1 ? 'Realistic' : 'Fallback';
+      return {
+        tier: (r.tier === 'Reach' || r.tier === 'Realistic' || r.tier === 'Fallback') ? r.tier : defaultTier,
+        journalName: String(r.journalName),
+        impactFactor: typeof r.impactFactor === 'number' && !isNaN(r.impactFactor) ? r.impactFactor : (idx === 0 ? 28.0 : idx === 1 ? 12.0 : 4.5),
+        publisher: r.publisher ? String(r.publisher) : "Peer-Reviewed Academic Publisher",
+        fitScore: typeof r.fitScore === 'number' ? r.fitScore : (idx === 0 ? 82 : idx === 1 ? 92 : 95),
+        scopeRationale: String(r.scopeRationale),
+        rejectionRisks: Array.isArray(r.rejectionRisks) && r.rejectionRisks.length > 0
+          ? r.rejectionRisks.map((x: any) => String(x))
+          : ["Methodological rigor and sample size justifications required"],
+        requiredRevisionsForFit: Array.isArray(r.requiredRevisionsForFit) && r.requiredRevisionsForFit.length > 0
+          ? r.requiredRevisionsForFit.map((x: any) => String(x))
+          : ["Address control conditions and variance reporting before submission"]
+      };
+    });
+  } else {
+    finalRecommendations = [
+      {
+        tier: "Reach",
+        journalName: journalMatches.reach.name,
+        impactFactor: journalMatches.reach.impactFactor,
+        publisher: journalMatches.reach.publisher,
+        fitScore: 82,
+        scopeRationale: `Matches ${journalMatches.reach.name}'s scope for high-impact conceptual breakthroughs in ${journalMatches.detectedDiscipline}. Requires definitive causal validation and broad scientific significance.`,
+        rejectionRisks: journalMatches.reach.deskRejectHazards,
+        requiredRevisionsForFit: journalMatches.reach.keyExpectations,
+      },
+      {
+        tier: "Realistic",
+        journalName: journalMatches.realistic.name,
+        impactFactor: journalMatches.realistic.impactFactor,
+        publisher: journalMatches.realistic.publisher,
+        fitScore: 92,
+        scopeRationale: `Strong alignment with ${journalMatches.realistic.name}'s publication criteria in ${journalMatches.detectedDiscipline}. The study's core findings address key questions for the specialist community.`,
+        rejectionRisks: journalMatches.realistic.deskRejectHazards,
+        requiredRevisionsForFit: journalMatches.realistic.keyExpectations,
+      },
+      {
+        tier: "Fallback",
+        journalName: journalMatches.fallback.name,
+        impactFactor: journalMatches.fallback.impactFactor,
+        publisher: journalMatches.fallback.publisher,
+        fitScore: 95,
+        scopeRationale: `Reliable publication venue in ${journalMatches.detectedDiscipline} emphasizing sound scientific methodology and data availability.`,
+        rejectionRisks: journalMatches.fallback.deskRejectHazards,
+        requiredRevisionsForFit: journalMatches.fallback.keyExpectations,
+      },
+    ];
+  }
+
   return {
     id: "rev_" + Math.random().toString(36).substring(2, 9),
     createdAt: new Date().toISOString(),
@@ -383,38 +465,7 @@ Please return your analysis as a JSON object with this exact structure:
     dimensions: finalDimensions,
     priorityIssues: finalPriorityIssues,
     reviewerPersonas: finalPersonas,
-    journalRecommendations: [
-      {
-        tier: "Reach",
-        journalName: journalMatches.reach.name,
-        impactFactor: journalMatches.reach.impactFactor,
-        publisher: journalMatches.reach.publisher,
-        fitScore: 82,
-        scopeRationale: journalMatches.reach.aimsAndScope,
-        rejectionRisks: journalMatches.reach.deskRejectHazards,
-        requiredRevisionsForFit: journalMatches.reach.keyExpectations,
-      },
-      {
-        tier: "Realistic",
-        journalName: journalMatches.realistic.name,
-        impactFactor: journalMatches.realistic.impactFactor,
-        publisher: journalMatches.realistic.publisher,
-        fitScore: 92,
-        scopeRationale: journalMatches.realistic.aimsAndScope,
-        rejectionRisks: journalMatches.realistic.deskRejectHazards,
-        requiredRevisionsForFit: journalMatches.realistic.keyExpectations,
-      },
-      {
-        tier: "Fallback",
-        journalName: journalMatches.fallback.name,
-        impactFactor: journalMatches.fallback.impactFactor,
-        publisher: journalMatches.fallback.publisher,
-        fitScore: 95,
-        scopeRationale: journalMatches.fallback.aimsAndScope,
-        rejectionRisks: journalMatches.fallback.deskRejectHazards,
-        requiredRevisionsForFit: journalMatches.fallback.keyExpectations,
-      },
-    ],
+    journalRecommendations: finalRecommendations,
     citationIntegrity,
   };
 }

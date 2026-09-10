@@ -42,3 +42,72 @@ body {
   outline: 2px solid rgba(0, 117, 235, 0.4);
   outline-offset: 1px;
 }
+
+/* ==========================================================================
+   Scholarly Report Print Styles (PDF Export Optimization)
+   ========================================================================== */
+@media print {
+  @page {
+    margin: 12mm 15mm;
+    size: A4 portrait;
+  }
+
+  *,
+  *::before,
+  *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #2F3437 !important;
+    font-size: 11pt !important;
+    line-height: 1.45 !important;
+  }
+
+  /* Hide interactive web UI controls during print */
+  nav,
+  footer,
+  button,
+  .print\:hidden,
+  input,
+  select,
+  textarea,
+  [role="dialog"] {
+    display: none !important;
+  }
+
+  /* Ensure official header is cleanly displayed */
+  .print\:block {
+    display: block !important;
+  }
+
+  /* Prevent awkward page breaks across cards, tables, and sections */
+  h1, h2, h3, h4, h5, h6 {
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  .rounded-xl,
+  .rounded-2xl,
+  table,
+  tr,
+  blockquote {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Clean borders for printing */
+  .border {
+    border-color: #d8d8d6 !important;
+  }
+
+  /* Do not append link URLs in print */
+  a[href]::after {
+    content: "" !important;
+  }
+}
+

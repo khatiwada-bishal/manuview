@@ -348,7 +348,7 @@ export default function HomePage() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div className="p-3.5 rounded-xl border border-[#EBEBEA] bg-[#F7F7F5] space-y-1.5">
                           <div className="flex items-center justify-between">
-                            <span className="font-semibold text-xs text-[#2F3437]">Dr. Aris Vance (Senior Methods Reviewer)</span>
+                            <span className="font-semibold text-xs text-[#2F3437]">Methods Specialist (Assay Rigor &amp; Controls)</span>
                             <span className="text-[10px] px-1.5 rounded bg-[#FDF0EF] text-[#7C2D2B] border border-[#F7CECC]">Major Rev</span>
                           </div>
                           <p className="text-xs text-[#787774] italic">
@@ -357,7 +357,7 @@ export default function HomePage() {
                         </div>
                         <div className="p-3.5 rounded-xl border border-[#EBEBEA] bg-[#F7F7F5] space-y-1.5">
                           <div className="flex items-center justify-between">
-                            <span className="font-semibold text-xs text-[#2F3437]">Dr. Elena Rostova (Senior Editor, Nature)</span>
+                            <span className="font-semibold text-xs text-[#2F3437]">Senior Journal Editor (Novelty &amp; Triage)</span>
                             <span className="text-[10px] px-1.5 rounded bg-[#FBF3DB] text-[#78510E] border border-[#F4E2B6]">Editorial Triage</span>
                           </div>
                           <p className="text-xs text-[#787774] italic">
@@ -366,7 +366,7 @@ export default function HomePage() {
                         </div>
                         <div className="p-3.5 rounded-xl border border-[#EBEBEA] bg-[#F7F7F5] space-y-1.5">
                           <div className="flex items-center justify-between">
-                            <span className="font-semibold text-xs text-[#2F3437]">Dr. Michael Sorkin (Biostatistician)</span>
+                            <span className="font-semibold text-xs text-[#2F3437]">Quantitative Biostatistician (Power &amp; Multiplicity)</span>
                             <span className="text-[10px] px-1.5 rounded bg-[#FDF0EF] text-[#7C2D2B] border border-[#F7CECC]">Desk Reject Risk</span>
                           </div>
                           <p className="text-xs text-[#787774] italic">
@@ -375,7 +375,7 @@ export default function HomePage() {
                         </div>
                         <div className="p-3.5 rounded-xl border border-[#EBEBEA] bg-[#F7F7F5] space-y-1.5">
                           <div className="flex items-center justify-between">
-                            <span className="font-semibold text-xs text-[#2F3437]">Dr. Marcus Chen (Translational Oncologist)</span>
+                            <span className="font-semibold text-xs text-[#2F3437]">Domain Specialist (Mechanistic Oncology)</span>
                             <span className="text-[10px] px-1.5 rounded bg-[#EDF6EE] text-[#1E5A2A] border border-[#CBE7CE]">High Value</span>
                           </div>
                           <p className="text-xs text-[#787774] italic">
@@ -457,7 +457,7 @@ export default function HomePage() {
       <section className="py-10 border-y border-[#EBEBEA] bg-[#F7F7F5]">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 text-center">
           <p className="text-[11px] font-semibold uppercase tracking-widest text-[#9B9A97] mb-6">
-            Empowering authors publishing in premier scientific journals worldwide
+            Calibrated for formatting and editorial standards of leading peer-reviewed venues
           </p>
           <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-14 text-sm sm:text-base font-serif font-bold text-[#9B9A97] tracking-wider">
             <span className="hover:text-[#2F3437] transition">NATURE</span>
@@ -710,73 +710,69 @@ export default function HomePage() {
       </section>
 
       {/* ------------------------------------------------------------- */}
-      {/* 4. TESTIMONIALS SECTION: "Trusted by teams that ship."        */}
+      {/* 4. SCHOLARLY STANDARDS & VERIFIABLE INTEGRITY                 */}
       {/* ------------------------------------------------------------- */}
       <section className="py-20 px-4 sm:px-6 bg-white border-t border-[#EBEBEA]">
         <div className="mx-auto max-w-5xl">
-          <h2 className="text-3xl sm:text-5xl font-bold text-[#2F3437] tracking-tight mb-12">
-            Trusted by researchers that publish.
-          </h2>
+          <div className="max-w-2xl mb-12">
+            <h2 className="text-3xl sm:text-5xl font-bold text-[#2F3437] tracking-tight mb-4">
+              Built for verifiable publishing standards.
+            </h2>
+            <p className="text-sm text-[#787774] font-light leading-relaxed">
+              Designed around empirical integrity checks, real-time registry lookups, and standardized editorial guidelines to catch fatal rejection hazards before journal submission.
+            </p>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Duotone Card 1: Red / Coral (Nature Communications) */}
-            <div className="relative rounded-2xl overflow-hidden aspect-[4/5] bg-gradient-to-br from-[#7C2D2B] via-[#8F3533] to-[#5C1F1E] text-white p-7 flex flex-col justify-between shadow-md">
-              <div className="flex items-center justify-between z-10">
-                <span className="font-serif font-bold text-base tracking-tight">nature communications</span>
-              </div>
-
-              <div className="z-10 space-y-4">
-                <p className="text-xs sm:text-sm leading-relaxed font-medium text-white/95">
-                  &ldquo;ManuView caught a fatal multiple-testing multiplicity flaw in our Methods that would have triggered immediate desk rejection. We fixed it before submission and were accepted.&rdquo;
-                </p>
-                <div className="pt-2 border-t border-white/20">
-                  <div className="font-semibold text-xs">Dr. Aris Vance</div>
-                  <div className="text-[11px] text-white/80">Lead Investigator, Oncology Institute</div>
+            {/* Standard Card 1: CrossRef Registry */}
+            <div className="rounded-2xl border border-[#EBEBEA] bg-[#F7F7F5] p-7 flex flex-col justify-between hover:border-[#d0d0d0] transition">
+              <div>
+                <div className="w-10 h-10 rounded-xl bg-white border border-[#EBEBEA] flex items-center justify-center text-lg mb-5 shadow-2xs">
+                  🔍
                 </div>
+                <h3 className="text-base font-bold text-[#2F3437] mb-2">CrossRef Registry Verification</h3>
+                <p className="text-xs text-[#787774] leading-relaxed">
+                  Directly resolves cited DOIs against CrossRef APIs to flag unresolvable citations, dead URLs, and hallucinated reference titles that trigger immediate editorial red flags.
+                </p>
               </div>
-
-              {/* Duotone Background Grain/Wave Overlay */}
-              <div className="absolute inset-0 bg-black/15 pointer-events-none" />
+              <div className="pt-4 mt-6 border-t border-[#EBEBEA] flex items-center justify-between text-[11px] text-[#787774]">
+                <span className="font-semibold text-[#2F3437]">Deterministic Audit</span>
+                <span className="font-mono text-[#18569C]">api.crossref.org</span>
+              </div>
             </div>
 
-            {/* Duotone Card 2: Ocean Blue (Cell Reports) */}
-            <div className="relative rounded-2xl overflow-hidden aspect-[4/5] bg-gradient-to-br from-[#18569C] via-[#1E67BA] to-[#124278] text-white p-7 flex flex-col justify-between shadow-md">
-              <div className="flex items-center justify-between z-10">
-                <span className="font-serif font-bold text-base tracking-tight">Cell Reports</span>
-              </div>
-
-              <div className="z-10 space-y-4">
-                <p className="text-xs sm:text-sm leading-relaxed font-medium text-white/95">
-                  &ldquo;The 4-persona peer-review simulation prepared our team for the exact objections our referees raised during revision. It is like having an editorial board in your pocket.&rdquo;
-                </p>
-                <div className="pt-2 border-t border-white/20">
-                  <div className="font-semibold text-xs">Prof. Elena Rostova</div>
-                  <div className="text-[11px] text-white/80">Chair of Computational Genomics</div>
+            {/* Standard Card 2: Retraction Watch */}
+            <div className="rounded-2xl border border-[#EBEBEA] bg-[#F7F7F5] p-7 flex flex-col justify-between hover:border-[#d0d0d0] transition">
+              <div>
+                <div className="w-10 h-10 rounded-xl bg-white border border-[#EBEBEA] flex items-center justify-center text-lg mb-5 shadow-2xs">
+                  ⚠️
                 </div>
+                <h3 className="text-base font-bold text-[#2F3437] mb-2">Retraction Screening</h3>
+                <p className="text-xs text-[#787774] leading-relaxed">
+                  Screens bibliography DOIs against retraction registries and publisher notices. Automatically detects whether your foundational literature has been retracted or corrected.
+                </p>
               </div>
-
-              {/* Duotone Background Grain/Wave Overlay */}
-              <div className="absolute inset-0 bg-black/15 pointer-events-none" />
+              <div className="pt-4 mt-6 border-t border-[#EBEBEA] flex items-center justify-between text-[11px] text-[#787774]">
+                <span className="font-semibold text-[#2F3437]">Integrity Shield</span>
+                <span className="font-mono text-[#7C2D2B]">Zero Retraction Policy</span>
+              </div>
             </div>
 
-            {/* Duotone Card 3: Golden Amber (The Lancet) */}
-            <div className="relative rounded-2xl overflow-hidden aspect-[4/5] bg-gradient-to-br from-[#b87d19] via-[#c98d24] to-[#8f5e0c] text-white p-7 flex flex-col justify-between shadow-md">
-              <div className="flex items-center justify-between z-10">
-                <span className="font-serif font-bold text-base tracking-tight">THE LANCET</span>
-              </div>
-
-              <div className="z-10 space-y-4">
-                <p className="text-xs sm:text-sm leading-relaxed font-medium text-white/95">
-                  &ldquo;We ran all 82 references through the integrity scanner and caught a retracted paper we did not know about. Saved our lab from an embarrassing correction notice.&rdquo;
-                </p>
-                <div className="pt-2 border-t border-white/20">
-                  <div className="font-semibold text-xs">Dr. Marcus Sorkin</div>
-                  <div className="text-[11px] text-white/80">Director of Clinical Biostatistics</div>
+            {/* Standard Card 3: EQUATOR & PRISMA */}
+            <div className="rounded-2xl border border-[#EBEBEA] bg-[#F7F7F5] p-7 flex flex-col justify-between hover:border-[#d0d0d0] transition">
+              <div>
+                <div className="w-10 h-10 rounded-xl bg-white border border-[#EBEBEA] flex items-center justify-center text-lg mb-5 shadow-2xs">
+                  📋
                 </div>
+                <h3 className="text-base font-bold text-[#2F3437] mb-2">Reporting Guideline Compliance</h3>
+                <p className="text-xs text-[#787774] leading-relaxed">
+                  Calibrated against EQUATOR Network checklists (PRISMA 2020, CONSORT, STROBE) to ensure sample size power justifications, randomization, and blinding statements are complete.
+                </p>
               </div>
-
-              {/* Duotone Background Grain/Wave Overlay */}
-              <div className="absolute inset-0 bg-black/15 pointer-events-none" />
+              <div className="pt-4 mt-6 border-t border-[#EBEBEA] flex items-center justify-between text-[11px] text-[#787774]">
+                <span className="font-semibold text-[#2F3437]">EQUATOR Guidelines</span>
+                <span className="font-mono text-[#1E5A2A]">Checklist Auditing</span>
+              </div>
             </div>
           </div>
         </div>

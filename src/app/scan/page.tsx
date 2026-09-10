@@ -30,7 +30,9 @@ import {
   Activity,
   Zap,
   Check,
-  ChevronDown
+  ChevronDown,
+  Download,
+  Printer
 } from "lucide-react";
 import { FullReviewReport, PriorityIssue, ReviewerPersonaFeedback, ProviderConfig, AvailableModel } from "@/lib/types";
 import { ProviderSettingsModal } from "@/components/ProviderSettingsModal";
@@ -59,7 +61,8 @@ References:
 
 export default function ScanPage() {
   const [inputText, setInputText] = useState("");
-  const [targetJournal, setTargetJournal] = useState("Nature Communications");
+  const [targetJournal, setTargetJournal] = useState("");
+  const [targetJournalError, setTargetJournalError] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingStep, setLoadingStep] = useState("");
@@ -209,6 +212,26 @@ export default function ScanPage() {
   };
 
 
+  const handleTargetJournalChange = (val: string) => {
+    setTargetJournal(val);
+    if (val.trim()) {
+      setTargetJournalError(false);
+    }
+  };
+
+  const handleDownloadPDF = () => {
+    if (!report) return;
+    const originalTitle = document.title;
+    const sanitized = (report.title || "Manuscript")
+      .replace(/[^a-zA-Z0-9_-]/g, "_")
+      .slice(0, 45);
+    document.title = `ManuView_Diagnostic_Report_${sanitized}`;
+    window.print();
+    setTimeout(() => {
+      document.title = originalTitle;
+    }, 1500);
+  };
+
   const handleSelectModel = (newModel: string) => {
     const saved = localStorage.getItem("manuview_provider_config");
     let currentConfig: ProviderConfig = {
@@ -232,6 +255,7 @@ export default function ScanPage() {
   const handleLoadSample = () => {
     setInputText(SAMPLE_PREPRINT_TEXT);
     setTargetJournal("Nature Communications");
+    setTargetJournalError(false);
     setFile(null);
     setError(null);
   };
@@ -251,6 +275,11 @@ export default function ScanPage() {
           ? "Pre-submission scan is disabled: No LLM API connection configured. Please set your API key in AI Settings."
           : "Pre-submission scan is disabled: The configured LLM connection is not working. Please fix your credentials in AI Settings."
       );
+      return;
+    }
+        if (!targetJournal.trim()) {
+      setTargetJournalError(true);
+      setError("Target Journal is required. Please specify the journal you intend to submit to (e.g., Nature Genetics, Cancer Discovery, IEEE TPAMI).");
       return;
     }
     if (!inputText.trim() && !file) {
@@ -327,7 +356,7 @@ export default function ScanPage() {
         </div>
 
         {/* Notion Page Header */}
-        <div className="mb-8">
+        <div className="mb-8 print:hidden">
           <div className="text-4xl mb-3 select-none">📄</div>
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#2F3437] mb-2 font-serif">
             Manuscript Pre-Submission Diagnostic
@@ -338,22 +367,59 @@ export default function ScanPage() {
         </div>
 
         {/* Notion Properties Block (Database metadata rows) */}
-        <div className="mb-8 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] p-4 text-xs divide-y divide-[#eaeaea]">
-          {/* Property 1: Target Journal */}
-          <div className="flex items-center py-2 px-1">
-            <div className="w-36 flex items-center gap-2 text-[#787774]">
-              <Tag className="w-3.5 h-3.5" />
-              <span>Target Journal</span>
+        <div className="mb-8 rounded-xl bg-[#F7F7F5] print:hidden border border-[#EBEBEA] p-4 text-xs divide-y divide-[#eaeaea]">
+          {/* Property 1: Target Journal (Mandatory) */}
+          <div className="py-2.5 px-1 space-y-1.5">
+            <div className="flex items-center">
+              <div className="w-40 flex items-center gap-1.5 text-[#787774]">
+                <Tag className="w-3.5 h-3.5" />
+                <span className="font-medium">Target Journal</span>
+                <span className="text-[10px] font-semibold text-[#7C2D2B] bg-[#FDF0EF] border border-[#F7CECC] px-1.5 py-0.5 rounded">
+                  Required
+                </span>
+              </div>
+              <div className="flex-1">
+                <input
+                  type="text"
+                  value={targetJournal}
+                  onChange={(e) => handleTargetJournalChange(e.target.value)}
+                  placeholder="e.g., Cancer Discovery, Nature Genetics, IEEE TPAMI, Cell Reports..."
+                  className={`w-full text-xs px-2.5 py-1.5 rounded-lg transition ${
+                    targetJournalError
+                      ? "bg-[#FDF0EF] border border-[#F7CECC] text-[#7C2D2B] placeholder-[#A05E5C] focus:outline-none ring-1 ring-[#F7CECC]"
+                      : "bg-transparent hover:bg-white text-[#2F3437] placeholder-[#888888] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#0075eb]"
+                  }`}
+                />
+              </div>
             </div>
-            <div className="flex-1">
-              <input
-                type="text"
-                value={targetJournal}
-                onChange={(e) => setTargetJournal(e.target.value)}
-                placeholder="e.g., Nature Communications, Cell, Lancet"
-                className="w-full bg-transparent text-[#2F3437] placeholder-[#888888] focus:outline-none text-xs hover:bg-white px-2 py-1 rounded-lg transition"
-              />
-            </div>
+            {targetJournalError && (
+              <div className="ml-40 text-[11px] text-[#7C2D2B] font-medium flex items-center gap-1">
+                <AlertCircle className="w-3 h-3 text-[#7C2D2B]" />
+                <span>Target Journal is required for calibrated rubric evaluation.</span>
+              </div>
+            )}
+            {!targetJournal && (
+              <div className="ml-40 flex flex-wrap items-center gap-1 text-[10px] text-[#787774] pt-0.5">
+                <span className="text-[#9B9A97]">Quick Pick:</span>
+                {[
+                  "Nature Medicine",
+                  "Cancer Discovery",
+                  "IEEE TPAMI",
+                  "Cell Reports",
+                  "Nature Communications",
+                  "PNAS"
+                ].map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => handleTargetJournalChange(s)}
+                    className="px-1.5 py-0.5 rounded bg-white border border-[#EBEBEA] hover:border-[#787774] text-[#2F3437] transition cursor-pointer"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Property 2: AI Diagnostic Engine */}
@@ -683,19 +749,45 @@ export default function ScanPage() {
         {/* Diagnostic Report Results (Notion Document View) */}
         {report && (
           <div className="space-y-8 animate-fade-in">
+            {/* Printable Official Header (Visible on PDF Export / Print Only) */}
+            <div className="hidden print:block pb-4 mb-4 border-b-2 border-[#2F3437]">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-xl font-bold font-serif text-[#2F3437]">ManuView Academic Pre-Submission Diagnostic Report</div>
+                  <div className="text-xs text-[#787774]">Independent Peer-Review &amp; Editorial Compliance Audit</div>
+                </div>
+                <div className="text-right text-xs text-[#787774]">
+                  <div>Date: {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+                  <div>Target Journal: <strong className="text-[#2F3437]">{report.targetJournal || "Not Specified"}</strong></div>
+                </div>
+              </div>
+            </div>
+
             {/* Top Navigation Bar in Results */}
-            <div className="flex items-center justify-between pb-3 border-b border-[#EBEBEA]">
+            <div className="flex items-center justify-between pb-3 border-b border-[#EBEBEA] print:hidden">
               <button
                 onClick={() => setReport(null)}
-                className="flex items-center gap-1.5 text-xs text-[#787774] hover:text-[#2F3437] hover:bg-[#F7F7F5] px-2.5 py-1 rounded-lg transition"
+                className="flex items-center gap-1.5 text-xs text-[#787774] hover:text-[#2F3437] hover:bg-[#F7F7F5] px-2.5 py-1 rounded-lg transition cursor-pointer"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 <span>Back to Input</span>
               </button>
 
-              <div className="flex items-center gap-2 text-xs text-[#787774]">
-                <span>Target:</span>
-                <span className="text-[#2F3437] font-medium">{report.targetJournal || "General High Impact"}</span>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 text-xs text-[#787774]">
+                  <span>Target:</span>
+                  <span className="text-[#2F3437] font-medium bg-[#F7F7F5] px-2 py-0.5 rounded border border-[#EBEBEA]">{report.targetJournal || "General High Impact"}</span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleDownloadPDF}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#2F3437] text-white hover:bg-black transition shadow-xs cursor-pointer"
+                  title="Download / Save as PDF Diagnostic Report"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download PDF Report</span>
+                </button>
               </div>
             </div>
 
