@@ -206,6 +206,24 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
               <p className="text-[11px] text-slate-400 mt-1">
                 Saved securely only inside your browser&apos;s localStorage or use <code className="text-slate-300">.env.local</code>.
               </p>
+
+              {config.provider === "openai" && (
+                <div className="mt-3">
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    API Base URL (for Custom OpenAI Proxies)
+                  </label>
+                  <input
+                    type="text"
+                    value={config.baseUrl || ""}
+                    onChange={(e) => setConfig({ ...config, baseUrl: e.target.value })}
+                    placeholder="e.g. https://ai.psu.blue/v1 (or leave blank for default OpenAI)"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-sm text-white focus:outline-none focus:border-emerald-500 font-mono transition"
+                  />
+                  <p className="text-[11px] text-slate-400 mt-1">
+                    Compatible with custom endpoints like <code className="text-emerald-400">https://ai.psu.blue/v1</code>.
+                  </p>
+                </div>
+              )}
             </div>
           ) : (
             <div>

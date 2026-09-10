@@ -1,0 +1,118 @@
+export type ScoreDimension = 
+  | 'originality'
+  | 'broad_interest'
+  | 'claims_vs_evidence'
+  | 'methodology'
+  | 'clarity'
+  | 'prior_work';
+
+export interface DimensionScore {
+  score: number; // 1 to 5
+  label: string;
+  verdict: string;
+  strengths: string[];
+  vulnerabilities: string[];
+}
+
+export type PriorityLevel = 'A' | 'B' | 'C';
+
+export interface PriorityIssue {
+  id: string;
+  priority: PriorityLevel;
+  title: string;
+  category: 'Methodology' | 'Causal Claims' | 'Statistics' | 'Citations' | 'Scope/Fit' | 'Clarity';
+  description: string;
+  location?: string;
+  reviewerQuote: string; // How a reviewer or editor would formulate this critique
+  actionableFix: string; // Specific concrete step to resolve before submission
+}
+
+export interface ReviewerPersonaFeedback {
+  persona: 'methods_reviewer' | 'domain_expert' | 'journal_editor' | 'statistician';
+  name: string;
+  roleDescription: string;
+  keyChallenge: string;
+  assessment: string;
+  mustAddressItems: string[];
+}
+
+export interface ReferenceVerification {
+  raw: string;
+  doi?: string;
+  title?: string;
+  authors?: string[];
+  year?: number;
+  journal?: string;
+  status: 'valid' | 'retracted' | 'unresolvable' | 'expression_of_concern';
+  isRetracted: boolean;
+  retractionDetails?: string;
+  crossrefUrl?: string;
+}
+
+export interface CitationIntegritySummary {
+  totalReferences: number;
+  verifiedCount: number;
+  unresolvableCount: number; // Potential AI hallucination
+  retractedCount: number;
+  selfCitationRatio: number;
+  recencyProfile: {
+    last5YearsPercent: number;
+    olderThan5YearsPercent: number;
+  };
+  references: ReferenceVerification[];
+}
+
+export interface JournalRecommendation {
+  tier: 'Reach' | 'Realistic' | 'Fallback';
+  journalName: string;
+  impactFactor: number | string;
+  publisher: string;
+  fitScore: number; // percentage 0-100
+  scopeRationale: string;
+  rejectionRisks: string[];
+  requiredRevisionsForFit: string[];
+}
+
+export interface ManuscriptSection {
+  title: string;
+  content: string;
+}
+
+export interface ParsedManuscript {
+  title: string;
+  abstract: string;
+  authors: string[];
+  wordCount: number;
+  sections: {
+    introduction?: string;
+    methods?: string;
+    results?: string;
+    discussion?: string;
+    conclusion?: string;
+  };
+  rawText: string;
+  references: string[];
+}
+
+export interface FullReviewReport {
+  id: string;
+  createdAt: string;
+  title: string;
+  targetJournal?: string;
+  overallScore: number; // 0 to 100
+  summary: string;
+  dimensions: Record<ScoreDimension, DimensionScore>;
+  priorityIssues: PriorityIssue[];
+  reviewerPersonas: ReviewerPersonaFeedback[];
+  journalRecommendations: JournalRecommendation[];
+  citationIntegrity: CitationIntegritySummary;
+}
+
+export type LLMProvider = 'ollama' | 'gemini' | 'groq' | 'openai' | 'anthropic';
+
+export interface ProviderConfig {
+  provider: LLMProvider;
+  model: string;
+  baseUrl?: string; // e.g. http://localhost:11434 for Ollama
+  apiKey?: string;
+}

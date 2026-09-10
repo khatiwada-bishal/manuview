@@ -21,8 +21,8 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
+/lib/
+/lib64/
 parts/
 sdist/
 var/
@@ -65,10 +65,10 @@ lerna-debug.log*
 
 # Environment & Secrets
 .env
-.env*.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env*
+*.env
+*.rtf
+*.local
 
 # IDE & OS
 .DS_Store
