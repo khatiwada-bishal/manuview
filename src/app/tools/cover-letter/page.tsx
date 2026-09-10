@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
-import { FileText, Copy, Check, Sparkles, RefreshCw, AlertCircle } from "lucide-react";
+import { FileText, Copy, Check, Sparkles, RefreshCw, AlertCircle, Download } from "lucide-react";
 import JournalCombobox from "@/components/JournalCombobox";
 
 export default function CoverLetterPage() {
   const [title, setTitle] = useState("");
   const [targetJournal, setTargetJournal] = useState("Nature Communications");
+  const [abstract, setAbstract] = useState("");
+  const [keywords, setKeywords] = useState("");
   const [mainFindings, setMainFindings] = useState("");
   const [broadSignificance, setBroadSignificance] = useState("");
   const [suggestedReviewers, setSuggestedReviewers] = useState("");
@@ -18,15 +20,30 @@ export default function CoverLetterPage() {
   const handleSample = () => {
     setTitle("Single-cell transcriptional profiling of DLL3 activation in neuroendocrine lung carcinoma");
     setTargetJournal("Nature Communications");
+    setAbstract("Small cell lung cancer (SCLC) exhibits rapid recurrence and therapy resistance. Delta-like ligand 3 (DLL3) is an established cell-surface target for antibody-drug conjugates and T-cell engagers. However, the precise cis-regulatory mechanisms controlling DLL3 transcription remain uncharacterized. Here, we perform marker-based CRISPR-Cas9 screens and identify the transcription factor POU2F1 as a primary driver of DLL3 expression. We demonstrate that POU2F1 directly binds the DLL3 distal enhancer element to drive chemoresistance in clinical isolates. Knockdown of POU2F1 caused significant downregulation of DLL3 mRNA across 8 patient-derived organoid lines. Our findings provide a mechanistic framework for DLL3 regulation and suggest POU2F1 as a candidate predictive biomarker for clinical stratification.");
+    setKeywords("small cell lung cancer, DLL3, POU2F1, CRISPR-Cas9 screen, transcriptional regulation, organoids, chemoresistance");
     setMainFindings("Nominated transcription factor POU2F1 as the primary upstream regulator of DLL3 through genome-wide CRISPR knockout screens across 8 patient-derived organoid lines.");
     setBroadSignificance("Identifies the missing transcriptional mechanism behind DLL3 expression in small cell lung cancer and offers a biomarker to stratify patient response to T-cell engager therapies.");
     setSuggestedReviewers("Dr. Jane Doe (Memorial Sloan Kettering, no conflicts), Dr. Alan Smith (Francis Crick Institute, no conflicts)");
+    setError(null);
   };
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || !targetJournal) {
-      setError("Please provide at least the manuscript title and target journal.");
+    if (!targetJournal.trim()) {
+      setError("Please specify a Target Journal.");
+      return;
+    }
+    if (!title.trim()) {
+      setError("Please provide the Manuscript Title.");
+      return;
+    }
+    if (!abstract.trim()) {
+      setError("Please provide the Manuscript Abstract.");
+      return;
+    }
+    if (!keywords.trim()) {
+      setError("Please provide at least 2-3 Keywords.");
       return;
     }
 
@@ -41,6 +58,8 @@ export default function CoverLetterPage() {
         body: JSON.stringify({
           title,
           targetJournal,
+          abstract,
+          keywords,
           mainFindings,
           broadSignificance,
           suggestedReviewers,
@@ -96,20 +115,7 @@ export default function CoverLetterPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-[#374151] mb-1">
-                  Manuscript Title
-                </label>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. Single-cell transcriptional..."
-                  className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-teal-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#374151] mb-1">
-                  Target Journal
+                  Target Journal <span className="text-[#E03E3E] font-bold text-xs">*</span>
                 </label>
                 <JournalCombobox
                   value={targetJournal}
@@ -117,32 +123,88 @@ export default function CoverLetterPage() {
                   placeholder="e.g. Nature Communications, Cell"
                 />
               </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#374151] mb-1">
+                  Manuscript Title <span className="text-[#E03E3E] font-bold text-xs">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="e.g. Single-cell transcriptional profiling of..."
+                  className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-teal-500"
+                />
+              </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-[#374151] mb-1">
-                Primary Findings &amp; Evidence
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#374151]">
+                  Manuscript Abstract <span className="text-[#E03E3E] font-bold text-xs">*</span>
+                </label>
+                <span className="text-[11px] text-neutral-400">
+                  {abstract.trim() ? `${abstract.trim().split(/\s+/).length} words` : "Mandatory"}
+                </span>
+              </div>
               <textarea
-                rows={2}
-                value={mainFindings}
-                onChange={(e) => setMainFindings(e.target.value)}
-                placeholder="What was discovered? What experimental proof was provided?"
-                className="w-full p-3 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-teal-500"
+                rows={4}
+                value={abstract}
+                onChange={(e) => setAbstract(e.target.value)}
+                placeholder="Paste the complete abstract (core research question, methodology, primary findings, and conclusion)..."
+                className="w-full p-3 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-teal-500 leading-relaxed"
               />
             </div>
 
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-[#374151] mb-1">
-                Broader Impact / Fit with Journal Readership
+                Manuscript Keywords <span className="text-[#E03E3E] font-bold text-xs">*</span>
               </label>
-              <textarea
-                rows={2}
-                value={broadSignificance}
-                onChange={(e) => setBroadSignificance(e.target.value)}
-                placeholder="Why should the journal's audience care about this today?"
-                className="w-full p-3 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-teal-500"
+              <input
+                type="text"
+                value={keywords}
+                onChange={(e) => setKeywords(e.target.value)}
+                placeholder="Comma-separated keywords, e.g. CRISPR screen, organoids, chemoresistance, oncology"
+                className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-teal-500"
               />
+            </div>
+
+            {/* Optional Section */}
+            <div className="pt-3 border-t border-[#E5E7EB] space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">
+                  Optional Highlights
+                </span>
+                <span className="text-[11px] text-neutral-400">
+                  If omitted, synthesized automatically from Abstract
+                </span>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-[#374151] mb-1">
+                  Primary Findings &amp; Evidence <span className="text-neutral-400 font-normal text-[11px]">(Optional)</span>
+                </label>
+                <textarea
+                  rows={2}
+                  value={mainFindings}
+                  onChange={(e) => setMainFindings(e.target.value)}
+                  placeholder="Key breakthroughs or experimental data you specifically want highlighted in the cover letter..."
+                  className="w-full p-3 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-teal-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-[#374151] mb-1">
+                  Broader Impact / Fit with Journal Readership <span className="text-neutral-400 font-normal text-[11px]">(Optional)</span>
+                </label>
+                <textarea
+                  rows={2}
+                  value={broadSignificance}
+                  onChange={(e) => setBroadSignificance(e.target.value)}
+                  placeholder="Why the journal's specific readership should care about this discovery today..."
+                  className="w-full p-3 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-teal-500"
+                />
+              </div>
             </div>
 
             {error && (
@@ -155,7 +217,7 @@ export default function CoverLetterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-black hover:bg-neutral-800 disabled:opacity-50 text-white font-semibold text-xs shadow-lg transition flex items-center justify-center gap-2"
+              className="w-full py-3 rounded-xl bg-black hover:bg-neutral-800 disabled:opacity-50 text-white font-semibold text-xs shadow-lg transition flex items-center justify-center gap-2 cursor-pointer"
             >
               {loading ? (
                 <>
@@ -173,19 +235,42 @@ export default function CoverLetterPage() {
         </div>
 
         {letter && (
-          <div className="rounded-2xl bg-slate-900/60 border border-slate-800 p-6 space-y-4">
-            <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-3">
-              <span className="text-xs font-semibold text-white">Generated Cover Letter Draft</span>
-              <button
-                onClick={handleCopy}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 transition"
-              >
-                {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>{copied ? "Copied" : "Copy Letter"}</span>
-              </button>
+          <div className="rounded-2xl bg-[#0F121C] border border-white/10 p-6 space-y-4 shadow-xl">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
+              <div>
+                <span className="text-sm font-semibold text-white">Generated Submission Cover Letter</span>
+                <p className="text-xs text-neutral-400 mt-0.5">Addressed to the Senior Editor of {targetJournal}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const blob = new Blob([letter], { type: "text/plain;charset=utf-8" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = `Cover_Letter_${targetJournal.replace(/[^a-zA-Z0-9_-]/g, "_")}.txt`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs text-white transition cursor-pointer"
+                  title="Download plain text file"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download .txt</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCopy}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white text-black hover:bg-neutral-200 text-xs font-semibold transition cursor-pointer shadow-xs"
+                >
+                  {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span>{copied ? "Copied!" : "Copy Letter"}</span>
+                </button>
+              </div>
             </div>
 
-            <div className="p-6 rounded-xl bg-white border border-[#D1D5DB] text-xs text-slate-300 whitespace-pre-wrap font-serif leading-relaxed">
+            <div className="p-8 rounded-xl bg-white border border-[#E5E7EB] text-xs sm:text-sm text-[#1E293B] whitespace-pre-wrap font-serif leading-relaxed shadow-sm">
               {letter}
             </div>
           </div>
