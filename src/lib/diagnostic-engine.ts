@@ -1,4 +1,4 @@
-import { FullReviewReport, ParsedManuscript, ProviderConfig, CitationIntegritySummary } from "./types";
+import { FullReviewReport, ParsedManuscript, ProviderConfig, CitationIntegritySummary, ReviewerPersonaFeedback } from "./types";
 import { callLLM } from "./llm";
 import { batchVerifyReferences } from "./crossref";
 import { findMatchingJournals } from "./journals";
@@ -172,7 +172,7 @@ Please return your analysis as a JSON object with this exact structure:
     });
   }
 
-  const finalPersonas = parsedLLM?.reviewerPersonas || [
+  const canonicalPersonas: ReviewerPersonaFeedback[] = [
     {
       persona: "methods_reviewer",
       name: "Dr. A. Vance (Methods Reviewer)",
@@ -206,6 +206,21 @@ Please return your analysis as a JSON object with this exact structure:
       mustAddressItems: ["Report adjusted p-values (q-values) for all pairwise comparisons"]
     }
   ];
+
+  const rawLLMPersonas = Array.isArray(parsedLLM?.reviewerPersonas) ? parsedLLM.reviewerPersonas : [];
+  const finalPersonas: ReviewerPersonaFeedback[] = canonicalPersonas.map(defaultP => {
+    const matched = rawLLMPersonas.find((p: any) => p && p.persona === defaultP.persona);
+    if (matched && matched.assessment && matched.keyChallenge) {
+      return {
+        ...defaultP,
+        ...matched,
+        mustAddressItems: (Array.isArray(matched.mustAddressItems) && matched.mustAddressItems.length > 0)
+          ? matched.mustAddressItems
+          : defaultP.mustAddressItems
+      };
+    }
+    return defaultP;
+  });
 
   return {
     id: "rev_" + Math.random().toString(36).substring(2, 9),
