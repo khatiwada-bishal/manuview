@@ -18,124 +18,120 @@ import {
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col bg-[#191919] text-[#e6e6e6]">
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-20 pb-28 border-b border-slate-800 bg-gradient-to-b from-slate-950 via-slate-900 to-[#090d16]">
-        {/* Glow accents */}
-        <div className="absolute top-1/4 -left-48 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-10 -right-48 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+      <section className="relative overflow-hidden pt-16 pb-24 border-b border-[#2e2e2e]">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 relative z-10 text-center">
+          {/* Notion Page Icon & Mission Tag */}
+          <div className="text-4xl mb-4 select-none">🔬</div>
+          
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-normal bg-[#222222] text-[#9b9a97] border border-[#333333] mb-6">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            <span>Open Source &bull; Education &amp; Science Belong to Everyone</span>
+          </div>
 
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
-            {/* Mission Badge */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 mb-8 shadow-inner">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              100% Free &amp; Open Source &bull; Education &amp; Science Belong to Everyone
+          <h1 className="text-3xl sm:text-5xl font-serif font-bold text-white mb-5 leading-tight tracking-tight">
+            Catch what peer reviewers will, <br />
+            <span className="text-emerald-400">
+              before you submit.
+            </span>
+          </h1>
+
+          <p className="text-sm sm:text-base text-[#9b9a97] mb-8 leading-relaxed max-w-xl mx-auto font-light">
+            Stop paying commercial services $39 to $1,800 for surface-level manuscript reviews. ManuView applies an authentic top-journal peer-review rubric to diagnose desk-rejection hazards, causal overclaims, and citation bugs—for free.
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Link
+              href="/scan"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-md bg-[#252525] hover:bg-[#2d2d2d] text-white font-medium text-xs sm:text-sm border border-[#3d3d3d] hover:border-[#555555] active:scale-95 transition"
+            >
+              <Sparkles className="w-4 h-4 text-emerald-400" />
+              <span>Run Free Manuscript Scan</span>
+              <ArrowRight className="w-3.5 h-3.5 text-[#8a8a86]" />
+            </Link>
+
+            <Link
+              href="/tools"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-md bg-transparent hover:bg-[#222222] text-[#9b9a97] hover:text-[#e6e6e6] border border-[#2e2e2e] font-normal text-xs sm:text-sm transition"
+            >
+              Explore 8 Research Tools
+            </Link>
+          </div>
+
+          {/* Quick stats in Notion metadata style */}
+          <div className="mt-12 grid grid-cols-3 gap-3 border-t border-[#2e2e2e] pt-6 text-left max-w-md mx-auto">
+            <div className="p-2.5 rounded-lg bg-[#202020] border border-[#2e2e2e]">
+              <div className="text-lg font-serif font-bold text-white">6-Dim</div>
+              <div className="text-[11px] text-[#8a8a86]">Editorial Rubric</div>
             </div>
-
-            <h1 className="text-4xl sm:text-6xl font-bold font-serif tracking-tight text-white mb-6 leading-[1.12]">
-              Catch what reviewers will, <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">
-                before you submit.
-              </span>
-            </h1>
-
-            <p className="text-lg sm:text-xl text-slate-300 mb-10 leading-relaxed max-w-2xl mx-auto font-light">
-              Stop paying commercial services $39 to $1,800 to review your manuscript. ManuView applies a reviewer-calibrated peer-review rubric to surface desk-rejection hazards, causal overclaims, and citation bugs—for free.
-            </p>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link
-                href="/scan"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-base shadow-xl shadow-emerald-600/25 active:scale-95 transition"
-              >
-                <Sparkles className="w-5 h-5" />
-                <span>Run Free Manuscript Scan</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-
-              <Link
-                href="/tools"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-4 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-200 border border-slate-700/80 font-medium text-base hover:text-white transition"
-              >
-                Explore 8 Research Tools
-              </Link>
+            <div className="p-2.5 rounded-lg bg-[#202020] border border-[#2e2e2e]">
+              <div className="text-lg font-serif font-bold text-emerald-400">100% Free</div>
+              <div className="text-[11px] text-[#8a8a86]">Zero Paywalls</div>
             </div>
-
-            {/* Quick stats / Highlights */}
-            <div className="mt-14 grid grid-cols-3 gap-4 border-t border-slate-800/80 pt-8 text-left max-w-xl mx-auto">
-              <div>
-                <div className="text-2xl font-bold text-white font-serif">6-Dim</div>
-                <div className="text-xs text-slate-400">Peer-Review Rubric</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-emerald-400 font-serif">100% Free</div>
-                <div className="text-xs text-slate-400">Zero Paywalls Ever</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-cyan-400 font-serif">Local AI</div>
-                <div className="text-xs text-slate-400">Ollama Offline Privacy</div>
-              </div>
+            <div className="p-2.5 rounded-lg bg-[#202020] border border-[#2e2e2e]">
+              <div className="text-lg font-serif font-bold text-blue-400">Local AI</div>
+              <div className="text-[11px] text-[#8a8a86]">Ollama Offline</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Philosophy / Differentiation Table */}
-      <section className="py-20 bg-slate-950 border-b border-slate-800">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-14">
-            <h2 className="text-xs font-semibold uppercase tracking-widest text-emerald-400 mb-2">
-              Why We Built ManuView
-            </h2>
-            <p className="text-3xl font-serif font-bold text-white mb-4">
+      {/* Philosophy / Differentiation Table (Notion Database Table style) */}
+      <section className="py-16 border-b border-[#2e2e2e]">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6">
+          <div className="text-center max-w-xl mx-auto mb-10">
+            <div className="text-xs font-medium uppercase tracking-widest text-[#8a8a86] mb-1.5">
+              The Peer-Review Philosophy
+            </div>
+            <h2 className="text-2xl font-serif font-bold text-white mb-2">
               Scientific critique is not grammar polishing.
-            </p>
-            <p className="text-slate-400 text-sm">
+            </h2>
+            <p className="text-xs text-[#9b9a97]">
               Generic LLMs are flattering, and grammar checkers only see commas. Editors desk-reject on methodology and overclaims.
             </p>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse rounded-2xl overflow-hidden border border-slate-800 text-left text-sm bg-slate-900/40">
+          <div className="overflow-x-auto rounded-lg border border-[#2e2e2e] bg-[#202020]">
+            <table className="w-full border-collapse text-left text-xs">
               <thead>
-                <tr className="border-b border-slate-800 bg-slate-900/80 text-xs font-semibold uppercase tracking-wider text-slate-400">
-                  <th className="p-4 sm:p-5">Dimension</th>
-                  <th className="p-4 sm:p-5">Grammar Tools (Paperpal, Grammarly)</th>
-                  <th className="p-4 sm:p-5">Generic LLMs (ChatGPT, Claude)</th>
-                  <th className="p-4 sm:p-5 text-emerald-300 bg-emerald-950/30">ManuView (Open Source)</th>
+                <tr className="border-b border-[#2e2e2e] bg-[#1a1a1a] text-[11px] font-medium uppercase tracking-wider text-[#8a8a86]">
+                  <th className="p-3.5">Dimension</th>
+                  <th className="p-3.5">Grammar Checkers</th>
+                  <th className="p-3.5">Generic LLMs</th>
+                  <th className="p-3.5 text-emerald-400 bg-[#1c2e24]">ManuView (Open Source)</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800 text-slate-300">
+              <tbody className="divide-y divide-[#2a2a2a] text-[#cccccc]">
                 <tr>
-                  <td className="p-4 sm:p-5 font-semibold text-white">Focus Level</td>
-                  <td className="p-4 sm:p-5 text-slate-400">Sentence level (typos, passive voice)</td>
-                  <td className="p-4 sm:p-5 text-slate-400">Conversational summaries &amp; rewriting</td>
-                  <td className="p-4 sm:p-5 font-medium text-emerald-200 bg-emerald-950/20">Manuscript-level scientific &amp; structural critique</td>
+                  <td className="p-3.5 font-medium text-white">Focus Level</td>
+                  <td className="p-3.5 text-[#8a8a86]">Sentence level (typos, passive voice)</td>
+                  <td className="p-3.5 text-[#8a8a86]">Conversational summaries &amp; rewriting</td>
+                  <td className="p-3.5 font-medium text-[#4dab83] bg-[#1c2e24]/40">Manuscript-level scientific critique</td>
                 </tr>
                 <tr>
-                  <td className="p-4 sm:p-5 font-semibold text-white">Reviewer Posture</td>
-                  <td className="p-4 sm:p-5 text-slate-400">Mechanical spelling correction</td>
-                  <td className="p-4 sm:p-5 text-slate-400">Agreeable / flattering bias</td>
-                  <td className="p-4 sm:p-5 font-medium text-emerald-200 bg-emerald-950/20">Calibrated top-journal editorial skepticism</td>
+                  <td className="p-3.5 font-medium text-white">Reviewer Posture</td>
+                  <td className="p-3.5 text-[#8a8a86]">Mechanical spelling correction</td>
+                  <td className="p-3.5 text-[#8a8a86]">Agreeable / flattering bias</td>
+                  <td className="p-3.5 font-medium text-[#4dab83] bg-[#1c2e24]/40">Top-journal editorial skepticism</td>
                 </tr>
                 <tr>
-                  <td className="p-4 sm:p-5 font-semibold text-white">Critical Detection</td>
-                  <td className="p-4 sm:p-5 text-slate-400">Grammar &amp; word choice</td>
-                  <td className="p-4 sm:p-5 text-slate-400">Misses unsupported causal links</td>
-                  <td className="p-4 sm:p-5 font-medium text-emerald-200 bg-emerald-950/20">Causal overclaims, missing controls, power gaps</td>
+                  <td className="p-3.5 font-medium text-white">Critical Detection</td>
+                  <td className="p-3.5 text-[#8a8a86]">Grammar &amp; word choice</td>
+                  <td className="p-3.5 text-[#8a8a86]">Misses unsupported causal links</td>
+                  <td className="p-3.5 font-medium text-[#4dab83] bg-[#1c2e24]/40">Causal overclaims, missing controls, power gaps</td>
                 </tr>
                 <tr>
-                  <td className="p-4 sm:p-5 font-semibold text-white">Citation Integrity</td>
-                  <td className="p-4 sm:p-5 text-slate-400">Formatting style only</td>
-                  <td className="p-4 sm:p-5 text-slate-400">Frequently hallucinates fake papers</td>
-                  <td className="p-4 sm:p-5 font-medium text-emerald-200 bg-emerald-950/20">Real-time Crossref &amp; Retraction Watch verification</td>
+                  <td className="p-3.5 font-medium text-white">Citation Integrity</td>
+                  <td className="p-3.5 text-[#8a8a86]">Formatting style only</td>
+                  <td className="p-3.5 text-[#8a8a86]">Frequently hallucinates fake papers</td>
+                  <td className="p-3.5 font-medium text-[#4dab83] bg-[#1c2e24]/40">Live Crossref &amp; Retraction Watch verification</td>
                 </tr>
                 <tr>
-                  <td className="p-4 sm:p-5 font-semibold text-white">Cost &amp; Access</td>
-                  <td className="p-4 sm:p-5 text-slate-400">$20 - $30 / month</td>
-                  <td className="p-4 sm:p-5 text-slate-400">$20 / month + cloud logging</td>
-                  <td className="p-4 sm:p-5 font-semibold text-emerald-300 bg-emerald-950/30">100% Free &amp; Run Offline via Ollama</td>
+                  <td className="p-3.5 font-medium text-white">Cost &amp; Access</td>
+                  <td className="p-3.5 text-[#8a8a86]">$20 - $30 / month</td>
+                  <td className="p-3.5 text-[#8a8a86]">$20 / month + cloud logging</td>
+                  <td className="p-3.5 font-medium text-[#4dab83] bg-[#1c2e24]/60">100% Free &amp; Run Offline via Ollama</td>
                 </tr>
               </tbody>
             </table>
@@ -144,180 +140,154 @@ export default function HomePage() {
       </section>
 
       {/* The 6 Scoring Dimensions */}
-      <section className="py-24 bg-[#090d16] border-b border-slate-800">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-xs font-semibold uppercase tracking-widest text-emerald-400 mb-2">
+      <section className="py-16 border-b border-[#2e2e2e]">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6">
+          <div className="text-center max-w-xl mx-auto mb-10">
+            <div className="text-xs font-medium uppercase tracking-widest text-[#8a8a86] mb-1.5">
               The Peer-Review Rubric
+            </div>
+            <h2 className="text-2xl font-serif font-bold text-white mb-2">
+              The 6 dimensions journal editors screen in triage
             </h2>
-            <p className="text-3xl sm:text-4xl font-serif font-bold text-white mb-4">
-              The 6 dimensions journal editors screen during triage
-            </p>
-            <p className="text-slate-400 text-sm">
-              Each dimension is scored 1 to 5, calibrated against publication expectations at journals like Nature, Cell, Science, and The Lancet.
+            <p className="text-xs text-[#9b9a97]">
+              Each dimension is scored 1 to 5, calibrated against high-impact publication expectations.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {/* Dim 1 */}
-            <div className="p-6 rounded-2xl bg-slate-900/50 border border-slate-800 hover:border-slate-700 transition">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold font-serif mb-4 border border-emerald-500/20">
+            <div className="p-4 rounded-lg bg-[#202020] border border-[#2e2e2e] hover:border-[#383838] transition">
+              <div className="w-7 h-7 rounded bg-[#2a2a2a] text-white flex items-center justify-center font-bold text-xs mb-3">
                 1
               </div>
-              <h3 className="text-lg font-serif font-semibold text-white mb-2">Originality &amp; Novelty</h3>
-              <p className="text-xs text-slate-400 leading-relaxed mb-4">
-                Does the draft introduce a genuinely new finding, mechanism, or algorithm? Flags incremental-only advances and derivative framings.
+              <h3 className="text-sm font-semibold text-white mb-1.5">Originality &amp; Novelty</h3>
+              <p className="text-xs text-[#9b9a97] leading-relaxed mb-3">
+                Does the draft introduce a genuinely new finding, mechanism, or algorithm? Flags incremental-only advances.
               </p>
-              <div className="text-[11px] text-emerald-300/80 bg-emerald-950/40 p-2.5 rounded-lg border border-emerald-500/10">
-                Catches: “Incremental delta over 2023 baselines without paradigm improvement.”
+              <div className="text-[11px] text-[#4dab83] bg-[#1c2e24] p-2 rounded border border-[#284a36]">
+                Catches: &ldquo;Incremental delta without paradigm improvement.&rdquo;
               </div>
             </div>
 
             {/* Dim 2 */}
-            <div className="p-6 rounded-2xl bg-slate-900/50 border border-slate-800 hover:border-slate-700 transition">
-              <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center font-bold font-serif mb-4 border border-blue-500/20">
+            <div className="p-4 rounded-lg bg-[#202020] border border-[#2e2e2e] hover:border-[#383838] transition">
+              <div className="w-7 h-7 rounded bg-[#2a2a2a] text-white flex items-center justify-center font-bold text-xs mb-3">
                 2
               </div>
-              <h3 className="text-lg font-serif font-semibold text-white mb-2">Importance &amp; Broad Interest</h3>
-              <p className="text-xs text-slate-400 leading-relaxed mb-4">
-                Would researchers outside the narrow subfield care? Checks whether the abstract links the discovery to fundamental field-level questions.
+              <h3 className="text-sm font-semibold text-white mb-1.5">Importance &amp; Broad Interest</h3>
+              <p className="text-xs text-[#9b9a97] leading-relaxed mb-3">
+                Would researchers outside the narrow subfield care? Checks whether the abstract links to fundamental questions.
               </p>
-              <div className="text-[11px] text-blue-300/80 bg-blue-950/40 p-2.5 rounded-lg border border-blue-500/10">
-                Catches: “Hyper-specialized focus lacking cross-disciplinary significance.”
+              <div className="text-[11px] text-[#529cca] bg-[#192636] p-2 rounded border border-[#254263]">
+                Catches: &ldquo;Hyper-specialized focus lacking cross-disciplinary impact.&rdquo;
               </div>
             </div>
 
             {/* Dim 3 */}
-            <div className="p-6 rounded-2xl bg-slate-900/50 border border-slate-800 hover:border-slate-700 transition">
-              <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold font-serif mb-4 border border-amber-500/20">
+            <div className="p-4 rounded-lg bg-[#202020] border border-[#2e2e2e] hover:border-[#383838] transition">
+              <div className="w-7 h-7 rounded bg-[#2a2a2a] text-white flex items-center justify-center font-bold text-xs mb-3">
                 3
               </div>
-              <h3 className="text-lg font-serif font-semibold text-white mb-2">Strength of Claims vs. Evidence</h3>
-              <p className="text-xs text-slate-400 leading-relaxed mb-4">
-                Scans for overstatement patterns: using &quot;demonstrates&quot; without mechanistic proof, claiming causation from correlative data, and missing negative controls.
+              <h3 className="text-sm font-semibold text-white mb-1.5">Claims vs. Evidence</h3>
+              <p className="text-xs text-[#9b9a97] leading-relaxed mb-3">
+                Scans for overstatement patterns: claiming causation from correlative data, and missing negative controls.
               </p>
-              <div className="text-[11px] text-amber-300/80 bg-amber-950/40 p-2.5 rounded-lg border border-amber-500/10">
-                Catches: “Causal claim made without rescue experiment or inhibitor.”
+              <div className="text-[11px] text-[#f1b854] bg-[#2e281b] p-2 rounded border border-[#4a3e26]">
+                Catches: &ldquo;Causal claim made without rescue experiment or inhibitor.&rdquo;
               </div>
             </div>
 
             {/* Dim 4 */}
-            <div className="p-6 rounded-2xl bg-slate-900/50 border border-slate-800 hover:border-slate-700 transition">
-              <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center font-bold font-serif mb-4 border border-purple-500/20">
+            <div className="p-4 rounded-lg bg-[#202020] border border-[#2e2e2e] hover:border-[#383838] transition">
+              <div className="w-7 h-7 rounded bg-[#2a2a2a] text-white flex items-center justify-center font-bold text-xs mb-3">
                 4
               </div>
-              <h3 className="text-lg font-serif font-semibold text-white mb-2">Methodological Soundness</h3>
-              <p className="text-xs text-slate-400 leading-relaxed mb-4">
-                Verifies sample size power justification, statistical test suitability, blinding, randomization, and figure-data consistency.
+              <h3 className="text-sm font-semibold text-white mb-1.5">Methodological Soundness</h3>
+              <p className="text-xs text-[#9b9a97] leading-relaxed mb-3">
+                Verifies sample size power justification, statistical test suitability, blinding, and randomization.
               </p>
-              <div className="text-[11px] text-purple-300/80 bg-purple-950/40 p-2.5 rounded-lg border border-purple-500/10">
-                Catches: “Underpowered cohort (n=6) without pre-specified power calculation.”
+              <div className="text-[11px] text-[#9a6dd7] bg-[#291f33] p-2 rounded border border-[#442c5c]">
+                Catches: &ldquo;Underpowered cohort (n=6) without power calculation.&rdquo;
               </div>
             </div>
 
             {/* Dim 5 */}
-            <div className="p-6 rounded-2xl bg-slate-900/50 border border-slate-800 hover:border-slate-700 transition">
-              <div className="w-10 h-10 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center font-bold font-serif mb-4 border border-teal-500/20">
+            <div className="p-4 rounded-lg bg-[#202020] border border-[#2e2e2e] hover:border-[#383838] transition">
+              <div className="w-7 h-7 rounded bg-[#2a2a2a] text-white flex items-center justify-center font-bold text-xs mb-3">
                 5
               </div>
-              <h3 className="text-lg font-serif font-semibold text-white mb-2">Clarity &amp; Narrative Flow</h3>
-              <p className="text-xs text-slate-400 leading-relaxed mb-4">
-                Evaluates abstract structure (Problem &rarr; Gap &rarr; Method &rarr; Finding &rarr; Impact), figure caption completeness, and readability.
+              <h3 className="text-sm font-semibold text-white mb-1.5">Clarity &amp; Narrative Flow</h3>
+              <p className="text-xs text-[#9b9a97] leading-relaxed mb-3">
+                Evaluates abstract structure (Problem &rarr; Gap &rarr; Method &rarr; Finding &rarr; Impact) and readability.
               </p>
-              <div className="text-[11px] text-teal-300/80 bg-teal-950/40 p-2.5 rounded-lg border border-teal-500/10">
-                Catches: “Missing knowledge gap bridge in opening paragraph.”
+              <div className="text-[11px] text-[#4dab83] bg-[#1c2e24] p-2 rounded border border-[#284a36]">
+                Catches: &ldquo;Missing knowledge gap bridge in opening paragraph.&rdquo;
               </div>
             </div>
 
             {/* Dim 6 */}
-            <div className="p-6 rounded-2xl bg-slate-900/50 border border-slate-800 hover:border-slate-700 transition">
-              <div className="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center font-bold font-serif mb-4 border border-rose-500/20">
+            <div className="p-4 rounded-lg bg-[#202020] border border-[#2e2e2e] hover:border-[#383838] transition">
+              <div className="w-7 h-7 rounded bg-[#2a2a2a] text-white flex items-center justify-center font-bold text-xs mb-3">
                 6
               </div>
-              <h3 className="text-lg font-serif font-semibold text-white mb-2">Prior Work &amp; Reference Integrity</h3>
-              <p className="text-xs text-slate-400 leading-relaxed mb-4">
-                Live verification of DOIs against Crossref and Retraction Watch. Flags hallucinated citations, retracted works, and high self-citation ratios.
+              <h3 className="text-sm font-semibold text-white mb-1.5">Prior Work &amp; Citations</h3>
+              <p className="text-xs text-[#9b9a97] leading-relaxed mb-3">
+                Live verification of DOIs against Crossref and Retraction Watch. Flags hallucinated citations and retracted works.
               </p>
-              <div className="text-[11px] text-rose-300/80 bg-rose-950/40 p-2.5 rounded-lg border border-rose-500/10">
-                Catches: “Unresolvable DOI indicating AI hallucination or retracted paper.”
+              <div className="text-[11px] text-[#ff7373] bg-[#2d1f1f] p-2 rounded border border-[#4a2b2b]">
+                Catches: &ldquo;Unresolvable DOI indicating AI hallucination or retracted paper.&rdquo;
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 4-Persona Reviewer Simulator Preview */}
-      <section className="py-24 bg-slate-950 border-b border-slate-800">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      {/* 4-Persona Reviewer Simulation Preview */}
+      <section className="py-16 border-b border-[#2e2e2e]">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 mb-4">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-normal bg-[#222222] text-[#9b9a97] border border-[#333333] mb-3">
                 <Users className="w-3.5 h-3.5" />
-                The Dossier Simulation
+                <span>The Persona Simulation</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl font-serif font-bold text-white mb-6 leading-tight">
-                Simulate your 4 peer reviewers before sending to an editor.
+              <h2 className="text-2xl font-serif font-bold text-white mb-3">
+                Simulate your 4 peer reviewers before the editor sees your draft.
               </h2>
-              <p className="text-slate-300 text-sm leading-relaxed mb-6 font-light">
-                Manuscripts are rarely rejected because of bad prose; they are rejected because one specific reviewer persona found a vulnerability they couldn&apos;t forgive. ManuView passes your paper through four specialized lenses:
+              <p className="text-xs text-[#9b9a97] leading-relaxed mb-5 font-light">
+                Manuscripts are rarely rejected because of grammar; they are rejected because one specific reviewer persona found a vulnerability they couldn&apos;t forgive.
               </p>
 
-              <div className="space-y-3.5 text-xs text-slate-300">
-                <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-900 border border-slate-800">
-                  <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400">
-                    <Scale className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="font-semibold text-white">Methods Reviewer:</span> Scrutinizes controls, protocols, reagents, and independent reproducibility.
-                  </div>
+              <div className="space-y-2 text-xs text-[#cccccc]">
+                <div className="p-2.5 rounded-lg bg-[#202020] border border-[#2e2e2e]">
+                  <span className="font-semibold text-white">🔬 Methods Specialist:</span> Scrutinizes controls, protocols, reagents, and reproducibility.
                 </div>
-
-                <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-900 border border-slate-800">
-                  <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400">
-                    <Search className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="font-semibold text-white">Domain Expert:</span> Evaluates biological/theoretical significance and compares against 2024 competitor baselines.
-                  </div>
+                <div className="p-2.5 rounded-lg bg-[#202020] border border-[#2e2e2e]">
+                  <span className="font-semibold text-white">🧬 Domain Expert:</span> Evaluates biological significance against competitor baselines.
                 </div>
-
-                <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-900 border border-slate-800">
-                  <div className="p-1.5 rounded-lg bg-amber-500/10 text-amber-400">
-                    <BookOpen className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="font-semibold text-white">Journal Editor:</span> Assesses desk-rejection risk, target audience appeal, and broad impact.
-                  </div>
+                <div className="p-2.5 rounded-lg bg-[#202020] border border-[#2e2e2e]">
+                  <span className="font-semibold text-white">📑 Journal Editor:</span> Assesses desk-rejection risk, target audience appeal, and broad scope.
                 </div>
-
-                <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-900 border border-slate-800">
-                  <div className="p-1.5 rounded-lg bg-purple-500/10 text-purple-400">
-                    <BarChart3 className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="font-semibold text-white">Biostatistician:</span> Checks normality distributions, p-hacking risks, and multiple testing corrections (FDR).
-                  </div>
+                <div className="p-2.5 rounded-lg bg-[#202020] border border-[#2e2e2e]">
+                  <span className="font-semibold text-white">📊 Biostatistician:</span> Checks normality distributions, p-hacking risks, and multiple testing corrections.
                 </div>
               </div>
             </div>
 
-            <div className="p-6 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 shadow-2xl">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
-                <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-rose-500/80" />
-                  <span className="text-xs font-semibold text-slate-200">Priority A Objection (Methods Reviewer)</span>
-                </div>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-semibold uppercase">
-                  Desk Reject Trigger
+            <div className="p-5 rounded-lg bg-[#202020] border border-[#2e2e2e] space-y-3">
+              <div className="flex items-center justify-between pb-2 border-b border-[#2e2e2e]">
+                <span className="text-xs font-medium text-white">Simulated Fatal Reviewer Objection</span>
+                <span className="text-[10px] px-2 py-0.5 rounded bg-[#2d1f1f] text-[#ff7373] border border-[#4a2b2b] uppercase font-bold">
+                  Priority A
                 </span>
               </div>
 
-              <blockquote className="text-xs italic text-slate-300 border-l-2 border-rose-500 pl-3 py-1 mb-4 leading-relaxed">
-                &quot;The authors assert in line 162 that compound K directly inhibits kinase phosphorylation. However, Western blot Figure 3B lacks the total protein loading control lane, and no rescue assay is presented. Without this, the causal claim cannot be accepted.&quot;
+              <blockquote className="text-xs italic text-[#cccccc] border-l-2 border-[#ff7373] pl-3 py-0.5 leading-relaxed font-serif">
+                &ldquo;The authors assert that compound K directly inhibits kinase phosphorylation. However, Figure 3B lacks the total protein loading control, and no rescue assay is presented. Without this, the causal claim cannot be accepted.&rdquo;
               </blockquote>
 
-              <div className="p-3 rounded-xl bg-slate-800/80 text-xs text-slate-300 border border-slate-700/60">
-                <span className="font-semibold text-emerald-400 block mb-1">Actionable Pre-Submission Resolution:</span>
+              <div className="p-3 rounded bg-[#1b251f] text-xs text-[#a3d4b6] border border-[#284232]">
+                <span className="font-semibold text-white block mb-0.5">Required Pre-Submission Resolution:</span>
                 Add the non-phosphorylated total protein control to Figure 3B, or revise text to describe association rather than direct inhibition.
               </div>
             </div>
@@ -326,101 +296,89 @@ export default function HomePage() {
       </section>
 
       {/* Free Research Tools Grid */}
-      <section className="py-24 bg-[#090d16] border-b border-slate-800">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-14">
+      <section className="py-16 border-b border-[#2e2e2e]">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8">
             <div>
-              <h2 className="text-xs font-semibold uppercase tracking-widest text-emerald-400 mb-2">
-                Standalone Utilities
+              <div className="text-xs font-medium uppercase tracking-widest text-[#8a8a86] mb-1">
+                Modular Utilities
+              </div>
+              <h2 className="text-2xl font-serif font-bold text-white">
+                Standalone submission tools
               </h2>
-              <p className="text-3xl font-serif font-bold text-white">
-                Modular submission tools for every step
-              </p>
             </div>
             <Link
               href="/tools"
-              className="mt-4 md:mt-0 text-xs font-medium text-emerald-400 hover:text-emerald-300 flex items-center gap-1"
+              className="mt-2 sm:mt-0 text-xs text-emerald-400 hover:text-emerald-300 font-medium"
             >
               View all 8 tools &rarr;
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <Link
               href="/tools/journal-fit"
-              className="p-6 rounded-2xl bg-slate-900/40 border border-slate-800 hover:border-emerald-500/40 hover:bg-slate-900/80 transition group"
+              className="p-4 rounded-lg bg-[#202020] border border-[#2e2e2e] hover:border-[#383838] transition"
             >
-              <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 w-fit mb-4 group-hover:scale-105 transition-transform">
-                <BookOpen className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-semibold text-white mb-2">Journal Fit Predictor</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Matches title + abstract against 1,300+ journals to rank Reach, Realistic, and Fallback venues with acceptance hazard notes.
+              <div className="text-xl mb-2 select-none">📖</div>
+              <h3 className="text-xs font-semibold text-white mb-1">Journal Fit Predictor</h3>
+              <p className="text-[11px] text-[#9b9a97] leading-relaxed">
+                Matches title + abstract against 1,300+ journals to rank Reach, Realistic, and Fallback venues.
               </p>
             </Link>
 
             <Link
               href="/tools/reference-checker"
-              className="p-6 rounded-2xl bg-slate-900/40 border border-slate-800 hover:border-emerald-500/40 hover:bg-slate-900/80 transition group"
+              className="p-4 rounded-lg bg-[#202020] border border-[#2e2e2e] hover:border-[#383838] transition"
             >
-              <div className="p-3 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20 w-fit mb-4 group-hover:scale-105 transition-transform">
-                <CheckCircle2 className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-semibold text-white mb-2">Reference &amp; Retraction Checker</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Paste your bibliography to check Crossref DOIs in real time, catching unresolvable AI hallucinations and retracted papers.
+              <div className="text-xl mb-2 select-none">🔍</div>
+              <h3 className="text-xs font-semibold text-white mb-1">Reference &amp; Retraction Checker</h3>
+              <p className="text-[11px] text-[#9b9a97] leading-relaxed">
+                Paste bibliography to verify Crossref DOIs in real time, catching hallucinations and retracted papers.
               </p>
             </Link>
 
             <Link
               href="/tools/citation-claim"
-              className="p-6 rounded-2xl bg-slate-900/40 border border-slate-800 hover:border-emerald-500/40 hover:bg-slate-900/80 transition group"
+              className="p-4 rounded-lg bg-[#202020] border border-[#2e2e2e] hover:border-[#383838] transition"
             >
-              <div className="p-3 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 w-fit mb-4 group-hover:scale-105 transition-transform">
-                <Sparkles className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-semibold text-white mb-2">Citation Claim Validator</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Validates whether the paper you cited actually supports the sentence you attached to it, offering evidence-aligned rewrites.
+              <div className="text-xl mb-2 select-none">✨</div>
+              <h3 className="text-xs font-semibold text-white mb-1">Citation Claim Validator</h3>
+              <p className="text-[11px] text-[#9b9a97] leading-relaxed">
+                Validates whether the cited study actually supports the sentence attached to it.
               </p>
             </Link>
 
             <Link
               href="/tools/prisma"
-              className="p-6 rounded-2xl bg-slate-900/40 border border-slate-800 hover:border-emerald-500/40 hover:bg-slate-900/80 transition group"
+              className="p-4 rounded-lg bg-[#202020] border border-[#2e2e2e] hover:border-[#383838] transition"
             >
-              <div className="p-3 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 w-fit mb-4 group-hover:scale-105 transition-transform">
-                <Layers className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-semibold text-white mb-2">PRISMA Flow Diagram Generator</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Client-side PRISMA 2020 systematic review flow diagram. Automatically catches arithmetic conflicts and exports clean SVG.
+              <div className="text-xl mb-2 select-none">📊</div>
+              <h3 className="text-xs font-semibold text-white mb-1">PRISMA Flow Diagram</h3>
+              <p className="text-[11px] text-[#9b9a97] leading-relaxed">
+                Client-side systematic review flow generator. Reconciles screening counts and exports SVG.
               </p>
             </Link>
 
             <Link
               href="/tools/cover-letter"
-              className="p-6 rounded-2xl bg-slate-900/40 border border-slate-800 hover:border-emerald-500/40 hover:bg-slate-900/80 transition group"
+              className="p-4 rounded-lg bg-[#202020] border border-[#2e2e2e] hover:border-[#383838] transition"
             >
-              <div className="p-3 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/20 w-fit mb-4 group-hover:scale-105 transition-transform">
-                <FileSearch className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-semibold text-white mb-2">Journal Cover Letter Generator</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Assembles an editor-ready formal submission letter conveying novelty, target journal fit, and non-preferred reviewers.
+              <div className="text-xl mb-2 select-none">✉️</div>
+              <h3 className="text-xs font-semibold text-white mb-1">Cover Letter Generator</h3>
+              <p className="text-[11px] text-[#9b9a97] leading-relaxed">
+                Drafts formal editor-ready submission letter conveying novelty, journal scope, and reviewers.
               </p>
             </Link>
 
             <Link
               href="/tools/response-builder"
-              className="p-6 rounded-2xl bg-slate-900/40 border border-slate-800 hover:border-emerald-500/40 hover:bg-slate-900/80 transition group"
+              className="p-4 rounded-lg bg-[#202020] border border-[#2e2e2e] hover:border-[#383838] transition"
             >
-              <div className="p-3 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20 w-fit mb-4 group-hover:scale-105 transition-transform">
-                <Users className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-semibold text-white mb-2">Response to Reviewers Workspace</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Converts unstructured decision letters into an itemized point-by-point rebuttal matrix and revision checklist.
+              <div className="text-xl mb-2 select-none">📝</div>
+              <h3 className="text-xs font-semibold text-white mb-1">Response to Reviewers</h3>
+              <p className="text-[11px] text-[#9b9a97] leading-relaxed">
+                Converts decision letters into a point-by-point rebuttal matrix and revision checklist.
               </p>
             </Link>
           </div>
@@ -428,20 +386,18 @@ export default function HomePage() {
       </section>
 
       {/* Local-First & Privacy Section */}
-      <section className="py-20 bg-slate-950 text-center">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          <div className="inline-flex p-3 rounded-2xl bg-emerald-500/10 text-emerald-400 mb-6 border border-emerald-500/20">
-            <ShieldCheck className="w-8 h-8" />
-          </div>
-          <h2 className="text-3xl font-serif font-bold text-white mb-4">
+      <section className="py-16 text-center">
+        <div className="mx-auto max-w-2xl px-4 sm:px-6">
+          <div className="text-3xl mb-3 select-none">🔒</div>
+          <h2 className="text-2xl font-serif font-bold text-white mb-2">
             Your unpublished research never leaves your control.
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-8 max-w-2xl mx-auto font-light">
-            You don&apos;t have to trust a commercial cloud with your sensitive unpublished discoveries. ManuView supports <strong>100% offline local AI execution</strong> using Ollama (<code className="text-emerald-300">llama3.3</code>, <code className="text-emerald-300">mistral</code>, or <code className="text-emerald-300">deepseek-r1</code>).
+          <p className="text-xs text-[#9b9a97] leading-relaxed mb-6 font-light">
+            You don&apos;t have to trust commercial clouds with your unpublished discoveries. ManuView supports <strong>100% offline local AI execution</strong> using Ollama (<code className="text-[#4dab83]">llama3.3</code>, <code className="text-[#4dab83]">mistral</code>, or <code className="text-[#4dab83]">deepseek-r1</code>).
           </p>
 
-          <div className="inline-flex items-center gap-2 p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300">
-            <Cpu className="w-4 h-4 text-emerald-400" />
+          <div className="inline-flex items-center gap-2 p-2.5 rounded-lg bg-[#202020] border border-[#2e2e2e] text-xs text-[#cccccc]">
+            <Cpu className="w-3.5 h-3.5 text-emerald-400" />
             <span>Zero model training &bull; Zero database retention &bull; 100% Open Source MIT License</span>
           </div>
         </div>

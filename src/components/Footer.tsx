@@ -4,38 +4,44 @@ import { Heart, ShieldCheck, FileSearch } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="border-t border-slate-800 bg-slate-950 text-slate-400 text-xs py-12">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
-          <div className="space-y-3 md:col-span-1">
-            <div className="flex items-center gap-2 text-white font-bold text-base">
-              <FileSearch className="w-5 h-5 text-emerald-400" />
-              ManuView
+    <footer className="border-t border-[#2e2e2e] bg-[#191919] text-[#8a8a86] text-xs py-10">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          <div className="space-y-2 md:col-span-1">
+            <div className="flex items-center gap-2 text-white font-semibold text-sm">
+              <div className="flex h-5 w-5 items-center justify-center rounded bg-[#252525] border border-[#333333] text-emerald-400">
+                <FileSearch className="w-3.5 h-3.5" />
+              </div>
+              <span>ManuView</span>
             </div>
-            <p className="text-slate-400 leading-relaxed text-xs">
+            <p className="text-[#8a8a86] leading-relaxed text-xs">
               An open-source pre-submission scientific peer-review diagnostic suite. Built to eliminate commercial paywalls on academic feedback.
             </p>
-            <div className="flex items-center gap-2 text-emerald-400 text-[11px]">
+            <div className="flex items-center gap-1.5 text-[#4dab83] text-[11px] pt-1">
               <ShieldCheck className="w-3.5 h-3.5" />
               <span>Zero data retention &bull; Privacy by default</span>
             </div>
           </div>
 
           <div>
-            <h4 className="font-semibold text-slate-200 mb-3 uppercase tracking-wider text-[11px]">Flagship Diagnostic</h4>
-            <ul className="space-y-2">
+            <h4 className="font-semibold text-white mb-2.5 uppercase tracking-wider text-[10px]">
+              Flagship Diagnostic
+            </h4>
+            <ul className="space-y-1.5">
               <li><Link href="/scan" className="hover:text-white transition">Pre-Submission Scan</Link></li>
-              <li><Link href="/examples" className="hover:text-white transition">6 Real Preprint Examples</Link></li>
-              <li><Link href="/scan#rubric" className="hover:text-white transition">The 6 Scoring Dimensions</Link></li>
-              <li><Link href="/scan#personas" className="hover:text-white transition">4-Persona Reviewer Simulation</Link></li>
+              <li><Link href="/examples" className="hover:text-white transition">Sample Preprints</Link></li>
+              <li><Link href="/scan" className="hover:text-white transition">The 6 Scoring Dimensions</Link></li>
+              <li><Link href="/scan" className="hover:text-white transition">4-Persona Reviewer Simulation</Link></li>
             </ul>
           </div>
 
           <div>
-            <h4 className="font-semibold text-slate-200 mb-3 uppercase tracking-wider text-[11px]">Free Research Tools</h4>
-            <ul className="space-y-2">
+            <h4 className="font-semibold text-white mb-2.5 uppercase tracking-wider text-[10px]">
+              Free Research Tools
+            </h4>
+            <ul className="space-y-1.5">
               <li><Link href="/tools/journal-fit" className="hover:text-white transition">Journal Fit Predictor</Link></li>
-              <li><Link href="/tools/reference-checker" className="hover:text-white transition">Reference & Retraction Checker</Link></li>
+              <li><Link href="/tools/reference-checker" className="hover:text-white transition">Reference &amp; Retraction Checker</Link></li>
               <li><Link href="/tools/citation-claim" className="hover:text-white transition">Citation Claim Validator</Link></li>
               <li><Link href="/tools/prisma" className="hover:text-white transition">PRISMA Flow Generator</Link></li>
               <li><Link href="/tools/cover-letter" className="hover:text-white transition">Cover Letter Generator</Link></li>
@@ -44,8 +50,10 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-semibold text-slate-200 mb-3 uppercase tracking-wider text-[11px]">Open Science</h4>
-            <ul className="space-y-2">
+            <h4 className="font-semibold text-white mb-2.5 uppercase tracking-wider text-[10px]">
+              Open Science
+            </h4>
+            <ul className="space-y-1.5">
               <li>
                 <a
                   href="https://github.com/khatiwada-bishal/manuview"
@@ -83,11 +91,11 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="pt-8 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-500 text-[11px]">
+        <div className="pt-6 border-t border-[#2e2e2e] flex flex-col sm:flex-row items-center justify-between gap-3 text-[#6b6a67] text-[11px]">
           <div>
-            &copy; 2026 ManuView. Dedicated to free and open scientific inquiry worldwide.
+            &copy; 2026 ManuView. Dedicated to open scientific inquiry.
           </div>
-          <div className="flex items-center gap-1 text-slate-400">
+          <div className="flex items-center gap-1 text-[#8a8a86]">
             Created with <Heart className="w-3 h-3 text-red-500 fill-red-500" /> for the global research community.
           </div>
         </div>

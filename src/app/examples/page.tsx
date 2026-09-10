@@ -39,53 +39,54 @@ export default function ExamplesPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#090d16] text-slate-100 py-16">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 mb-3">
-            <BookOpen className="w-3.5 h-3.5" />
-            Transparent Peer-Review Benchmarks
+    <div className="min-h-screen bg-[#191919] text-[#e6e6e6] py-12">
+      <div className="mx-auto max-w-4xl px-4 sm:px-6">
+        <div className="text-center max-w-xl mx-auto mb-12">
+          <div className="text-4xl mb-3 select-none">📚</div>
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-normal bg-[#222222] text-[#9b9a97] border border-[#333333] mb-3">
+            <BookOpen className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Transparent Peer-Review Benchmarks</span>
           </div>
-          <h1 className="text-3xl sm:text-5xl font-serif font-bold text-white mb-4">
+          <h1 className="text-2xl sm:text-4xl font-serif font-bold text-white mb-2">
             Example Reviews on Real Public Preprints
           </h1>
-          <p className="text-slate-400 text-sm leading-relaxed">
+          <p className="text-[#9b9a97] text-xs sm:text-sm leading-relaxed font-light">
             Inspect how the reviewer-calibrated diagnostic evaluates real arXiv, bioRxiv, and medRxiv papers side-by-side with their eventual peer-review outcomes.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
           {examples.map((ex, idx) => (
             <div
               key={idx}
-              className="p-6 rounded-2xl bg-slate-900/50 border border-slate-800 flex flex-col justify-between shadow-xl"
+              className="p-5 rounded-lg bg-[#202020] border border-[#2e2e2e] flex flex-col justify-between hover:border-[#383838] transition"
             >
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 uppercase tracking-wider">
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-[#1c2e24] text-[#4dab83] border border-[#284a36] uppercase tracking-wider">
                     {ex.field}
                   </span>
-                  <span className="text-[11px] text-slate-500">{ex.source}</span>
+                  <span className="text-[11px] text-[#787774]">{ex.source}</span>
                 </div>
 
-                <h3 className="text-base font-serif font-bold text-white mb-3 leading-snug">
+                <h3 className="text-sm font-serif font-bold text-white mb-2 leading-snug">
                   {ex.title}
                 </h3>
 
-                <p className="text-xs text-slate-300 leading-relaxed mb-4 font-light">
+                <p className="text-xs text-[#9b9a97] leading-relaxed mb-4 font-light">
                   {ex.findings}
                 </p>
               </div>
 
-              <div className="space-y-4 pt-4 border-t border-slate-800">
-                <div className="p-3 rounded-xl bg-slate-950 text-xs text-emerald-300/90 border border-slate-800/80 flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+              <div className="space-y-3 pt-3 border-t border-[#2a2a2a]">
+                <div className="p-2.5 rounded bg-[#191919] text-xs text-[#a1d6b8] border border-[#284a36]/60 flex items-start gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0 mt-0.5" />
                   <span>{ex.matchedPeerReview}</span>
                 </div>
 
                 <Link
                   href="/scan"
-                  className="inline-flex items-center gap-1.5 text-xs text-emerald-400 hover:text-emerald-300 font-medium"
+                  className="inline-flex items-center gap-1.5 text-xs text-[#4dab83] hover:underline font-medium"
                 >
                   <span>Test this paper in scanner</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -95,16 +96,18 @@ export default function ExamplesPage() {
           ))}
         </div>
 
-        <div className="text-center p-8 rounded-2xl bg-slate-900/30 border border-slate-800 max-w-2xl mx-auto">
-          <h3 className="text-lg font-serif font-semibold text-white mb-2">
-            Ready to scan your own paper?
+        {/* Notion-style Callout Footer */}
+        <div className="text-center p-6 rounded-lg bg-[#202020] border border-[#2e2e2e] max-w-xl mx-auto">
+          <div className="text-2xl mb-2 select-none">📄</div>
+          <h3 className="text-sm font-serif font-bold text-white mb-1">
+            Ready to scan your own draft?
           </h3>
-          <p className="text-xs text-slate-400 mb-6 font-light">
-            Upload your draft (.docx or text) to run the full 6-dimension diagnostic rubric and 4-persona simulation.
+          <p className="text-xs text-[#9b9a97] mb-4 font-light">
+            Upload your paper (.docx or text) to run the full 6-dimension diagnostic rubric and 4-persona simulation.
           </p>
           <Link
             href="/scan"
-            className="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-lg transition"
+            className="px-4 py-2 rounded bg-[#252525] hover:bg-[#2f2f2f] text-white font-medium text-xs border border-[#3e3e3e] transition inline-flex items-center gap-1.5"
           >
             Launch Free Pre-Submission Scan &rarr;
           </Link>

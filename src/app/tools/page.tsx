@@ -78,52 +78,53 @@ export default function ToolsIndexPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#090d16] text-slate-100 py-16">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 mb-3">
-            <Sliders className="w-3.5 h-3.5" />
-            100% Free Research Utilities
+    <div className="min-h-screen bg-[#191919] text-[#e6e6e6] py-12">
+      <div className="mx-auto max-w-4xl px-4 sm:px-6">
+        <div className="text-center max-w-xl mx-auto mb-12">
+          <div className="text-4xl mb-3 select-none">🧰</div>
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-normal bg-[#222222] text-[#9b9a97] border border-[#333333] mb-3">
+            <Sliders className="w-3.5 h-3.5 text-emerald-400" />
+            <span>100% Free Research Utilities</span>
           </div>
-          <h1 className="text-3xl sm:text-5xl font-serif font-bold text-white mb-4">
+          <h1 className="text-2xl sm:text-4xl font-serif font-bold text-white mb-2">
             Single-Purpose Submission Tools
           </h1>
-          <p className="text-slate-400 text-sm leading-relaxed">
-            Modular tools for choosing a journal, checking evidence, assembling submission packages, and answering peer review. No sign-up required.
+          <p className="text-[#9b9a97] text-xs sm:text-sm leading-relaxed font-light">
+            Modular utilities for choosing a journal, checking evidence, assembling submission packages, and answering peer review. No sign-up required.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-10">
           {tools.map((t) => {
             const Icon = t.icon;
             return (
               <Link
                 key={t.id}
                 href={t.href}
-                className="group flex flex-col justify-between p-6 rounded-2xl bg-slate-900/50 border border-slate-800 hover:border-emerald-500/50 hover:bg-slate-900/90 transition shadow-lg"
+                className="group flex flex-col justify-between p-4 rounded-lg bg-[#202020] border border-[#2e2e2e] hover:border-[#383838] hover:bg-[#232323] transition"
               >
                 <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 rounded-xl bg-slate-800 border border-slate-700/80 text-emerald-400 group-hover:scale-105 transition-transform">
-                      <Icon className="w-5 h-5" />
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="p-2 rounded bg-[#252525] border border-[#333333] text-emerald-400">
+                      <Icon className="w-4 h-4" />
                     </div>
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#282828] text-[#8a8a86] border border-[#333333]">
                       {t.runtime}
                     </span>
                   </div>
 
-                  <span className="text-[11px] font-semibold text-emerald-400 block mb-1">
+                  <span className="text-[11px] font-medium text-emerald-400 block mb-0.5">
                     {t.badge}
                   </span>
-                  <h3 className="text-lg font-serif font-semibold text-white mb-2 group-hover:text-emerald-300 transition">
+                  <h3 className="text-sm font-semibold text-white mb-1.5 group-hover:text-emerald-300 transition">
                     {t.title}
                   </h3>
-                  <p className="text-xs text-slate-400 leading-relaxed mb-6 font-light">
+                  <p className="text-xs text-[#9b9a97] leading-relaxed mb-4 font-light">
                     {t.description}
                   </p>
                 </div>
 
-                <div className="flex items-center gap-1.5 text-xs font-medium text-emerald-400 group-hover:translate-x-1 transition-transform">
+                <div className="flex items-center gap-1 text-xs font-medium text-[#4dab83] group-hover:translate-x-0.5 transition-transform">
                   <span>Open tool</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </div>
@@ -132,19 +133,22 @@ export default function ToolsIndexPage() {
           })}
         </div>
 
-        {/* Banner to Full Scan */}
-        <div className="p-8 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-slate-900 to-slate-950 border border-emerald-500/20 flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div>
-            <h3 className="text-lg font-serif font-bold text-white mb-1">
-              Need a full manuscript diagnostic that runs all of the above?
-            </h3>
-            <p className="text-xs text-slate-400 font-light">
-              The Pre-Submission Scan evaluates claims, statistics, controls, and 4 reviewer personas in one comprehensive pass.
-            </p>
+        {/* Banner to Full Scan in Notion Callout style */}
+        <div className="p-5 rounded-lg bg-[#202020] border border-[#2e2e2e] flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <span className="text-xl select-none">📄</span>
+            <div>
+              <h3 className="text-sm font-semibold text-white mb-0.5">
+                Need a comprehensive pre-submission diagnostic?
+              </h3>
+              <p className="text-xs text-[#9b9a97] font-light">
+                The Pre-Submission Scan evaluates claims, statistics, controls, and 4 reviewer personas in one pass.
+              </p>
+            </div>
           </div>
           <Link
             href="/scan"
-            className="flex-shrink-0 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-lg shadow-emerald-600/20 transition"
+            className="flex-shrink-0 px-3.5 py-2 rounded bg-[#252525] hover:bg-[#2f2f2f] text-white text-xs font-medium border border-[#3e3e3e] transition"
           >
             Run Pre-Submission Scan &rarr;
           </Link>

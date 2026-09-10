@@ -56,46 +56,44 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="relative w-full max-w-xl rounded-2xl bg-slate-900 border border-slate-700 shadow-2xl p-6 text-slate-100 my-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-4 overflow-y-auto">
+      <div className="relative w-full max-w-lg rounded-lg bg-[#202020] border border-[#2e2e2e] shadow-2xl p-5 text-[#e6e6e6] my-6">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-1 text-slate-400 hover:text-white rounded-lg transition"
+          className="absolute top-4 right-4 p-1 text-[#8a8a86] hover:text-white rounded transition"
         >
-          <X className="w-5 h-5" />
+          <X className="w-4 h-4" />
         </button>
 
-        <div className="flex items-center gap-3 mb-5">
-          <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-            <Settings className="w-5 h-5" />
-          </div>
+        <div className="flex items-center gap-2.5 mb-4">
+          <div className="text-xl select-none">⚙️</div>
           <div>
-            <h3 className="text-lg font-semibold text-white">AI Engine &amp; API Key Settings</h3>
-            <p className="text-xs text-slate-400">Select your provider and add your credentials to power live peer-review diagnostics.</p>
+            <h3 className="text-sm font-semibold text-white">AI Engine &amp; API Key Settings</h3>
+            <p className="text-[11px] text-[#8a8a86]">Select your provider and add credentials for real-time peer-review diagnostics.</p>
           </div>
         </div>
 
         {/* Server environment indicator */}
         {serverStatus?.hasServerKey ? (
-          <div className="p-3.5 mb-5 rounded-xl bg-emerald-950/40 border border-emerald-500/30 flex items-start gap-3 text-xs text-emerald-300">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+          <div className="p-2.5 mb-4 rounded-md bg-[#1c2e24] border border-[#284a36] flex items-start gap-2 text-xs text-[#a1d6b8]">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0 mt-0.5" />
             <div>
-              <span className="font-semibold text-white">Active Server Key Detected:</span> Using <code className="text-emerald-300 uppercase font-bold">{serverStatus.activeProvider}</code> from your <code className="text-emerald-300 font-mono">.env.local</code> configuration on the backend.
+              <span className="font-semibold text-white">Server Key Detected:</span> Using <code className="text-emerald-300 uppercase font-bold">{serverStatus.activeProvider}</code> from your <code className="text-emerald-300 font-mono">.env.local</code>.
             </div>
           </div>
         ) : (
-          <div className="p-3.5 mb-5 rounded-xl bg-amber-950/30 border border-amber-500/30 flex items-start gap-3 text-xs text-amber-300">
-            <FileCode className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+          <div className="p-2.5 mb-4 rounded-md bg-[#2e281b] border border-[#4a3e26] flex items-start gap-2 text-xs text-[#f1b854]">
+            <FileCode className="w-3.5 h-3.5 text-[#f1b854] flex-shrink-0 mt-0.5" />
             <div>
-              <span className="font-semibold text-white">Local Configuration:</span> You can configure your credentials below in the browser, or place them in a <code className="text-amber-200 font-mono">.env.local</code> file in your repository.
+              <span className="font-semibold text-white">Client Key:</span> Add your API key below in browser memory, or place it in <code className="font-mono text-white">.env.local</code>.
             </div>
           </div>
         )}
 
         {/* Provider Selection Grid */}
-        <div className="space-y-4">
+        <div className="space-y-3.5">
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+            <label className="block text-[11px] font-medium uppercase tracking-wider text-[#8a8a86] mb-1.5">
               Select AI Engine
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -103,16 +101,16 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
               <button
                 type="button"
                 onClick={() => setConfig({ ...config, provider: "gemini", model: "gemini-1.5-flash" })}
-                className={`flex items-center gap-2.5 p-3 rounded-xl border text-sm font-medium transition ${
+                className={`flex items-center gap-2 p-2.5 rounded-md border text-xs font-medium transition ${
                   config.provider === "gemini"
-                    ? "bg-blue-950/40 border-blue-500 text-white shadow-sm shadow-blue-500/20"
-                    : "bg-slate-800/40 border-slate-700 text-slate-300 hover:border-slate-600"
+                    ? "bg-[#282828] border-[#444444] text-white"
+                    : "bg-[#191919] border-[#2e2e2e] text-[#8a8a86] hover:text-[#e6e6e6] hover:border-[#383838]"
                 }`}
               >
-                <GeminiLogo className="w-5 h-5 flex-shrink-0" />
+                <GeminiLogo className="w-4 h-4 flex-shrink-0" />
                 <div className="text-left">
-                  <div className="leading-tight font-semibold text-xs">Google Gemini</div>
-                  <div className="text-[10px] text-blue-400">Free tier</div>
+                  <div className="leading-tight font-medium text-xs">Gemini</div>
+                  <div className="text-[10px] text-blue-400">Google</div>
                 </div>
               </button>
 
@@ -120,18 +118,18 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
               <button
                 type="button"
                 onClick={() => setConfig({ ...config, provider: "openai", model: "gpt-4o" })}
-                className={`flex items-center gap-2.5 p-3 rounded-xl border text-sm font-medium transition ${
+                className={`flex items-center gap-2 p-2.5 rounded-md border text-xs font-medium transition ${
                   config.provider === "openai"
-                    ? "bg-purple-950/40 border-purple-500 text-white shadow-sm shadow-purple-500/20"
-                    : "bg-slate-800/40 border-slate-700 text-slate-300 hover:border-slate-600"
+                    ? "bg-[#282828] border-[#444444] text-white"
+                    : "bg-[#191919] border-[#2e2e2e] text-[#8a8a86] hover:text-[#e6e6e6] hover:border-[#383838]"
                 }`}
               >
-                <div className="p-1 rounded-md bg-white text-slate-950 flex items-center justify-center flex-shrink-0">
-                  <OpenAILogo className="w-3.5 h-3.5" />
+                <div className="p-0.5 rounded bg-white text-slate-950 flex items-center justify-center flex-shrink-0">
+                  <OpenAILogo className="w-3 h-3" />
                 </div>
                 <div className="text-left">
-                  <div className="leading-tight font-semibold text-xs">OpenAI / Proxy</div>
-                  <div className="text-[10px] text-purple-400">GPT-4o &amp; Custom</div>
+                  <div className="leading-tight font-medium text-xs">OpenAI</div>
+                  <div className="text-[10px] text-purple-400">Proxy/GPT-4o</div>
                 </div>
               </button>
 
@@ -139,16 +137,16 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
               <button
                 type="button"
                 onClick={() => setConfig({ ...config, provider: "anthropic", model: "claude-3-5-sonnet-20241022" })}
-                className={`flex items-center gap-2.5 p-3 rounded-xl border text-sm font-medium transition ${
+                className={`flex items-center gap-2 p-2.5 rounded-md border text-xs font-medium transition ${
                   config.provider === "anthropic"
-                    ? "bg-amber-950/40 border-amber-500 text-white shadow-sm shadow-amber-500/20"
-                    : "bg-slate-800/40 border-slate-700 text-slate-300 hover:border-slate-600"
+                    ? "bg-[#282828] border-[#444444] text-white"
+                    : "bg-[#191919] border-[#2e2e2e] text-[#8a8a86] hover:text-[#e6e6e6] hover:border-[#383838]"
                 }`}
               >
-                <AnthropicLogo className="w-5 h-5 flex-shrink-0" />
+                <AnthropicLogo className="w-4 h-4 flex-shrink-0" />
                 <div className="text-left">
-                  <div className="leading-tight font-semibold text-xs">Anthropic Claude</div>
-                  <div className="text-[10px] text-amber-400">Sonnet 3.5</div>
+                  <div className="leading-tight font-medium text-xs">Claude</div>
+                  <div className="text-[10px] text-amber-400">Anthropic</div>
                 </div>
               </button>
 
@@ -156,16 +154,16 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
               <button
                 type="button"
                 onClick={() => setConfig({ ...config, provider: "groq", model: "llama-3.3-70b-versatile" })}
-                className={`flex items-center gap-2.5 p-3 rounded-xl border text-sm font-medium transition ${
+                className={`flex items-center gap-2 p-2.5 rounded-md border text-xs font-medium transition ${
                   config.provider === "groq"
-                    ? "bg-orange-950/40 border-orange-500 text-white shadow-sm shadow-orange-500/20"
-                    : "bg-slate-800/40 border-slate-700 text-slate-300 hover:border-slate-600"
+                    ? "bg-[#282828] border-[#444444] text-white"
+                    : "bg-[#191919] border-[#2e2e2e] text-[#8a8a86] hover:text-[#e6e6e6] hover:border-[#383838]"
                 }`}
               >
-                <GroqLogo className="w-5 h-5 flex-shrink-0" />
+                <GroqLogo className="w-4 h-4 flex-shrink-0" />
                 <div className="text-left">
-                  <div className="leading-tight font-semibold text-xs">Groq</div>
-                  <div className="text-[10px] text-orange-400">Ultra-fast Llama 3.3</div>
+                  <div className="leading-tight font-medium text-xs">Groq</div>
+                  <div className="text-[10px] text-orange-400">Llama 3.3</div>
                 </div>
               </button>
 
@@ -173,15 +171,15 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
               <button
                 type="button"
                 onClick={() => setConfig({ ...config, provider: "ollama", model: "llama3.3" })}
-                className={`flex items-center gap-2.5 p-3 rounded-xl border text-sm font-medium transition ${
+                className={`flex items-center gap-2 p-2.5 rounded-md border text-xs font-medium transition ${
                   config.provider === "ollama"
-                    ? "bg-emerald-950/40 border-emerald-500 text-white shadow-sm shadow-emerald-500/20"
-                    : "bg-slate-800/40 border-slate-700 text-slate-300 hover:border-slate-600"
+                    ? "bg-[#282828] border-[#444444] text-white"
+                    : "bg-[#191919] border-[#2e2e2e] text-[#8a8a86] hover:text-[#e6e6e6] hover:border-[#383838]"
                 }`}
               >
-                <OllamaLogo className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+                <OllamaLogo className="w-4 h-4 text-emerald-400 flex-shrink-0" />
                 <div className="text-left">
-                  <div className="leading-tight font-semibold text-xs">Local Ollama</div>
+                  <div className="leading-tight font-medium text-xs">Ollama</div>
                   <div className="text-[10px] text-emerald-400">100% Offline</div>
                 </div>
               </button>
@@ -192,7 +190,7 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
           {config.provider !== "ollama" ? (
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="block text-xs font-semibold text-slate-300">
+                <label className="block text-xs text-[#cccccc] font-medium">
                   {config.provider === 'openai' ? 'API Key' : `${config.provider.toUpperCase()} API Key`}
                 </label>
                 {config.provider === "gemini" && (
@@ -235,26 +233,26 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
                   config.provider === "anthropic" ? "sk-ant-..." :
                   "sk-..."
                 }
-                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-sm text-white focus:outline-none focus:border-emerald-500 font-mono transition"
+                className="w-full px-3 py-2 rounded bg-[#191919] border border-[#2e2e2e] focus:border-[#444444] text-xs text-white focus:outline-none font-mono transition"
               />
-              <p className="text-[11px] text-slate-400 mt-1">
-                Stored securely only in your browser&apos;s local memory.
+              <p className="text-[11px] text-[#787774] mt-1">
+                Stored securely only in your local browser storage.
               </p>
 
               {/* Custom Base URL (Available for OpenAI / Custom Proxies) */}
               {config.provider === "openai" && (
-                <div className="mt-3">
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    API Base URL (Optional for Custom Gateways / Proxies)
+                <div className="mt-2.5">
+                  <label className="block text-xs text-[#cccccc] font-medium mb-1">
+                    API Base URL (Optional for Proxies / Custom Endpoints)
                   </label>
                   <input
                     type="text"
                     value={config.baseUrl || ""}
                     onChange={(e) => setConfig({ ...config, baseUrl: e.target.value })}
-                    placeholder="e.g. https://api.your-provider.com/v1 (or leave blank for official OpenAI)"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-sm text-white focus:outline-none focus:border-emerald-500 font-mono transition"
+                    placeholder="https://api.your-provider.com/v1 (or leave blank for official OpenAI)"
+                    className="w-full px-3 py-2 rounded bg-[#191919] border border-[#2e2e2e] focus:border-[#444444] text-xs text-white focus:outline-none font-mono transition"
                   />
-                  <p className="text-[11px] text-slate-400 mt-1">
+                  <p className="text-[11px] text-[#787774] mt-1">
                     Supports any OpenAI-compatible custom gateway or self-hosted endpoint.
                   </p>
                 </div>
@@ -262,16 +260,16 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
             </div>
           ) : (
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
+              <label className="block text-xs text-[#cccccc] font-medium mb-1">
                 Local Ollama Base URL
               </label>
               <input
                 type="text"
                 value={config.baseUrl || "http://localhost:11434"}
                 onChange={(e) => setConfig({ ...config, baseUrl: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-sm text-white focus:outline-none focus:border-emerald-500 font-mono transition"
+                className="w-full px-3 py-2 rounded bg-[#191919] border border-[#2e2e2e] focus:border-[#444444] text-xs text-white focus:outline-none font-mono transition"
               />
-              <p className="text-[11px] text-slate-400 mt-1">
+              <p className="text-[11px] text-[#787774] mt-1">
                 Run <code className="text-emerald-400">ollama serve</code> and <code className="text-emerald-400">ollama run llama3.3</code> on your machine.
               </p>
             </div>
@@ -279,37 +277,37 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
 
           {/* Model Name */}
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">
+            <label className="block text-xs text-[#cccccc] font-medium mb-1">
               Model Name
             </label>
             <input
               type="text"
               value={config.model}
               onChange={(e) => setConfig({ ...config, model: e.target.value })}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-sm text-white focus:outline-none focus:border-emerald-500 font-mono transition"
+              className="w-full px-3 py-2 rounded bg-[#191919] border border-[#2e2e2e] focus:border-[#444444] text-xs text-white focus:outline-none font-mono transition"
             />
           </div>
         </div>
 
         {/* Privacy badge */}
-        <div className="mt-5 p-3 rounded-xl bg-slate-800/60 border border-slate-700/60 flex items-center gap-2.5 text-xs text-slate-300">
-          <ShieldCheck className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-          <span>Zero data retention &bull; Your manuscripts are processed ephemerally and never used for model training.</span>
+        <div className="mt-4 p-2.5 rounded bg-[#191919] border border-[#2e2e2e] flex items-center gap-2 text-[11px] text-[#8a8a86]">
+          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+          <span>Zero data retention &bull; Processed in-memory, never stored or trained on.</span>
         </div>
 
-        {/* Save button */}
-        <div className="mt-6 flex items-center justify-end gap-3">
+        {/* Save buttons */}
+        <div className="mt-5 flex items-center justify-end gap-2">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm text-slate-400 hover:text-white transition"
+            className="px-3 py-1.5 text-xs text-[#8a8a86] hover:text-white rounded hover:bg-[#282828] transition"
           >
             Cancel
           </button>
           <button
             type="button"
             onClick={handleSave}
-            className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-sm transition shadow-lg shadow-emerald-600/20"
+            className="px-3.5 py-1.5 rounded bg-[#252525] hover:bg-[#2f2f2f] text-white font-medium text-xs border border-[#3e3e3e] transition"
           >
             {savedSuccess ? "Saved!" : "Save & Activate"}
           </button>
