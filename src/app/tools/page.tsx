@@ -89,7 +89,7 @@ export default function ToolsIndexPage() {
           <h1 className="text-3xl sm:text-4xl font-bold text-[#2F3437] tracking-tight mb-3 font-serif">
             Single-Purpose Submission Tools
           </h1>
-          <p className="text-[#787774] text-xs sm:text-sm leading-relaxed">
+          <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed">
             Modular utilities for choosing a journal, checking evidence, assembling submission packages, and answering peer review. No sign-up required.
           </p>
         </div>
@@ -134,11 +134,11 @@ export default function ToolsIndexPage() {
         </div>
 
         {/* Banner to Full Scan in Notion Callout style */}
-        <div className="p-6 rounded-2xl bg-[#F7F7F5] border border-[#EBEBEA] flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xs">
+        <div className="p-6 rounded-2xl bg-[#12151B] border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xs">
           <div className="flex items-start gap-3.5">
             <span className="text-2xl select-none">📄</span>
             <div>
-              <h3 className="text-sm font-bold text-[#2F3437] mb-0.5">
+              <h3 className="text-sm font-bold text-white mb-0.5">
                 Need a comprehensive pre-submission diagnostic?
               </h3>
               <p className="text-xs text-[#787774]">
@@ -148,7 +148,7 @@ export default function ToolsIndexPage() {
           </div>
           <Link
             href="/scan"
-            className="flex-shrink-0 px-4 py-2 rounded-lg bg-[#000000] hover:bg-[#2F3437] text-white text-xs font-medium shadow-xs transition"
+            className="flex-shrink-0 px-4 py-2 rounded-lg bg-white hover:bg-neutral-200 text-black font-semibold text-xs font-medium shadow-xs transition"
           >
             Run Pre-Submission Scan &rarr;
           </Link>

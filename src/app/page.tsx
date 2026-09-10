@@ -53,14 +53,14 @@ export default function HomePage() {
           <div className="flex flex-wrap items-center justify-center gap-3.5 mb-14 sm:mb-18">
             <Link
               href="/scan"
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-md bg-[#000000] hover:bg-[#2F3437] text-white font-medium text-sm shadow-xs transition active:scale-[0.98]"
+              className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-md bg-white hover:bg-neutral-200 text-black font-semibold text-sm shadow-md transition active:scale-[0.98]"
             >
               <span>Try ManuView free</span>
             </Link>
 
             <Link
               href="/tools"
-              className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-md text-[#2F3437] hover:text-[#0075eb] hover:bg-[#f5f5f4] font-medium text-sm transition"
+              className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-md text-neutral-300 hover:text-white hover:bg-white/10 font-medium text-sm transition"
             >
               <span>Explore Research Tools</span>
               <ArrowRight className="w-4 h-4" />
@@ -454,19 +454,19 @@ export default function HomePage() {
       {/* ------------------------------------------------------------- */}
       {/* 2. LOGO BAR (Scholarly Publisher Venues)                      */}
       {/* ------------------------------------------------------------- */}
-      <section className="py-10 border-y border-[#EBEBEA] bg-[#F7F7F5]">
+      <section className="py-10 border-y border-white/10 bg-[#12151B]">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 text-center">
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-[#9B9A97] mb-6">
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-neutral-400 mb-6">
             Calibrated for formatting and editorial standards of leading peer-reviewed venues
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-14 text-sm sm:text-base font-serif font-bold text-[#9B9A97] tracking-wider">
-            <span className="hover:text-[#2F3437] transition">NATURE</span>
-            <span className="hover:text-[#2F3437] transition">SCIENCE</span>
-            <span className="hover:text-[#2F3437] transition">CELL</span>
-            <span className="hover:text-[#2F3437] transition">THE LANCET</span>
-            <span className="hover:text-[#2F3437] transition">PNAS</span>
-            <span className="hover:text-[#2F3437] transition">PLOS ONE</span>
-            <span className="hover:text-[#2F3437] transition">IEEE TPAMI</span>
+          <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-14 text-sm sm:text-base font-serif font-bold text-neutral-300 tracking-wider">
+            <span className="hover:text-white transition">NATURE</span>
+            <span className="hover:text-white transition">SCIENCE</span>
+            <span className="hover:text-white transition">CELL</span>
+            <span className="hover:text-white transition">THE LANCET</span>
+            <span className="hover:text-white transition">PNAS</span>
+            <span className="hover:text-white transition">PLOS ONE</span>
+            <span className="hover:text-white transition">IEEE TPAMI</span>
           </div>
         </div>
       </section>
@@ -474,9 +474,9 @@ export default function HomePage() {
       {/* ------------------------------------------------------------- */}
       {/* 3. BENTO GRID SECTION: "AI where your research works."        */}
       {/* ------------------------------------------------------------- */}
-      <section className="py-20 px-4 sm:px-6 bg-white">
+      <section className="py-20 px-4 sm:px-6 bg-[#0A0B0E]">
         <div className="mx-auto max-w-5xl">
-          <h2 className="text-3xl sm:text-5xl font-bold text-[#2F3437] tracking-tight mb-12">
+          <h2 className="text-3xl sm:text-5xl font-bold text-white tracking-tight mb-12">
             AI where your research works.
           </h2>
 
@@ -712,13 +712,13 @@ export default function HomePage() {
       {/* ------------------------------------------------------------- */}
       {/* 4. SCHOLARLY STANDARDS & VERIFIABLE INTEGRITY                 */}
       {/* ------------------------------------------------------------- */}
-      <section className="py-20 px-4 sm:px-6 bg-white border-t border-[#EBEBEA]">
+      <section className="py-20 px-4 sm:px-6 bg-[#0A0B0E] border-t border-white/10">
         <div className="mx-auto max-w-5xl">
           <div className="max-w-2xl mb-12">
-            <h2 className="text-3xl sm:text-5xl font-bold text-[#2F3437] tracking-tight mb-4">
+            <h2 className="text-3xl sm:text-5xl font-bold text-white tracking-tight mb-4">
               Built for verifiable publishing standards.
             </h2>
-            <p className="text-sm text-[#787774] font-light leading-relaxed">
+            <p className="text-sm text-neutral-400 font-light leading-relaxed">
               Designed around empirical integrity checks, real-time registry lookups, and standardized editorial guidelines to catch fatal rejection hazards before journal submission.
             </p>
           </div>

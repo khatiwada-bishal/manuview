@@ -47,10 +47,10 @@ export default function ExamplesPage() {
             <BookOpen className="w-3.5 h-3.5 text-[#18569C]" />
             <span>Transparent Peer-Review Benchmarks</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#2F3437] mb-2 font-serif">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-2 font-serif">
             Example Reviews on Real Public Preprints
           </h1>
-          <p className="text-[#787774] text-xs sm:text-sm leading-relaxed">
+          <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed">
             Inspect how the reviewer-calibrated diagnostic evaluates real arXiv, bioRxiv, and medRxiv papers side-by-side with their eventual peer-review outcomes.
           </p>
         </div>
@@ -59,7 +59,7 @@ export default function ExamplesPage() {
           {examples.map((ex, idx) => (
             <div
               key={idx}
-              className="p-5 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] flex flex-col justify-between hover:border-[#D0D0CE] hover:shadow-xs transition"
+              className="p-5 rounded-xl bg-white border border-[#EBEBEA] text-[#2F3437] shadow-lg flex flex-col justify-between hover:border-[#D0D0CE] hover:shadow-xs transition"
             >
               <div>
                 <div className="flex items-center justify-between mb-2">
@@ -97,9 +97,9 @@ export default function ExamplesPage() {
         </div>
 
         {/* Notion-style Callout Footer */}
-        <div className="text-center p-8 rounded-2xl bg-[#F7F7F5] border border-[#EBEBEA] max-w-xl mx-auto shadow-2xs">
+        <div className="text-center p-8 rounded-2xl bg-[#12151B] border border-white/10 max-w-xl mx-auto shadow-xl text-white">
           <div className="text-2xl mb-2 select-none">📄</div>
-          <h3 className="text-base font-bold text-[#2F3437] mb-1">
+          <h3 className="text-base font-bold text-white mb-1">
             Ready to scan your own draft?
           </h3>
           <p className="text-xs text-[#787774] mb-5">
@@ -107,7 +107,7 @@ export default function ExamplesPage() {
           </p>
           <Link
             href="/scan"
-            className="px-4 py-2 rounded-lg bg-[#000000] hover:bg-[#2F3437] text-white font-medium text-xs shadow-xs transition inline-flex items-center gap-1.5"
+            className="px-4 py-2 rounded-lg bg-white hover:bg-neutral-200 text-black font-semibold font-medium text-xs shadow-xs transition inline-flex items-center gap-1.5"
           >
             Launch Free Pre-Submission Scan &rarr;
           </Link>

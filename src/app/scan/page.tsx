@@ -332,28 +332,33 @@ export default function ScanPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-[#2F3437] py-12">
-      <div className="mx-auto max-w-4xl px-4 sm:px-6">
+    <div className="min-h-screen bg-[#0A0B0E] text-white py-8 sm:py-12 print:bg-white print:p-0">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 print:max-w-none print:p-0">
         
-        {/* Top Breadcrumb & Page Icon */}
-        <div className="mb-6 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs text-[#787774]">
+        {/* Top Breadcrumb & Page Controls */}
+        <div className="mb-4 flex items-center justify-between print:hidden">
+          <div className="flex items-center gap-2 text-xs text-neutral-400">
             <span>Workspace</span>
             <span>/</span>
             <span>Diagnostics</span>
             <span>/</span>
-            <span className="text-[#2F3437]">Pre-Submission Scan</span>
+            <span className="text-white font-medium">Pre-Submission Scan</span>
           </div>
 
           <button
             type="button"
             onClick={() => setSettingsOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-[#F7F7F5] border border-[#EBEBEA] text-xs text-[#787774] hover:text-[#2F3437] shadow-2xs transition"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#12151B] hover:bg-[#181D26] border border-white/10 text-xs text-neutral-300 hover:text-white transition cursor-pointer"
           >
             <Settings className="w-3.5 h-3.5" />
             <span>{activeProviderInfo.name}</span>
           </button>
         </div>
+
+        {/* Workspace Card Container (White Paper Sheet on Dark Canvas) */}
+        <div className="rounded-2xl border border-[#EBEBEA] bg-white text-[#2F3437] shadow-2xl p-6 sm:p-10 print:border-none print:shadow-none print:p-0 print:rounded-none">
+        
+
 
         {/* Notion Page Header */}
         <div className="mb-8 print:hidden">
@@ -746,22 +751,10 @@ export default function ScanPage() {
           </div>
         )}
 
-        {/* Diagnostic Report Results (Notion Document View) */}
+        {/* Diagnostic Report Results (Interactive Notion Web View) */}
         {report && (
-          <div className="space-y-8 animate-fade-in">
-            {/* Printable Official Header (Visible on PDF Export / Print Only) */}
-            <div className="hidden print:block pb-4 mb-4 border-b-2 border-[#2F3437]">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-xl font-bold font-serif text-[#2F3437]">ManuView Academic Pre-Submission Diagnostic Report</div>
-                  <div className="text-xs text-[#787774]">Independent Peer-Review &amp; Editorial Compliance Audit</div>
-                </div>
-                <div className="text-right text-xs text-[#787774]">
-                  <div>Date: {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
-                  <div>Target Journal: <strong className="text-[#2F3437]">{report.targetJournal || "Not Specified"}</strong></div>
-                </div>
-              </div>
-            </div>
+          <div className="space-y-8 animate-fade-in print:hidden">
+
 
             {/* Top Navigation Bar in Results */}
             <div className="flex items-center justify-between pb-3 border-b border-[#EBEBEA] print:hidden">
@@ -1344,6 +1337,306 @@ export default function ScanPage() {
             )}
           </div>
         )}
+
+
+        {/* ================================================================= */}
+        {/* DEDICATED PUBLICATION-GRADE PDF REPORT (VISIBLE ONLY IN PRINT/PDF) */}
+        {/* ================================================================= */}
+        {report && (
+          <div className="hidden print:block print-only-report text-[#111111] bg-white p-0 space-y-6">
+            {/* 1. Official Academic Header */}
+            <div className="border-b-2 border-[#111111] pb-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded bg-black text-white font-serif font-bold text-sm flex items-center justify-center">
+                    M
+                  </div>
+                  <div>
+                    <h1 className="text-xl font-bold font-serif tracking-tight text-[#111111] leading-none">
+                      ManuView Academic Pre-Submission Diagnostic Report
+                    </h1>
+                    <p className="text-[10px] text-[#555555] tracking-wider uppercase mt-0.5">
+                      Field-Adaptive Peer-Review Simulation &bull; Deterministic Citation Integrity Audit
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right text-[10px] text-[#555555] space-y-0.5">
+                  <div><strong>Report ID:</strong> {report.id}</div>
+                  <div><strong>Date:</strong> {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+                </div>
+              </div>
+
+              {/* Manuscript Metadata Summary Grid */}
+              <div className="grid grid-cols-2 gap-3 p-3 rounded-lg bg-[#F7F7F5] border border-[#E5E5E5] text-[11px] mt-3">
+                <div>
+                  <span className="text-[#666666] block text-[10px]">Manuscript Title:</span>
+                  <span className="font-bold text-[#111111] leading-tight block">{report.title}</span>
+                  <span className="text-[10px] text-[#555555] block mt-1">
+                    Classification: <strong>{report.classification?.categoryLabel || "Academic Manuscript"}</strong>
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-2 border-l border-[#E5E5E5] pl-3">
+                  <div>
+                    <span className="text-[#666666] block text-[10px]">Target Journal:</span>
+                    <span className="font-bold text-[#111111] block">{report.targetJournal || "General High Impact"}</span>
+                  </div>
+                  <div>
+                    <span className="text-[#666666] block text-[10px]">Evaluated AI Engine:</span>
+                    <span className="font-mono text-[#111111] text-[10px] block">{activeProviderInfo.name} ({activeProviderInfo.model})</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. Executive Editorial Triage Summary */}
+            <div className="avoid-break p-4 rounded-xl border border-[#D0D0D0] bg-[#FAFAFA] space-y-2.5">
+              <div className="flex items-center justify-between border-b border-[#E5E5E5] pb-2">
+                <div className="flex items-center gap-3">
+                  <div className="px-3 py-1.5 rounded-lg bg-[#111111] text-white font-mono font-bold text-sm">
+                    {report.overallScore} / 100
+                  </div>
+                  <div>
+                    <div className="text-[10px] uppercase tracking-wider text-[#666666] font-semibold">
+                      Submission Readiness Verdict
+                    </div>
+                    <div className="text-xs font-bold text-[#111111]">
+                      {report.overallScore >= 80 ? "Conditionally Ready with Minor Revisions" :
+                       report.overallScore >= 60 ? "Major Revisions Prior to Submission Recommended" :
+                       "High Desk-Rejection Vulnerability — Substantial Re-Framing Required"}
+                    </div>
+                  </div>
+                </div>
+                <div className="text-[10px] font-semibold px-2 py-0.5 rounded border border-[#CBE7CE] bg-[#EDF6EE] text-[#1E5A2A]">
+                  Verified Peer-Review Rubric
+                </div>
+              </div>
+              <p className="text-[11px] leading-relaxed text-[#2F3437] italic">
+                &ldquo;{report.summary}&rdquo;
+              </p>
+            </div>
+
+            {/* 3. The 6 Evaluation Dimensions Matrix */}
+            <div className="avoid-break space-y-2">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-[#111111] border-b border-[#E5E5E5] pb-1">
+                1. The 6 Evaluation Dimensions (1–5 Scholarly Scale)
+              </h2>
+              <table className="w-full text-left text-[10.5px] border-collapse border border-[#E5E5E5]">
+                <thead>
+                  <tr className="bg-[#F7F7F5] border-b border-[#E5E5E5]">
+                    <th className="p-2 border-r border-[#E5E5E5] font-semibold text-[#111111] w-44">Dimension</th>
+                    <th className="p-2 border-r border-[#E5E5E5] font-semibold text-[#111111] w-14 text-center">Score</th>
+                    <th className="p-2 border-r border-[#E5E5E5] font-semibold text-[#111111] w-36">Verdict</th>
+                    <th className="p-2 font-semibold text-[#111111]">Key Strengths &amp; Vulnerabilities</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(report.dimensions).map(([key, dim], idx) => (
+                    <tr key={key} className={`border-b border-[#E5E5E5] ${idx % 2 === 1 ? 'bg-[#FAFAFA]' : ''}`}>
+                      <td className="p-2 border-r border-[#E5E5E5] font-medium text-[#111111]">{dim.label}</td>
+                      <td className="p-2 border-r border-[#E5E5E5] text-center font-mono font-bold text-[#111111]">{dim.score}/5</td>
+                      <td className="p-2 border-r border-[#E5E5E5] text-[#2F3437]">{dim.verdict}</td>
+                      <td className="p-2 text-[#444444]">
+                        {dim.strengths && dim.strengths.length > 0 && (
+                          <span className="text-[#1E5A2A] font-medium">✓ {dim.strengths.join(", ")}. </span>
+                        )}
+                        {dim.vulnerabilities && dim.vulnerabilities.length > 0 && (
+                          <span className="text-[#7C2D2B]">⚠ {dim.vulnerabilities.join(", ")}</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* 4. Priority Issues & Fatal Rejection Flaws */}
+            {report.priorityIssues && report.priorityIssues.length > 0 && (
+              <div className="avoid-break space-y-2">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-[#111111] border-b border-[#E5E5E5] pb-1">
+                  2. Priority Pre-Submission Action Items
+                </h2>
+                <div className="space-y-2">
+                  {report.priorityIssues.map((issue, idx) => (
+                    <div key={idx} className="p-2.5 rounded-lg border border-[#E5E5E5] bg-[#FAFAFA] text-[11px] space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-[#111111]">
+                          Priority {issue.priority}: {issue.title} ({issue.category})
+                        </span>
+                        <span className="text-[10px] font-semibold px-1.5 py-0.2 rounded border bg-[#FDF0EF] text-[#7C2D2B] border-[#F7CECC]">
+                          Fatal Flaw Hazard
+                        </span>
+                      </div>
+                      <p className="text-[#333333] text-[10.5px]">{issue.description}</p>
+                      {issue.reviewerQuote && (
+                        <p className="text-[10px] text-[#666666] italic bg-white p-1.5 rounded border border-[#EBEBEA]">
+                          Referee critique: {issue.reviewerQuote}
+                        </p>
+                      )}
+                      <div className="text-[10.5px] text-[#1E5A2A] font-medium pt-0.5">
+                        <strong>Required Action:</strong> {issue.actionableFix}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 5. ALL 4-PERSONA REVIEWERS (PRINTED IN FULL SEQUENTIALLY) */}
+            <div className="space-y-3">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-[#111111] border-b border-[#E5E5E5] pb-1">
+                3. 4-Persona Peer-Review Simulation (Full Referee Critiques)
+              </h2>
+              <div className="space-y-3.5">
+                {report.reviewerPersonas.map((persona, idx) => (
+                  <div key={idx} className="avoid-break p-3.5 rounded-xl border border-[#D0D0D0] bg-[#FFFFFF] space-y-2 text-[10.5px]">
+                    <div className="flex items-center justify-between border-b border-[#E5E5E5] pb-1.5">
+                      <div>
+                        <h3 className="font-bold text-xs text-[#111111]">
+                          Reviewer {idx + 1}: {persona.name}
+                        </h3>
+                        <div className="text-[10px] text-[#666666]">{persona.title} &bull; {persona.affiliation}</div>
+                        <div className="text-[9.5px] text-[#888888] font-mono">Expertise: {persona.expertise}</div>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded border bg-[#FDF0EF] text-[#7C2D2B] border-[#F7CECC]">
+                          {persona.decisionRecommendation}
+                        </span>
+                        <div className="text-[9.5px] text-[#666666] mt-0.5 font-medium">{persona.roleDescription}</div>
+                      </div>
+                    </div>
+
+                    <div className="text-[11px] leading-relaxed text-[#2F3437] space-y-1.5 whitespace-pre-line">
+                      <p className="font-semibold text-[#111111]">Primary Challenge: {persona.keyChallenge}</p>
+                      <p>{persona.assessment}</p>
+                    </div>
+
+                    {persona.majorCritiques && persona.majorCritiques.length > 0 && (
+                      <div className="pt-1.5 border-t border-[#EBEBEA]">
+                        <span className="font-semibold text-[#111111] block mb-0.5">Major Methodological Critiques:</span>
+                        <ul className="list-disc pl-4 space-y-0.5 text-[#444444]">
+                          {persona.majorCritiques.map((c, cIdx) => (
+                            <li key={cIdx}>{c}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {persona.missingControlsOrAnalyses && persona.missingControlsOrAnalyses.length > 0 && (
+                      <div className="pt-1.5 border-t border-[#EBEBEA]">
+                        <span className="font-semibold text-[#7C2D2B] block mb-0.5">Missing Controls / Required Analyses:</span>
+                        <ul className="list-disc pl-4 space-y-0.5 text-[#555555]">
+                          {persona.missingControlsOrAnalyses.map((m, mIdx) => (
+                            <li key={mIdx}>{m}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {persona.mustAddressItems && persona.mustAddressItems.length > 0 && (
+                      <div className="pt-1.5 border-t border-[#EBEBEA]">
+                        <span className="font-semibold text-[#1E5A2A] block mb-0.5">Mandatory Revisions for Acceptance:</span>
+                        <ul className="list-disc pl-4 space-y-0.5 text-[#444444]">
+                          {persona.mustAddressItems.map((item, iIdx) => (
+                            <li key={iIdx}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 6. Citation & Reference Integrity Audit */}
+            <div className="avoid-break space-y-2">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-[#111111] border-b border-[#E5E5E5] pb-1">
+                4. Citation &amp; Reference Integrity Audit
+              </h2>
+              <div className="grid grid-cols-3 gap-2 p-2.5 rounded-lg bg-[#F7F7F5] border border-[#E5E5E5] text-center text-xs">
+                <div>
+                  <span className="text-[10px] text-[#666666] block">Total References</span>
+                  <span className="font-mono font-bold text-sm text-[#111111]">{report.citationIntegrity?.totalReferences || 0}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-[#666666] block">Unresolvable DOIs</span>
+                  <span className={`font-mono font-bold text-sm ${report.citationIntegrity?.unresolvableCount ? "text-[#7C2D2B]" : "text-[#1E5A2A]"}`}>
+                    {report.citationIntegrity?.unresolvableCount || 0}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-[#666666] block">Retracted Papers Flagged</span>
+                  <span className={`font-mono font-bold text-sm ${report.citationIntegrity?.retractedCount ? "text-[#7C2D2B]" : "text-[#1E5A2A]"}`}>
+                    {report.citationIntegrity?.retractedCount || 0}
+                  </span>
+                </div>
+              </div>
+
+              {report.citationIntegrity?.references && report.citationIntegrity.references.length > 0 && (
+                <table className="w-full text-left text-[10px] border-collapse border border-[#E5E5E5] mt-2">
+                  <thead>
+                    <tr className="bg-[#F7F7F5] border-b border-[#E5E5E5]">
+                      <th className="p-1.5 border-r border-[#E5E5E5] font-semibold text-[#111111]">Audited Reference</th>
+                      <th className="p-1.5 border-r border-[#E5E5E5] font-semibold text-[#111111] w-28">DOI</th>
+                      <th className="p-1.5 font-semibold text-[#111111] w-28 text-center">CrossRef Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {report.citationIntegrity.references.slice(0, 10).map((ref, rIdx) => (
+                      <tr key={rIdx} className="border-b border-[#E5E5E5]">
+                        <td className="p-1.5 border-r border-[#E5E5E5] text-[#2F3437]">{ref.title || ref.raw}</td>
+                        <td className="p-1.5 border-r border-[#E5E5E5] font-mono text-[#555555]">{ref.doi || "No DOI"}</td>
+                        <td className="p-1.5 text-center">
+                          {ref.isRetracted ? (
+                            <span className="font-bold text-[#7C2D2B]">RETRACTED</span>
+                          ) : ref.status === 'valid' ? (
+                            <span className="font-semibold text-[#1E5A2A]">Verified</span>
+                          ) : (
+                            <span className="font-semibold text-[#78510E]">Unresolvable</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+
+            {/* 7. Target Journal Recommendations */}
+            {report.journalRecommendations && report.journalRecommendations.length > 0 && (
+              <div className="avoid-break space-y-2">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-[#111111] border-b border-[#E5E5E5] pb-1">
+                  5. Calibrated Target Journal Recommendations
+                </h2>
+                <div className="grid grid-cols-3 gap-2">
+                  {report.journalRecommendations.map((rec, idx) => (
+                    <div key={idx} className="p-2.5 rounded-lg border border-[#D0D0D0] bg-[#FAFAFA] text-[10.5px] space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-[#111111]">{rec.tier} Tier</span>
+                        <span className="font-mono font-semibold text-[#555555]">IF: {rec.impactFactor}</span>
+                      </div>
+                      <h4 className="font-bold text-[#111111]">{rec.journalName}</h4>
+                      <div className="text-[10px] text-[#666666]">{rec.publisher}</div>
+                      <div className="p-1.5 rounded bg-white border border-[#EBEBEA] text-[10px] text-[#333333]">
+                        <strong>Scope Rationale:</strong> {rec.scopeRationale}
+                      </div>
+                      <div className="text-[10px] text-[#7C2D2B] pt-1 border-t border-[#EBEBEA]">
+                        <strong>Desk-Reject Hazard:</strong> {rec.rejectionRisks[0] || "Methodological rigor requirements"}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 8. Official Confidentiality & Legal Notice Footer */}
+            <div className="pt-4 border-t border-[#E5E5E5] text-[9.5px] text-[#777777] flex items-center justify-between">
+              <span>ManuView Academic Pre-Submission Diagnostic Audit &bull; Confidential Research Document</span>
+              <span>Generated locally with zero data retention &bull; {report.id}</span>
+            </div>
+          </div>
+        )}
+
+        </div> {/* End Workspace Card Container */}
 
         <ProviderSettingsModal
           isOpen={settingsOpen}

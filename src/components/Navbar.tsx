@@ -24,15 +24,15 @@ export function Navbar() {
   return (
     <>
       {/* Top Notion Announcement Banner */}
-      <div className="bg-[#f7f7f5] text-[#37352f] border-b border-[#eaeaea] py-1.5 px-4 text-center text-[11px] sm:text-xs font-medium flex items-center justify-center gap-1 hover:bg-[#f0f0ee] transition cursor-pointer">
+      <div className="bg-[#12151B] text-neutral-300 border-b border-white/10 hover:bg-[#181D26] py-1.5 px-4 text-center text-[11px] sm:text-xs font-medium flex items-center justify-center gap-1 hover:bg-[#f0f0ee] transition cursor-pointer">
         <Link href="/scan" className="inline-flex items-center gap-1.5">
           <span className="font-semibold">✨ Introducing ManuView 2.0:</span>
-          <span className="text-[#555555]">Field-Adaptive 4-Persona Peer-Review Simulation</span>
+          <span className="text-neutral-400">Field-Adaptive 4-Persona Peer-Review Simulation</span>
           <ChevronRight className="w-3.5 h-3.5 text-[#888888]" />
         </Link>
       </div>
 
-      <header className="sticky top-0 z-40 w-full border-b border-[#eaeaea] bg-white/95 backdrop-blur-md">
+      <header className="sticky top-0 z-40 w-full border-b border-white/10 bg-[#0A0B0E]/95 backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
           {/* Left: Notion Logo & Navigation */}
           <div className="flex items-center gap-6 text-sm">
@@ -40,18 +40,18 @@ export function Navbar() {
               href="/" 
               className="flex items-center gap-2.5 px-1 py-1 rounded-md hover:opacity-85 transition group"
             >
-              <div className="flex h-6 w-6 items-center justify-center rounded bg-black text-white font-serif font-bold text-xs shadow-xs">
+              <div className="flex h-6 w-6 items-center justify-center rounded bg-white text-black font-serif font-bold text-xs shadow-xs">
                 M
               </div>
-              <span className="font-semibold tracking-tight text-[#111111] text-sm sm:text-base">
+              <span className="font-semibold tracking-tight text-white text-sm sm:text-base">
                 ManuView
               </span>
             </Link>
 
-            <nav className="hidden md:flex items-center gap-1 text-xs sm:text-sm font-medium text-[#444444]">
+            <nav className="hidden md:flex items-center gap-1 text-xs sm:text-sm font-medium text-neutral-300">
               <Link
                 href="/scan"
-                className="px-2.5 py-1.5 rounded-md hover:text-[#111111] hover:bg-[#f5f5f4] transition"
+                className="px-2.5 py-1.5 rounded-md hover:text-white hover:bg-white/10 transition"
               >
                 Pre-Submission Scan
               </Link>
@@ -61,66 +61,66 @@ export function Navbar() {
                 <button
                   onClick={() => setToolsDropdown(!toolsDropdown)}
                   onMouseEnter={() => setToolsDropdown(true)}
-                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-md hover:text-[#111111] hover:bg-[#f5f5f4] transition"
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-md hover:text-white hover:bg-white/10 transition"
                 >
                   <span>Research Tools</span>
-                  <ChevronDown className="w-3.5 h-3.5 text-[#777777]" />
+                  <ChevronDown className="w-3.5 h-3.5 text-neutral-400" />
                 </button>
 
                 {toolsDropdown && (
-                  <div className="absolute top-full -left-2 w-72 rounded-xl bg-white border border-[#e5e5e5] shadow-xl p-2 z-50 text-xs animate-fade-in">
-                    <div className="px-2 py-1 text-[10px] font-semibold text-[#888888] uppercase tracking-wider">
+                  <div className="absolute top-full -left-2 w-72 rounded-xl bg-[#12151B] border border-white/15 shadow-2xl p-2 z-50 text-xs animate-fade-in text-neutral-200">
+                    <div className="px-2 py-1 text-[10px] font-semibold text-neutral-400 uppercase tracking-wider">
                       Research Modules
                     </div>
                     <Link
                       href="/tools/journal-fit"
-                      className="flex items-start gap-2.5 p-2 rounded-lg hover:bg-[#f7f7f5] text-[#333333] hover:text-[#111111] transition"
+                      className="flex items-start gap-2.5 p-2 rounded-lg hover:bg-white/10 text-neutral-300 hover:text-white transition"
                     >
                       <BookOpen className="w-4 h-4 text-[#0075eb] mt-0.5" />
                       <div>
-                        <div className="font-medium text-[#111111]">Journal Fit Predictor</div>
-                        <div className="text-[11px] text-[#777777]">Match manuscript against 1,300+ venues</div>
+                        <div className="font-medium text-neutral-100">Journal Fit Predictor</div>
+                        <div className="text-[11px] text-neutral-400">Match manuscript against 1,300+ venues</div>
                       </div>
                     </Link>
 
                     <Link
                       href="/tools/reference-checker"
-                      className="flex items-start gap-2.5 p-2 rounded-lg hover:bg-[#f7f7f5] text-[#333333] hover:text-[#111111] transition"
+                      className="flex items-start gap-2.5 p-2 rounded-lg hover:bg-white/10 text-neutral-300 hover:text-white transition"
                     >
                       <CheckCircle2 className="w-4 h-4 text-[#0075eb] mt-0.5" />
                       <div>
-                        <div className="font-medium text-[#111111]">Reference Integrity Audit</div>
-                        <div className="text-[11px] text-[#777777]">Crossref &amp; Retraction Watch verification</div>
+                        <div className="font-medium text-neutral-100">Reference Integrity Audit</div>
+                        <div className="text-[11px] text-neutral-400">Crossref &amp; Retraction Watch verification</div>
                       </div>
                     </Link>
 
                     <Link
                       href="/tools/citation-claim"
-                      className="flex items-start gap-2.5 p-2 rounded-lg hover:bg-[#f7f7f5] text-[#333333] hover:text-[#111111] transition"
+                      className="flex items-start gap-2.5 p-2 rounded-lg hover:bg-white/10 text-neutral-300 hover:text-white transition"
                     >
                       <Sparkles className="w-4 h-4 text-[#0075eb] mt-0.5" />
                       <div>
-                        <div className="font-medium text-[#111111]">Citation Claim Validator</div>
-                        <div className="text-[11px] text-[#777777]">Audit if cited study supports statement</div>
+                        <div className="font-medium text-neutral-100">Citation Claim Validator</div>
+                        <div className="text-[11px] text-neutral-400">Audit if cited study supports statement</div>
                       </div>
                     </Link>
 
                     <Link
                       href="/tools/prisma"
-                      className="flex items-start gap-2.5 p-2 rounded-lg hover:bg-[#f7f7f5] text-[#333333] hover:text-[#111111] transition"
+                      className="flex items-start gap-2.5 p-2 rounded-lg hover:bg-white/10 text-neutral-300 hover:text-white transition"
                     >
                       <Layers className="w-4 h-4 text-[#0075eb] mt-0.5" />
                       <div>
-                        <div className="font-medium text-[#111111]">PRISMA Flow Diagram</div>
-                        <div className="text-[11px] text-[#777777]">Reconcile screening counts &amp; export SVG</div>
+                        <div className="font-medium text-neutral-100">PRISMA Flow Diagram</div>
+                        <div className="text-[11px] text-neutral-400">Reconcile screening counts &amp; export SVG</div>
                       </div>
                     </Link>
 
-                    <div className="my-1 border-t border-[#f0f0ee]" />
+                    <div className="my-1 border-t border-white/10" />
 
                     <Link
                       href="/tools"
-                      className="flex items-center justify-between p-2 rounded-lg hover:bg-[#f7f7f5] text-[#0075eb] text-xs font-semibold transition"
+                      className="flex items-center justify-between p-2 rounded-lg hover:bg-[#f7f7f5] text-[#388BFD] text-xs font-semibold hover:text-white transition"
                     >
                       <span>View all 8 tools</span>
                       <ChevronRight className="w-3.5 h-3.5" />
@@ -131,7 +131,7 @@ export function Navbar() {
 
               <Link 
                 href="/examples" 
-                className="px-2.5 py-1.5 rounded-md hover:text-[#111111] hover:bg-[#f5f5f4] transition"
+                className="px-2.5 py-1.5 rounded-md hover:text-white hover:bg-white/10 transition"
               >
                 Examples
               </Link>
@@ -143,10 +143,10 @@ export function Navbar() {
             {/* AI Settings Button (Notion Ghost style) */}
             <button
               onClick={() => setSettingsOpen(true)}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md hover:bg-[#f5f5f4] text-xs font-medium text-[#555555] hover:text-[#111111] transition"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md hover:bg-[#f5f5f4] text-xs font-medium text-neutral-400 hover:text-neutral-100 transition"
               title="Configure API Keys & Diagnostics"
             >
-              <Settings className="w-3.5 h-3.5 text-[#777777]" />
+              <Settings className="w-3.5 h-3.5 text-neutral-400" />
               <span className="hidden sm:inline">AI Settings</span>
             </button>
 
@@ -155,7 +155,7 @@ export function Navbar() {
               href="https://github.com/khatiwada-bishal/manuview"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-1.5 rounded-md text-[#666666] hover:text-[#111111] hover:bg-[#f5f5f4] transition"
+              className="p-1.5 rounded-md text-[#666666] hover:text-white hover:bg-white/10 transition"
               title="Star on GitHub"
             >
               <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
