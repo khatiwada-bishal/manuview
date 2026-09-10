@@ -457,8 +457,84 @@ export default function ScanPage() {
               </div>
             )}
 
-            {/* Score & Summary Banner */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {/* If Non-Academic File: Display specialized Guidance & Omission Notice */}
+            {report.classification && !report.classification.isAcademicManuscript ? (
+              <div className="space-y-6 animate-fade-in">
+                <div className="p-6 sm:p-8 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-xl">
+                  <div className="flex items-center gap-2.5 text-xs font-semibold text-amber-400 uppercase tracking-wider mb-3">
+                    <Info className="w-4 h-4" />
+                    Academic Peer-Review Rubrics Omitted
+                  </div>
+                  <h3 className="text-xl font-serif font-bold text-white mb-3">
+                    Why are scientific peer-review scores omitted for this file?
+                  </h3>
+                  <p className="text-sm text-slate-300 leading-relaxed mb-6 font-light">
+                    ManuView&apos;s <strong>Submission Readiness Score</strong>, <strong>Editorial Triage Synthesis</strong>, <strong>6 Evaluation Dimensions</strong>, <strong>4-Persona Reviewer Simulation</strong>, <strong>Citation Integrity Audit</strong>, and <strong>Target Journal Recommendation Tiers</strong> are specifically calibrated against empirical research papers and clinical trial standards. Because this file is classified as <strong>{report.classification?.categoryLabel || "Non-Academic Content"}</strong>, journal peer-review metrics are not applicable and have been omitted.
+                  </p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-800 text-xs">
+                    <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800/80">
+                      <div className="font-semibold text-slate-200 mb-1.5 flex items-center gap-1.5">
+                        <FileText className="w-3.5 h-3.5 text-emerald-400" />
+                        What ManuView Reviews
+                      </div>
+                      <ul className="space-y-1.5 text-slate-400">
+                        <li className="flex items-center gap-1.5">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-400 flex-shrink-0" />
+                          Empirical research papers &amp; preprints (bioRxiv, arXiv, medRxiv)
+                        </li>
+                        <li className="flex items-center gap-1.5">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-400 flex-shrink-0" />
+                          IMRaD structured drafts (Abstract, Methods, Results, Discussion)
+                        </li>
+                        <li className="flex items-center gap-1.5">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-400 flex-shrink-0" />
+                          Causal claims, experimental controls, and sample size power
+                        </li>
+                        <li className="flex items-center gap-1.5">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-400 flex-shrink-0" />
+                          Reference lists with Crossref DOIs &amp; Retraction Watch screening
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800/80">
+                      <div className="font-semibold text-slate-200 mb-1.5 flex items-center gap-1.5">
+                        <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+                        Detected in This Submission
+                      </div>
+                      <ul className="space-y-1.5 text-slate-400">
+                        <li>• File Type: <span className="text-white font-medium">{report.classification.categoryLabel}</span></li>
+                        <li>• Identified Role: <span className="text-white font-medium">{report.classification.salutation}</span></li>
+                        <li>• Scientific Sections: <span className="text-amber-300">Not present (IMRaD absent)</span></li>
+                        <li>• Peer-Reviewed Citations: <span className="text-slate-300">{report.citationIntegrity.totalReferences > 0 ? `${report.citationIntegrity.totalReferences} found` : "0 references detected"}</span></li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 flex flex-col sm:flex-row items-center gap-3 pt-6 border-t border-slate-800">
+                    <button
+                      type="button"
+                      onClick={handleLoadSample}
+                      className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20"
+                    >
+                      <RefreshCw className="w-3.5 h-3.5" />
+                      Load Sample Preprint to See Full Peer-Review Diagnostic
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setReport(null)}
+                      className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium transition"
+                    >
+                      Upload a Research Paper (.docx / text)
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <>
+                {/* Score & Summary Banner */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               {/* Overall Score */}
               <div className="p-6 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 flex flex-col justify-center items-center text-center">
                 <div className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
@@ -761,8 +837,10 @@ export default function ScanPage() {
                 ))}
               </div>
             </div>
-          </div>
+          </>
         )}
+      </div>
+    )}
         <ProviderSettingsModal
           isOpen={settingsOpen}
           onClose={() => {
