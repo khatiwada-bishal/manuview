@@ -891,8 +891,8 @@ export default function ScanPage() {
               </h2>
             </div>
 
-            {/* Document Classification & Personalized Salutation Callout */}
-            {report.classification && (
+            {/* Document Classification & Personalized Salutation Callout (Only for review-eligible manuscripts) */}
+            {report.isEligibleForReview !== false && report.classification && report.classification.isAcademicManuscript && (
               <div className={`p-5 rounded-xl border text-xs space-y-3 ${
                 report.classification.isAcademicManuscript
                   ? "bg-[#EDF6EE] border-[#CBE7CE] text-[#1E5A2A]"
