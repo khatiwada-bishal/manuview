@@ -325,7 +325,7 @@ export default function ScanPage() {
       t1 = setTimeout(() => setLoadingStep("Resolving references against Crossref & Retraction Watch..."), 1200);
       t2 = setTimeout(() => setLoadingStep("Auditing causal claims against experimental controls..."), 2400);
       t3 = setTimeout(() => setLoadingStep("Evaluating methodology, sample power, and statistics..."), 3600);
-      t4 = setTimeout(() => setLoadingStep("Simulating 4 peer-reviewer personas..."), 4800);
+      t4 = setTimeout(() => setLoadingStep("Simulating 5 peer-reviewer personas (including Devil's Advocate)..."), 4800);
     } else {
       // Fast editorial scope validation
       setLoadingStep("Evaluating manuscript title & abstract scope...");
@@ -795,27 +795,30 @@ export default function ScanPage() {
                 </div>
               )}
 
-              {/* Submit Action */}
               <button
                 type="submit"
                 disabled={loading || apiStatus !== 'connected'}
-                className={`w-full py-3 px-4 rounded-lg font-medium text-xs sm:text-sm border transition flex items-center justify-center gap-2 shadow-sm ${
+                className={`w-full py-3 px-4 rounded-lg font-medium text-xs sm:text-sm border transition-colors duration-150 flex items-center justify-center gap-2 shadow-sm isolate relative overflow-hidden select-none ${
                   apiStatus === 'connected' && !loading
                     ? "bg-[#0A85EA] hover:bg-[#0075EB] text-[#2F3437] border-[#0A85EA] hover:border-[#0066cc] active:scale-[0.99] cursor-pointer shadow-sm"
-                    : "bg-[#eaeaea] text-[#9B9A97] border-[#e0e0e0] opacity-80 cursor-not-allowed"
+                    : "bg-[#eaeaea] text-[#9B9A97] border-[#e0e0e0] cursor-not-allowed"
                 }`}
                 title={apiStatus !== 'connected' ? "Valid LLM API connection required to run diagnostic scan" : "Run Pre-Submission Diagnostic Scan"}
               >
                 {loading ? (
-                  <>
-                    <RefreshCw className="w-4 h-4 animate-spin text-emerald-400" />
-                    <span>{loadingStep || "Analyzing Manuscript..."}</span>
-                  </>
+                  <span key="btn-loading-state" className="flex items-center justify-center gap-2 truncate max-w-full">
+                    <RefreshCw className="w-4 h-4 animate-spin text-emerald-400 shrink-0" />
+                    <span key={loadingStep || "analyzing-step"} className="truncate">
+                      {loadingStep || "Analyzing Manuscript..."}
+                    </span>
+                  </span>
                 ) : (
-                  <>
-                    <Sparkles className={`w-4 h-4 ${apiStatus === 'connected' ? "text-emerald-400" : "text-[#6b6a67]"}`} />
-                    <span>{file ? "Run Pre-Submission Diagnostic Scan" : "Validate Target Journal Scope & Fit"}</span>
-                  </>
+                  <span key="btn-idle-state" className="flex items-center justify-center gap-2 truncate max-w-full">
+                    <Sparkles className={`w-4 h-4 shrink-0 ${apiStatus === 'connected' ? "text-emerald-400" : "text-[#6b6a67]"}`} />
+                    <span className="truncate">
+                      {file ? "Run Pre-Submission Diagnostic Scan" : "Validate Target Journal Scope & Fit"}
+                    </span>
+                  </span>
                 )}
               </button>
             </form>
