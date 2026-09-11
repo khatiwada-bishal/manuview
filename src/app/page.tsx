@@ -34,11 +34,59 @@ import {
   X,
   ChevronDown,
   Settings,
-  AlertCircle
+  AlertCircle,
+  Shuffle
 } from "lucide-react";
+
+const CHARACTER_LAYOUTS = [
+  // Preset 0: "Orbiting Workshop" (Cross-diagonal scatter)
+  {
+    name: "Orbiting Workshop",
+    drafter: "-left-28 xl:-left-44 -top-8 rotate-[-3deg] animate-float-1",
+    citations: "-left-24 xl:-left-40 top-[52%] rotate-[2deg] animate-float-3",
+    referees: "right-6 lg:right-24 xl:right-12 -top-16 rotate-[2deg] animate-float-2",
+    editor: "-right-24 xl:-right-40 bottom-6 rotate-[-2deg] animate-float-4",
+  },
+  // Preset 1: "Constellation Scatter" (Top-left, Mid-right, Bottom-left, Top-right)
+  {
+    name: "Constellation Scatter",
+    citations: "left-6 lg:left-20 xl:left-12 -top-16 rotate-[-2deg] animate-float-1",
+    drafter: "-left-28 xl:-left-44 top-[45%] rotate-[3deg] animate-float-3",
+    editor: "-right-24 xl:-right-40 -top-10 rotate-[2deg] animate-float-2",
+    referees: "-right-24 xl:-right-44 bottom-12 rotate-[-3deg] animate-float-4",
+  },
+  // Preset 2: "Dynamic Editorial Desk" (Asymmetric Perimeter)
+  {
+    name: "Dynamic Editorial Desk",
+    referees: "-left-24 xl:-left-44 top-[25%] rotate-[-2deg] animate-float-2",
+    editor: "-left-28 xl:-left-40 -bottom-10 rotate-[3deg] animate-float-4",
+    drafter: "-right-28 xl:-right-44 -top-6 rotate-[2deg] animate-float-1",
+    citations: "-right-24 xl:-right-40 top-[55%] rotate-[-3deg] animate-float-3",
+  },
+  // Preset 3: "Adversarial Field" (Scattered across edges)
+  {
+    name: "Adversarial Field",
+    editor: "left-12 lg:left-28 xl:left-16 -top-16 rotate-[-3deg] animate-float-3",
+    referees: "-left-28 xl:-left-44 bottom-4 rotate-[2deg] animate-float-1",
+    citations: "-right-24 xl:-right-40 -top-8 rotate-[-2deg] animate-float-4",
+    drafter: "-right-28 xl:-right-44 top-[48%] rotate-[3deg] animate-float-2",
+  },
+];
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'personas' | 'references' | 'dimensions' | 'issues' | 'journals'>('overview');
+  const [layoutPreset, setLayoutPreset] = useState<number>(0);
+
+  // Randomize layout preset on mount so every visit has an organic, fresh scatter
+  React.useEffect(() => {
+    setLayoutPreset(Math.floor(Math.random() * CHARACTER_LAYOUTS.length));
+  }, []);
+
+  const shuffleLayout = () => {
+    setLayoutPreset((prev) => (prev + 1) % CHARACTER_LAYOUTS.length);
+  };
+
+  const currentLayout = CHARACTER_LAYOUTS[layoutPreset] || CHARACTER_LAYOUTS[0];
   return (
     <div className="flex flex-col min-h-screen text-neutral-900 dark:text-white">
       {/* ------------------------------------------------------------- */}
@@ -194,6 +242,17 @@ export default function HomePage() {
                 <p className="text-[11px] text-neutral-500 dark:text-neutral-400 mt-0.5">Journal fit &amp; zero retractions</p>
               </div>
             </button>
+
+            {/* Playful Interactive Layout Shuffle Button */}
+            <button
+              type="button"
+              onClick={shuffleLayout}
+              className="group relative flex items-center gap-2 px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-2xl liquid-glass-btn-secondary text-xs font-semibold text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white transition cursor-pointer border border-black/5 dark:border-white/10 shadow-xs"
+              title={`Layout: ${currentLayout.name}. Click to randomize/shuffle positions!`}
+            >
+              <Shuffle className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 group-hover:rotate-180 transition-transform duration-500" />
+              <span className="hidden sm:inline">Shuffle Desk</span>
+            </button>
           </div>
 
           {/* --------------------------------------------------------- */}
@@ -201,15 +260,15 @@ export default function HomePage() {
           {/* --------------------------------------------------------- */}
           <div className="relative mx-auto max-w-5xl text-left">
 
-            {/* Top-Left Flanking Character: Drafter on laptop */}
-            <div className="hidden xl:block absolute -left-44 -top-6 w-40 z-30 pointer-events-auto">
+            {/* Dynamically Positioned Character 1: Author Drafter */}
+            <div className={`hidden xl:block absolute w-40 z-30 pointer-events-auto transition-all duration-700 ease-out ${currentLayout.drafter}`}>
               <div 
                 className="relative group cursor-pointer" 
                 onClick={() => setActiveTab('overview')}
                 title="Click to view manuscript self-audit report"
               >
                 {/* Speech Bubble */}
-                <div className="mb-2 p-3 rounded-2xl liquid-glass-card border border-black/10 dark:border-white/15 text-[11px] text-neutral-800 dark:text-neutral-200 shadow-xl transition-all duration-300 group-hover:translate-y-[-2px]">
+                <div className="mb-2 p-3 rounded-2xl liquid-glass-card border border-black/10 dark:border-white/15 text-[11px] text-neutral-800 dark:text-neutral-200 shadow-xl transition-all duration-300 group-hover:translate-y-[-2px] group-hover:shadow-glow-blue/30">
                   <div className="flex items-center gap-1 font-bold text-blue-600 dark:text-blue-400 text-[10px] uppercase tracking-wider mb-0.5">
                     <Sparkles className="w-3 h-3" />
                     <span>Author Drafter</span>
@@ -217,33 +276,31 @@ export default function HomePage() {
                   &ldquo;Auditing sample power &amp; controls before our referees see it.&rdquo;
                 </div>
                 {/* Character Image */}
-                <div className="relative p-2 rounded-2xl liquid-glass-card/60 backdrop-blur-sm">
+                <div className="relative p-2 rounded-2xl liquid-glass-card/60 backdrop-blur-sm transition-all duration-300 group-hover:scale-105 group-hover:rotate-0">
                   <img
                     src="/illustrations/researcher-typing-laptop.png"
                     alt="Author Drafter"
-                    className="w-full h-auto drop-shadow-md dark:invert dark:brightness-150 transition-transform duration-300 group-hover:scale-105"
+                    className="w-full h-auto drop-shadow-md dark:invert dark:brightness-150"
                   />
                 </div>
               </div>
             </div>
 
-            {/* Bottom-Left Flanking Character: Man reading paper (Citation & Evidence Auditor) */}
-            <div className="hidden xl:block absolute -left-44 bottom-10 w-40 z-30 pointer-events-auto">
+            {/* Dynamically Positioned Character 2: Citation & Evidence Auditor */}
+            <div className={`hidden xl:block absolute w-40 z-30 pointer-events-auto transition-all duration-700 ease-out ${currentLayout.citations}`}>
               <div 
                 className="relative group cursor-pointer" 
                 onClick={() => setActiveTab('references')}
                 title="Click to view Citation & Evidence Audit"
               >
-                {/* Character Image */}
-                <div className="relative p-2 rounded-2xl liquid-glass-card/60 backdrop-blur-sm mb-2">
+                <div className="relative p-2 rounded-2xl liquid-glass-card/60 backdrop-blur-sm mb-2 transition-all duration-300 group-hover:scale-105 group-hover:rotate-0">
                   <img
                     src="/illustrations/researcher-reading-paper.png"
                     alt="Citation & Evidence Auditor"
-                    className="w-full h-auto drop-shadow-md dark:invert dark:brightness-150 transition-transform duration-300 group-hover:scale-105"
+                    className="w-full h-auto drop-shadow-md dark:invert dark:brightness-150"
                   />
                 </div>
-                {/* Speech Bubble */}
-                <div className="p-3 rounded-2xl liquid-glass-card border border-black/10 dark:border-white/15 text-[11px] text-neutral-800 dark:text-neutral-200 shadow-xl transition-all duration-300 group-hover:translate-y-[-2px]">
+                <div className="p-3 rounded-2xl liquid-glass-card border border-black/10 dark:border-white/15 text-[11px] text-neutral-800 dark:text-neutral-200 shadow-xl transition-all duration-300 group-hover:translate-y-[-2px] group-hover:shadow-glow-emerald/30">
                   <div className="flex items-center gap-1 font-bold text-teal-600 dark:text-teal-400 text-[10px] uppercase tracking-wider mb-0.5">
                     <BookOpen className="w-3 h-3" />
                     <span>Citation Integrity</span>
@@ -253,49 +310,45 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Top-Right Flanking Character: Collaborators / Referee Reviewers */}
-            <div className="hidden xl:block absolute -right-44 -top-6 w-44 z-30 pointer-events-auto">
+            {/* Dynamically Positioned Character 3: Simulated Peer Reviewers */}
+            <div className={`hidden xl:block absolute w-44 z-30 pointer-events-auto transition-all duration-700 ease-out ${currentLayout.referees}`}>
               <div 
                 className="relative group cursor-pointer" 
                 onClick={() => setActiveTab('personas')}
                 title="Click to view 5-persona simulated reviews"
               >
-                {/* Speech Bubble */}
-                <div className="mb-2 p-3 rounded-2xl liquid-glass-card border border-black/10 dark:border-white/15 text-[11px] text-neutral-800 dark:text-neutral-200 shadow-xl transition-all duration-300 group-hover:translate-y-[-2px]">
+                <div className="mb-2 p-3 rounded-2xl liquid-glass-card border border-black/10 dark:border-white/15 text-[11px] text-neutral-800 dark:text-neutral-200 shadow-xl transition-all duration-300 group-hover:translate-y-[-2px] group-hover:shadow-glow-violet/30">
                   <div className="flex items-center gap-1 font-bold text-purple-600 dark:text-purple-400 text-[10px] uppercase tracking-wider mb-0.5">
                     <Users className="w-3 h-3" />
                     <span>5 Referees Simulated</span>
                   </div>
                   &ldquo;Devil&apos;s advocate caught a missing control in Fig 3B!&rdquo;
                 </div>
-                {/* Character Image */}
-                <div className="relative p-2 rounded-2xl liquid-glass-card/60 backdrop-blur-sm">
+                <div className="relative p-2 rounded-2xl liquid-glass-card/60 backdrop-blur-sm transition-all duration-300 group-hover:scale-105 group-hover:rotate-0">
                   <img
                     src="/illustrations/researchers-collaborating.png"
                     alt="Peer Reviewers"
-                    className="w-full h-auto drop-shadow-md dark:invert dark:brightness-150 transition-transform duration-300 group-hover:scale-105"
+                    className="w-full h-auto drop-shadow-md dark:invert dark:brightness-150"
                   />
                 </div>
               </div>
             </div>
 
-            {/* Bottom-Right Flanking Character: Journal Reader / Editor with Accepted Paper */}
-            <div className="hidden xl:block absolute -right-44 bottom-10 w-40 z-30 pointer-events-auto">
+            {/* Dynamically Positioned Character 4: Journal Editor */}
+            <div className={`hidden xl:block absolute w-40 z-30 pointer-events-auto transition-all duration-700 ease-out ${currentLayout.editor}`}>
               <div 
                 className="relative group cursor-pointer" 
                 onClick={() => setActiveTab('journals')}
                 title="Click to view target journal fit recommendations"
               >
-                {/* Character Image */}
-                <div className="relative p-2 rounded-2xl liquid-glass-card/60 backdrop-blur-sm mb-2">
+                <div className="relative p-2 rounded-2xl liquid-glass-card/60 backdrop-blur-sm mb-2 transition-all duration-300 group-hover:scale-105 group-hover:rotate-0">
                   <img
                     src="/illustrations/researcher-reading-journal.png"
                     alt="Journal Editor"
-                    className="w-full h-auto drop-shadow-md dark:invert dark:brightness-150 transition-transform duration-300 group-hover:scale-105"
+                    className="w-full h-auto drop-shadow-md dark:invert dark:brightness-150"
                   />
                 </div>
-                {/* Speech Bubble */}
-                <div className="p-3 rounded-2xl liquid-glass-card border border-black/10 dark:border-white/15 text-[11px] text-neutral-800 dark:text-neutral-200 shadow-xl transition-all duration-300 group-hover:translate-y-[-2px]">
+                <div className="p-3 rounded-2xl liquid-glass-card border border-black/10 dark:border-white/15 text-[11px] text-neutral-800 dark:text-neutral-200 shadow-xl transition-all duration-300 group-hover:translate-y-[-2px] group-hover:shadow-glow-emerald/30">
                   <div className="flex items-center gap-1 font-bold text-emerald-600 dark:text-emerald-400 text-[10px] uppercase tracking-wider mb-0.5">
                     <BookOpen className="w-3 h-3" />
                     <span>Accepted Article</span>

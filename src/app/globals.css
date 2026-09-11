@@ -640,4 +640,44 @@ body {
   scrollbar-width: none !important;
 }
 
+/* ==========================================================================
+   Ambient Floating Keyframes for Hero Characters
+   ========================================================================== */
+@keyframes float-subtle-1 {
+  0%, 100% { transform: translateY(0px) rotate(-3deg); }
+  50% { transform: translateY(-7px) rotate(-1deg); }
+}
+
+@keyframes float-subtle-2 {
+  0%, 100% { transform: translateY(0px) rotate(2deg); }
+  50% { transform: translateY(-9px) rotate(4deg); }
+}
+
+@keyframes float-subtle-3 {
+  0%, 100% { transform: translateY(0px) rotate(-2deg); }
+  50% { transform: translateY(-8px) rotate(0deg); }
+}
+
+@keyframes float-subtle-4 {
+  0%, 100% { transform: translateY(0px) rotate(3deg); }
+  50% { transform: translateY(-7px) rotate(1deg); }
+}
+
+.animate-float-1 {
+  animation: float-subtle-1 6.2s ease-in-out infinite;
+}
+
+.animate-float-2 {
+  animation: float-subtle-2 7.5s ease-in-out infinite;
+}
+
+.animate-float-3 {
+  animation: float-subtle-3 8.1s ease-in-out infinite;
+}
+
+.animate-float-4 {
+  animation: float-subtle-4 6.8s ease-in-out infinite;
+}
+
+
 
