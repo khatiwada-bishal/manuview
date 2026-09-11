@@ -958,80 +958,167 @@ export default function ScanPage() {
               </div>
             )}
 
-            {/* Non-Academic File: Suppress Rubrics & Display Guidance */}
-            {report.classification && !report.classification.isAcademicManuscript ? (
-              <div className="space-y-6">
-                <div className="p-6 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] space-y-4">
-                  <div className="flex items-center gap-2 text-xs font-semibold text-[#78510E] uppercase tracking-wider">
-                    <Info className="w-4 h-4" />
-                    Academic Peer-Review Rubrics Omitted
-                  </div>
-                  <h3 className="text-xl font-serif font-bold text-[#2F3437]">
-                    Why are scientific peer-review scores omitted for this file?
-                  </h3>
-                  <p className="text-xs sm:text-sm text-[#787774] leading-relaxed font-light">
-                    ManuView&apos;s <strong>Submission Readiness Score</strong>, <strong>Editorial Triage Synthesis</strong>, <strong>6 Evaluation Dimensions</strong>, <strong>4-Persona Reviewer Simulation</strong>, <strong>Citation Integrity Audit</strong>, and <strong>Target Journal Recommendation Tiers</strong> are specifically calibrated against empirical research papers and clinical trial standards. Because this file is classified as <strong>{report.classification?.categoryLabel || "Non-Academic Content"}</strong>, journal peer-review metrics are not applicable and have been omitted.
-                  </p>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-[#EBEBEA] text-xs">
-                    <div className="p-4 rounded-xl bg-white border border-[#EBEBEA]">
-                      <div className="font-medium text-[#2F3437] mb-2 flex items-center gap-1.5">
-                        <FileText className="w-3.5 h-3.5 text-emerald-400" />
-                        What ManuView Reviews
+            {/* Ineligible: Already Published Article OR Non-Academic File */}
+            {report.isEligibleForReview === false || (report.classification && !report.classification.isAcademicManuscript) ? (
+              report.ineligibilityReason === "already_published" ? (
+                <div className="p-6 rounded-2xl bg-emerald-50/80 border border-emerald-200 shadow-2xs space-y-4">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-xs">
+                        <CheckCircle2 className="w-5 h-5 text-white" />
                       </div>
-                      <ul className="space-y-1.5 text-[#787774]">
-                        <li className="flex items-center gap-1.5">
-                          <CheckCircle2 className="w-3 h-3 text-emerald-400 flex-shrink-0" />
-                          Empirical research papers &amp; preprints (bioRxiv, arXiv, medRxiv)
-                        </li>
-                        <li className="flex items-center gap-1.5">
-                          <CheckCircle2 className="w-3 h-3 text-emerald-400 flex-shrink-0" />
-                          IMRaD structured drafts (Abstract, Methods, Results, Discussion)
-                        </li>
-                        <li className="flex items-center gap-1.5">
-                          <CheckCircle2 className="w-3 h-3 text-emerald-400 flex-shrink-0" />
-                          Causal claims, experimental controls, and sample size power
-                        </li>
-                        <li className="flex items-center gap-1.5">
-                          <CheckCircle2 className="w-3 h-3 text-emerald-400 flex-shrink-0" />
-                          Reference lists with Crossref DOIs &amp; Retraction Watch screening
-                        </li>
-                      </ul>
-                    </div>
-
-                    <div className="p-4 rounded-xl bg-white border border-[#EBEBEA]">
-                      <div className="font-medium text-[#2F3437] mb-2 flex items-center gap-1.5">
-                        <AlertTriangle className="w-3.5 h-3.5 text-[#78510E]" />
-                        Detected in This Submission
+                      <div>
+                        <h3 className="text-sm font-bold text-emerald-950">Already Published Article Detected</h3>
+                        <p className="text-xs text-emerald-800">
+                          Established record in scholarly literature. Pre-submission peer-review simulation safely bypassed.
+                        </p>
                       </div>
-                      <ul className="space-y-1.5 text-[#787774]">
-                        <li>• File Type: <span className="text-[#2F3437] font-medium">{report.classification.categoryLabel}</span></li>
-                        <li>• Identified Role: <span className="text-[#2F3437] font-medium">{report.classification.salutation}</span></li>
-                        <li>• Scientific Sections: <span className="text-[#78510E]">Not present (IMRaD absent)</span></li>
-                        <li>• Peer-Reviewed Citations: <span className="text-[#2F3437]">{report.citationIntegrity.totalReferences > 0 ? `${report.citationIntegrity.totalReferences} found` : "0 references detected"}</span></li>
-                      </ul>
                     </div>
+                    <span className="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                      Published Article
+                    </span>
                   </div>
 
-                  <div className="pt-4 border-t border-[#EBEBEA] flex flex-col sm:flex-row items-center gap-3">
+                  {report.publishedDetails && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-3 border-t border-emerald-200/70 text-xs">
+                      {report.publishedDetails.journalName && (
+                        <div className="p-3 rounded-xl bg-white/90 border border-emerald-200/60">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 block">Published Journal</span>
+                          <span className="font-semibold text-emerald-950 truncate block mt-0.5" title={report.publishedDetails.journalName}>
+                            {report.publishedDetails.journalName}
+                          </span>
+                        </div>
+                      )}
+                      {report.publishedDetails.publicationDate && (
+                        <div className="p-3 rounded-xl bg-white/90 border border-emerald-200/60">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 block">Publication Date</span>
+                          <span className="font-semibold text-emerald-950 block mt-0.5">
+                            {report.publishedDetails.publicationDate}
+                          </span>
+                        </div>
+                      )}
+                      {report.publishedDetails.publisher && (
+                        <div className="p-3 rounded-xl bg-white/90 border border-emerald-200/60">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 block">Publisher</span>
+                          <span className="font-semibold text-emerald-950 truncate block mt-0.5" title={report.publishedDetails.publisher}>
+                            {report.publishedDetails.publisher}
+                          </span>
+                        </div>
+                      )}
+                      {report.publishedDetails.doi && (
+                        <div className="p-3 rounded-xl bg-white/90 border border-emerald-200/60">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 block">Official Article DOI</span>
+                          <a
+                            href={`https://doi.org/${report.publishedDetails.doi}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-mono text-emerald-700 hover:text-emerald-900 hover:underline inline-flex items-center gap-1 truncate block mt-0.5"
+                          >
+                            <span className="truncate">{report.publishedDetails.doi}</span>
+                            <ExternalLink className="w-3 h-3 shrink-0" />
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="p-4 rounded-xl bg-white/80 border border-emerald-200/60 text-xs text-neutral-700">
+                    <span className="font-bold text-emerald-950 block mb-1">Status Note:</span>
+                    <p className="leading-relaxed">{report.summary}</p>
+                  </div>
+
+                  <div className="pt-3 border-t border-emerald-200/70 flex flex-col sm:flex-row items-center gap-3">
                     <button
                       type="button"
                       onClick={handleLoadSample}
-                      className="w-full sm:w-auto px-4 py-2 rounded-lg bg-[#0A85EA] hover:bg-[#0075EB] text-[#2F3437] border border-[#0A85EA] shadow-sm text-xs font-medium transition flex items-center justify-center gap-1.5"
+                      className="w-full sm:w-auto px-4 py-2 rounded-lg bg-[#0A85EA] hover:bg-[#0075EB] text-white shadow-sm text-xs font-medium transition flex items-center justify-center gap-1.5"
                     >
-                      <RefreshCw className="w-3.5 h-3.5 text-emerald-400" />
+                      <RefreshCw className="w-3.5 h-3.5" />
                       Load Sample Preprint to See Full Peer-Review Diagnostic
                     </button>
                     <button
                       type="button"
                       onClick={() => setReport(null)}
-                      className="w-full sm:w-auto px-4 py-2 rounded-lg bg-white hover:bg-[#F7F7F5] text-[#787774] hover:text-[#2F3437] border border-[#EBEBEA] text-xs font-medium transition"
+                      className="w-full sm:w-auto px-4 py-2 rounded-lg bg-white hover:bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-medium transition"
                     >
-                      Upload a Research Paper (.pdf / .docx / text)
+                      Upload an Unpublished Draft (.pdf / .docx / text)
                     </button>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <div className="space-y-6">
+                  <div className="p-6 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] space-y-4">
+                    <div className="flex items-center gap-2 text-xs font-semibold text-[#78510E] uppercase tracking-wider">
+                      <Info className="w-4 h-4" />
+                      Academic Peer-Review Rubrics Omitted
+                    </div>
+                    <h3 className="text-xl font-serif font-bold text-[#2F3437]">
+                      Why are scientific peer-review scores omitted for this file?
+                    </h3>
+                    <p className="text-xs sm:text-sm text-[#787774] leading-relaxed font-light">
+                      ManuView&apos;s <strong>Submission Readiness Score</strong>, <strong>Editorial Triage Synthesis</strong>, <strong>6 Evaluation Dimensions</strong>, <strong>5-Persona Reviewer Simulation</strong>, <strong>Citation Integrity Audit</strong>, and <strong>Target Journal Recommendation Tiers</strong> are specifically calibrated against empirical research papers and clinical trial standards. Because this file is classified as <strong>{report.classification?.categoryLabel || "Non-Academic Content"}</strong>, journal peer-review metrics are not applicable and have been omitted.
+                    </p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-[#EBEBEA] text-xs">
+                      <div className="p-4 rounded-xl bg-white border border-[#EBEBEA]">
+                        <div className="font-medium text-[#2F3437] mb-2 flex items-center gap-1.5">
+                          <FileText className="w-3.5 h-3.5 text-emerald-400" />
+                          What ManuView Reviews
+                        </div>
+                        <ul className="space-y-1.5 text-[#787774]">
+                          <li className="flex items-center gap-1.5">
+                            <CheckCircle2 className="w-3 h-3 text-emerald-400 flex-shrink-0" />
+                            Empirical research papers &amp; preprints (bioRxiv, arXiv, medRxiv)
+                          </li>
+                          <li className="flex items-center gap-1.5">
+                            <CheckCircle2 className="w-3 h-3 text-emerald-400 flex-shrink-0" />
+                            IMRaD structured drafts (Abstract, Methods, Results, Discussion)
+                          </li>
+                          <li className="flex items-center gap-1.5">
+                            <CheckCircle2 className="w-3 h-3 text-emerald-400 flex-shrink-0" />
+                            Causal claims, experimental controls, and sample size power
+                          </li>
+                          <li className="flex items-center gap-1.5">
+                            <CheckCircle2 className="w-3 h-3 text-emerald-400 flex-shrink-0" />
+                            Reference lists with Crossref DOIs &amp; Retraction Watch screening
+                          </li>
+                        </ul>
+                      </div>
+
+                      <div className="p-4 rounded-xl bg-white border border-[#EBEBEA]">
+                        <div className="font-medium text-[#2F3437] mb-2 flex items-center gap-1.5">
+                          <AlertTriangle className="w-3.5 h-3.5 text-[#78510E]" />
+                          Detected in This Submission
+                        </div>
+                        <ul className="space-y-1.5 text-[#787774]">
+                          <li>• File Type: <span className="text-[#2F3437] font-medium">{report.classification.categoryLabel}</span></li>
+                          <li>• Identified Role: <span className="text-[#2F3437] font-medium">{report.classification.salutation}</span></li>
+                          <li>• Scientific Sections: <span className="text-[#78510E]">Not present (IMRaD absent)</span></li>
+                          <li>• Peer-Reviewed Citations: <span className="text-[#2F3437]">{report.citationIntegrity && report.citationIntegrity.totalReferences > 0 ? `${report.citationIntegrity.totalReferences} found` : "0 references detected"}</span></li>
+                        </ul>
+                      </div>
+                    </div>
+
+                    <div className="pt-4 border-t border-[#EBEBEA] flex flex-col sm:flex-row items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={handleLoadSample}
+                        className="w-full sm:w-auto px-4 py-2 rounded-lg bg-[#0A85EA] hover:bg-[#0075EB] text-[#2F3437] border border-[#0A85EA] shadow-sm text-xs font-medium transition flex items-center justify-center gap-1.5"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5 text-emerald-400" />
+                        Load Sample Preprint to See Full Peer-Review Diagnostic
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setReport(null)}
+                        className="w-full sm:w-auto px-4 py-2 rounded-lg bg-white hover:bg-[#F7F7F5] text-[#787774] hover:text-[#2F3437] border border-[#EBEBEA] text-xs font-medium transition"
+                      >
+                        Upload a Research Paper (.pdf / .docx / text)
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )
             ) : (
               <>
                 {/* Score & Editorial Triage Block */}
@@ -1042,16 +1129,16 @@ export default function ScanPage() {
                       Readiness Score
                     </div>
                     <div className="flex items-baseline gap-1 my-1">
-                      <span className="text-4xl font-bold font-serif text-[#2F3437]">{report.overallScore}</span>
+                      <span className="text-4xl font-bold font-serif text-[#2F3437]">{report.overallScore ?? 0}</span>
                       <span className="text-[#9B9A97] text-sm font-serif">/100</span>
                     </div>
                     <div className={`mt-1 px-2.5 py-0.5 rounded text-[11px] font-medium border ${
-                      report.overallScore >= 80 ? "bg-[#EDF6EE] text-[#1E5A2A] border-[#CBE7CE]" :
-                      report.overallScore >= 65 ? "bg-[#FBF3DB] text-[#78510E] border-[#F4E2B6]" :
+                      (report.overallScore ?? 0) >= 80 ? "bg-[#EDF6EE] text-[#1E5A2A] border-[#CBE7CE]" :
+                      (report.overallScore ?? 0) >= 65 ? "bg-[#FBF3DB] text-[#78510E] border-[#F4E2B6]" :
                       "bg-[#FDF0EF] text-[#7C2D2B] border-[#F7CECC]"
                     }`}>
-                      {report.overallScore >= 80 ? "Submission Ready" :
-                       report.overallScore >= 65 ? "Revision Prioritized" :
+                      {(report.overallScore ?? 0) >= 80 ? "Submission Ready" :
+                       (report.overallScore ?? 0) >= 65 ? "Revision Prioritized" :
                        "Substantive Hazards"}
                     </div>
                   </div>
@@ -1076,7 +1163,7 @@ export default function ScanPage() {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {Object.entries(report.dimensions).map(([key, dim]) => (
+                    {Object.entries(report.dimensions || {}).map(([key, dim]) => (
                       <div key={key} className="p-4 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] flex flex-col justify-between hover:border-[#d0d0d0] hover:shadow-2xs transition">
                         <div>
                           <div className="flex items-center justify-between mb-2">
@@ -1113,7 +1200,7 @@ export default function ScanPage() {
                   </div>
 
                   <div className="space-y-3">
-                    {report.priorityIssues.map((issue: PriorityIssue) => (
+                    {(report.priorityIssues || []).map((issue: PriorityIssue) => (
                       <div
                         key={issue.id}
                         className="p-5 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] space-y-3"
@@ -1171,7 +1258,7 @@ export default function ScanPage() {
 
                   {/* Notion-style database view tabs */}
                   <div className="flex items-center gap-1 border-b border-[#EBEBEA] pb-1 overflow-x-auto">
-                    {report.reviewerPersonas.map((p: ReviewerPersonaFeedback, idx: number) => {
+                    {(report.reviewerPersonas || []).map((p: ReviewerPersonaFeedback, idx: number) => {
                       const isActive = selectedPersona === idx;
                       return (
                         <button
@@ -1204,7 +1291,7 @@ export default function ScanPage() {
                   </div>
 
                   {/* Active persona card */}
-                  {report.reviewerPersonas[selectedPersona] && (() => {
+                  {report.reviewerPersonas && report.reviewerPersonas[selectedPersona] && (() => {
                     const active = report.reviewerPersonas[selectedPersona];
                     const isReject = active.decisionRecommendation?.includes("Reject");
                     return (
@@ -1500,15 +1587,15 @@ export default function ScanPage() {
               <div className="flex items-center justify-between border-b border-[#E5E5E5] pb-2">
                 <div className="flex items-center gap-3">
                   <div className="px-3 py-1.5 rounded-lg bg-[#111111] text-white font-mono font-bold text-sm">
-                    {report.overallScore} / 100
+                    {report.overallScore ?? 0} / 100
                   </div>
                   <div>
                     <div className="text-[10px] uppercase tracking-wider text-[#666666] font-semibold">
                       Submission Readiness Verdict
                     </div>
                     <div className="text-xs font-bold text-[#111111]">
-                      {report.overallScore >= 80 ? "Conditionally Ready with Minor Revisions" :
-                       report.overallScore >= 60 ? "Major Revisions Prior to Submission Recommended" :
+                      {(report.overallScore ?? 0) >= 80 ? "Conditionally Ready with Minor Revisions" :
+                       (report.overallScore ?? 0) >= 60 ? "Major Revisions Prior to Submission Recommended" :
                        "High Desk-Rejection Vulnerability — Substantial Re-Framing Required"}
                     </div>
                   </div>
@@ -1537,7 +1624,7 @@ export default function ScanPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {Object.entries(report.dimensions).map(([key, dim], idx) => (
+                  {Object.entries(report.dimensions || {}).map(([key, dim], idx) => (
                     <tr key={key} className={`border-b border-[#E5E5E5] ${idx % 2 === 1 ? 'bg-[#FAFAFA]' : ''}`}>
                       <td className="p-2 border-r border-[#E5E5E5] font-medium text-[#111111]">{dim.label}</td>
                       <td className="p-2 border-r border-[#E5E5E5] text-center font-mono font-bold text-[#111111]">{dim.score}/5</td>
@@ -1594,7 +1681,7 @@ export default function ScanPage() {
                 3. 4-Persona Peer-Review Simulation (Full Referee Critiques)
               </h2>
               <div className="space-y-3.5">
-                {report.reviewerPersonas.map((persona, idx) => (
+                {(report.reviewerPersonas || []).map((persona, idx) => (
                   <div key={idx} className="avoid-break p-3.5 rounded-xl border border-[#D0D0D0] bg-[#FFFFFF] space-y-2 text-[10.5px]">
                     <div className="flex items-center justify-between border-b border-[#E5E5E5] pb-1.5">
                       <div>

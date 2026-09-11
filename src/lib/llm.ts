@@ -5,6 +5,28 @@ export interface LLMMessage {
   content: string;
 }
 
+export function getEnv(key: string): string {
+  try {
+    const g = (typeof window !== "undefined" ? window : globalThis) as any;
+    if (g?.process?.env?.[key]) return String(g.process.env[key]).trim();
+    if (typeof import.meta !== "undefined" && (import.meta as any)?.env) {
+      const meta = (import.meta as any).env;
+      if (meta[key]) return String(meta[key]).trim();
+      if (meta[`VITE_${key}`]) return String(meta[`VITE_${key}`]).trim();
+    }
+  } catch {}
+  return "";
+}
+
+function getSavedClientConfig(): ProviderConfig | undefined {
+  if (typeof window === "undefined") return undefined;
+  try {
+    const raw = localStorage.getItem("manuview_provider_config");
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return undefined;
+}
+
 export function getServerConfigStatus(): {
   hasServerKey: boolean;
   activeProvider: LLMProvider | 'none';
@@ -12,22 +34,33 @@ export function getServerConfigStatus(): {
   baseUrl?: string;
   model?: string;
 } {
+  const saved = getSavedClientConfig();
+  if (saved && saved.apiKey) {
+    return {
+      hasServerKey: true,
+      activeProvider: saved.provider,
+      availableProviders: [saved.provider],
+      baseUrl: saved.baseUrl,
+      model: saved.model,
+    };
+  }
+
   const providers: string[] = [];
   let activeProvider: LLMProvider | 'none' = 'none';
 
-  if (process.env.OPENAI_API_KEY) {
+  if (getEnv('OPENAI_API_KEY')) {
     providers.push('openai');
     if (activeProvider === 'none') activeProvider = 'openai';
   }
-  if (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY) {
+  if (getEnv('GEMINI_API_KEY') || getEnv('GOOGLE_API_KEY')) {
     providers.push('gemini');
     if (activeProvider === 'none') activeProvider = 'gemini';
   }
-  if (process.env.GROQ_API_KEY) {
+  if (getEnv('GROQ_API_KEY')) {
     providers.push('groq');
     if (activeProvider === 'none') activeProvider = 'groq';
   }
-  if (process.env.ANTHROPIC_API_KEY) {
+  if (getEnv('ANTHROPIC_API_KEY')) {
     providers.push('anthropic');
     if (activeProvider === 'none') activeProvider = 'anthropic';
   }
@@ -36,8 +69,8 @@ export function getServerConfigStatus(): {
     hasServerKey: providers.length > 0,
     activeProvider,
     availableProviders: providers,
-    baseUrl: process.env.OPENAI_BASE_URL,
-    model: process.env.OPENAI_MODEL || process.env.GEMINI_MODEL || process.env.GROQ_MODEL,
+    baseUrl: getEnv('OPENAI_BASE_URL') || undefined,
+    model: getEnv('OPENAI_MODEL') || getEnv('GEMINI_MODEL') || getEnv('GROQ_MODEL') || undefined,
   };
 }
 
@@ -46,37 +79,37 @@ export async function callLLM(
   config?: ProviderConfig
 ): Promise<string> {
   // 1. Resolve Provider and Credentials
-  // Check if frontend passed an explicit API key or provider
-  let provider: LLMProvider = config?.provider || "ollama";
-  let apiKey: string = config?.apiKey || "";
-  let model: string = config?.model || "";
-  let baseUrl: string = config?.baseUrl || process.env.OLLAMA_BASE_URL || "http://localhost:11434";
+  const resolvedConfig = config || getSavedClientConfig();
+  let provider: LLMProvider = resolvedConfig?.provider || "ollama";
+  let apiKey: string = resolvedConfig?.apiKey || "";
+  let model: string = resolvedConfig?.model || "";
+  let baseUrl: string = resolvedConfig?.baseUrl || "http://localhost:11434";
 
   // If no apiKey provided by client, auto-detect from server environment variables
   if (!apiKey) {
-    if (provider === "gemini" || (!config && (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY))) {
-      apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || "";
+    if (provider === "gemini" || (!config && (getEnv('GEMINI_API_KEY') || getEnv('GOOGLE_API_KEY')))) {
+      apiKey = getEnv('GEMINI_API_KEY') || getEnv('GOOGLE_API_KEY');
       if (apiKey) {
         provider = "gemini";
-        model = model || process.env.GEMINI_MODEL || "gemini-1.5-flash";
+        model = model || getEnv('GEMINI_MODEL') || "gemini-1.5-flash";
       }
-    } else if (provider === "groq" || (!config && process.env.GROQ_API_KEY)) {
-      apiKey = process.env.GROQ_API_KEY || "";
+    } else if (provider === "groq" || (!config && getEnv('GROQ_API_KEY'))) {
+      apiKey = getEnv('GROQ_API_KEY');
       if (apiKey) {
         provider = "groq";
-        model = model || process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
+        model = model || getEnv('GROQ_MODEL') || "llama-3.3-70b-versatile";
       }
-    } else if (provider === "openai" || (!config && process.env.OPENAI_API_KEY)) {
-      apiKey = process.env.OPENAI_API_KEY || "";
+    } else if (provider === "openai" || (!config && getEnv('OPENAI_API_KEY'))) {
+      apiKey = getEnv('OPENAI_API_KEY');
       if (apiKey) {
         provider = "openai";
-        model = model || process.env.OPENAI_MODEL || "gpt-4o-mini";
+        model = model || getEnv('OPENAI_MODEL') || "gpt-4o-mini";
       }
-    } else if (provider === "anthropic" || (!config && process.env.ANTHROPIC_API_KEY)) {
-      apiKey = process.env.ANTHROPIC_API_KEY || "";
+    } else if (provider === "anthropic" || (!config && getEnv('ANTHROPIC_API_KEY'))) {
+      apiKey = getEnv('ANTHROPIC_API_KEY');
       if (apiKey) {
         provider = "anthropic";
-        model = model || process.env.ANTHROPIC_MODEL || "claude-3-5-sonnet-20241022";
+        model = model || getEnv('ANTHROPIC_MODEL') || "claude-3-5-sonnet-20241022";
       }
     }
   }
@@ -86,10 +119,10 @@ export async function callLLM(
     const serverStatus = getServerConfigStatus();
     if (serverStatus.hasServerKey && serverStatus.activeProvider !== 'none') {
       provider = serverStatus.activeProvider;
-      if (provider === "gemini") apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || "";
-      else if (provider === "groq") apiKey = process.env.GROQ_API_KEY || "";
-      else if (provider === "openai") apiKey = process.env.OPENAI_API_KEY || "";
-      else if (provider === "anthropic") apiKey = process.env.ANTHROPIC_API_KEY || "";
+      if (provider === "gemini") apiKey = getEnv('GEMINI_API_KEY') || getEnv('GOOGLE_API_KEY');
+      else if (provider === "groq") apiKey = getEnv('GROQ_API_KEY');
+      else if (provider === "openai") apiKey = getEnv('OPENAI_API_KEY');
+      else if (provider === "anthropic") apiKey = getEnv('ANTHROPIC_API_KEY');
     }
   }
 
@@ -102,21 +135,62 @@ export async function callLLM(
   // -----------------------------------------------------------
   if (provider === "gemini" && apiKey) {
     const geminiModel = model || "gemini-1.5-flash";
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${apiKey}`;
+    const cleanModel = encodeURIComponent(geminiModel.trim());
+    const cleanKey = encodeURIComponent(apiKey.trim());
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${cleanModel}:generateContent?key=${cleanKey}`;
     try {
-      const contents = messages.map(m => ({
-        role: m.role === 'assistant' ? 'model' : 'user',
-        parts: [{ text: m.content }],
-      }));
+      const systemMessage = messages.find(m => m.role === 'system')?.content;
+      const nonSystemMessages = messages.filter(m => m.role !== 'system');
 
-      const response = await fetch(geminiUrl, {
+      // Ensure alternating turns without consecutive duplicate roles
+      let contents: any[] = [];
+      if (nonSystemMessages.length === 0 && systemMessage) {
+        contents = [{ role: 'user', parts: [{ text: systemMessage }] }];
+      } else {
+        nonSystemMessages.forEach(m => {
+          const role = m.role === 'assistant' ? 'model' : 'user';
+          if (contents.length > 0 && contents[contents.length - 1].role === role) {
+            contents[contents.length - 1].parts[0].text += `\n\n${m.content}`;
+          } else {
+            contents.push({ role, parts: [{ text: m.content }] });
+          }
+        });
+      }
+
+      const requestPayload: any = {
+        contents,
+        generationConfig: {
+          temperature: 0.2,
+          maxOutputTokens: 8192,
+          responseMimeType: "application/json",
+        },
+      };
+
+      if (systemMessage) {
+        requestPayload.systemInstruction = {
+          parts: [{ text: systemMessage }],
+        };
+      }
+
+      let response = await fetch(geminiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents,
-          generationConfig: { temperature: 0.2, maxOutputTokens: 8192 },
-        }),
+        body: JSON.stringify(requestPayload),
       });
+
+      // Fallback: If systemInstruction or responseMimeType is rejected on legacy models with 400, retry merged
+      if (!response.ok && response.status === 400 && systemMessage) {
+        console.warn("Gemini rejected systemInstruction/json mode, retrying with prepended prompt...");
+        const mergedText = `[SYSTEM INSTRUCTIONS]\n${systemMessage}\n\n[USER INPUT]\n${nonSystemMessages.map(m => m.content).join("\n\n")}`;
+        response = await fetch(geminiUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ role: "user", parts: [{ text: mergedText }] }],
+            generationConfig: { temperature: 0.2, maxOutputTokens: 8192 },
+          }),
+        });
+      }
 
       if (!response.ok) {
         let errText = `HTTP ${response.status}`;
@@ -147,13 +221,17 @@ export async function callLLM(
     if (provider === "groq") {
       endpoint = "https://api.groq.com/openai/v1/chat/completions";
     } else {
-      const customBase = config?.baseUrl || process.env.OPENAI_BASE_URL;
+      const customBase = config?.baseUrl || getEnv('OPENAI_BASE_URL');
       if (customBase) {
-        const cleanBase = customBase.replace(/\/+$/, "");
+        let cleanBase = customBase.trim();
+        if (!cleanBase.startsWith("http://") && !cleanBase.startsWith("https://")) {
+          cleanBase = `https://${cleanBase}`;
+        }
+        cleanBase = cleanBase.replace(/\/+$/, "");
         endpoint = cleanBase.endsWith("/chat/completions") ? cleanBase : `${cleanBase}/chat/completions`;
       }
     }
-    const chosenModel = model || process.env.OPENAI_MODEL || (provider === "groq" ? "llama-3.3-70b-versatile" : "gpt-4o-mini");
+    const chosenModel = model || getEnv('OPENAI_MODEL') || (provider === "groq" ? "llama-3.3-70b-versatile" : "gpt-4o-mini");
 
     try {
         const requestPayload: any = {
@@ -171,7 +249,7 @@ export async function callLLM(
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${apiKey}`,
+            "Authorization": `Bearer ${apiKey.trim()}`,
           },
           body: JSON.stringify(requestPayload),
         });
@@ -211,8 +289,9 @@ export async function callLLM(
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": apiKey,
+          "x-api-key": apiKey.trim(),
           "anthropic-version": "2023-06-01",
+          "anthropic-dangerous-direct-browser-access": "true",
         },
         body: JSON.stringify({
           model: model || "claude-3-5-sonnet-20241022",
@@ -249,11 +328,17 @@ export async function callLLM(
   // -----------------------------------------------------------
   if (provider === "ollama") {
     try {
-      const response = await fetch(`${baseUrl}/api/chat`, {
+      let cleanBase = (baseUrl || "http://localhost:11434").trim();
+      if (!cleanBase.startsWith("http://") && !cleanBase.startsWith("https://")) {
+        cleanBase = `http://${cleanBase}`;
+      }
+      cleanBase = cleanBase.replace(/\/+$/, "");
+
+      const response = await fetch(`${cleanBase}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: model || process.env.OLLAMA_MODEL || "llama3.3",
+          model: model || getEnv('OLLAMA_MODEL') || "llama3.3",
           messages,
           stream: false,
           options: { temperature: 0.2, num_predict: 8192 },
@@ -558,30 +643,38 @@ export const CURATED_MODELS: Record<LLMProvider, AvailableModel[]> = {
   ],
 };
 
-export async function fetchAvailableModels(config?: ProviderConfig): Promise<AvailableModel[]> {
+export async function fetchAvailableModels(
+  config?: ProviderConfig,
+  options?: { throwOnError?: boolean }
+): Promise<AvailableModel[]> {
   const serverStatus = getServerConfigStatus();
   const provider: LLMProvider = config?.provider || (serverStatus.activeProvider !== "none" ? serverStatus.activeProvider : "gemini");
   let apiKey = config?.apiKey?.trim() || "";
   let baseUrl = config?.baseUrl?.trim() || "";
 
   if (!apiKey) {
-    if (provider === "gemini") apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || "";
-    else if (provider === "groq") apiKey = process.env.GROQ_API_KEY || "";
-    else if (provider === "openai") apiKey = process.env.OPENAI_API_KEY || "";
-    else if (provider === "anthropic") apiKey = process.env.ANTHROPIC_API_KEY || "";
+    if (provider === "gemini") apiKey = getEnv('GEMINI_API_KEY') || getEnv('GOOGLE_API_KEY');
+    else if (provider === "groq") apiKey = getEnv('GROQ_API_KEY');
+    else if (provider === "openai") apiKey = getEnv('OPENAI_API_KEY');
+    else if (provider === "anthropic") apiKey = getEnv('ANTHROPIC_API_KEY');
   }
   if (!baseUrl) {
-    if (provider === "openai") baseUrl = process.env.OPENAI_BASE_URL || "https://api.openai.com/v1";
-    else if (provider === "ollama") baseUrl = process.env.OLLAMA_BASE_URL || "http://localhost:11434";
+    if (provider === "openai") baseUrl = getEnv('OPENAI_BASE_URL') || "https://api.openai.com/v1";
+    else if (provider === "ollama") baseUrl = getEnv('OLLAMA_BASE_URL') || "http://localhost:11434";
   }
 
   const defaultList = CURATED_MODELS[provider] || CURATED_MODELS.gemini;
 
+  if (options?.throwOnError && !apiKey && provider !== "ollama") {
+    throw new Error(`Please enter your ${provider.toUpperCase()} API key first.`);
+  }
+
   try {
     if (provider === "gemini" && apiKey) {
+      const cleanKey = encodeURIComponent(apiKey.trim());
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 4000);
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`, {
+      const timeoutId = setTimeout(() => controller.abort(), 6000);
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${cleanKey}`, {
         headers: { "Content-Type": "application/json" },
         signal: controller.signal,
       });
@@ -600,22 +693,35 @@ export async function fetchAvailableModels(config?: ProviderConfig): Promise<Ava
                 name: m.displayName || existing?.name || id,
                 description: existing?.description || m.description || "Google Generative AI Model",
                 tag: existing?.tag || (id.includes("flash") ? "⚡ Fast" : id.includes("pro") ? "🧠 Frontier" : undefined),
-                recommended: existing?.recommended || false,
+                recommended: existing?.recommended || id.includes("2.5-flash") || id.includes("1.5-flash"),
+                isLive: true,
               };
             });
           if (liveModels.length > 0) {
-            // Put recommended first
             return liveModels.sort((a, b) => (b.recommended ? 1 : 0) - (a.recommended ? 1 : 0));
           }
         }
+      } else if (options?.throwOnError) {
+        let errMessage = `HTTP ${res.status}`;
+        try {
+          const errJson = await res.json();
+          errMessage = errJson.error?.message || errMessage;
+        } catch {
+          errMessage = (await res.text()) || errMessage;
+        }
+        throw new Error(`Gemini API error (${res.status}): ${errMessage}`);
       }
     } else if (provider === "openai" && apiKey) {
-      const cleanBase = (baseUrl || "https://api.openai.com/v1").replace(/\/+$/, "");
+      let cleanBase = (baseUrl || "https://api.openai.com/v1").trim();
+      if (!cleanBase.startsWith("http://") && !cleanBase.startsWith("https://")) {
+        cleanBase = `https://${cleanBase}`;
+      }
+      cleanBase = cleanBase.replace(/\/+$/, "");
       const endpoint = cleanBase.endsWith("/models") ? cleanBase : `${cleanBase}/models`;
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 4000);
+      const timeoutId = setTimeout(() => controller.abort(), 6000);
       const res = await fetch(endpoint, {
-        headers: { Authorization: `Bearer ${apiKey}` },
+        headers: { Authorization: `Bearer ${apiKey.trim()}` },
         signal: controller.signal,
       });
       clearTimeout(timeoutId);
@@ -625,7 +731,7 @@ export async function fetchAvailableModels(config?: ProviderConfig): Promise<Ava
         if (Array.isArray(data.data)) {
           const chatIds = data.data
             .map((m: any) => m.id)
-            .filter((id: string) => id.includes("gpt") || id.startsWith("o1") || id.startsWith("o3") || id.includes("chat"));
+            .filter((id: string) => id.includes("gpt") || id.startsWith("o1") || id.startsWith("o3") || id.includes("chat") || id.includes("claude"));
           if (chatIds.length > 0) {
             const mapped: AvailableModel[] = chatIds.map((id: string) => {
               const existing = defaultList.find((d) => d.id === id);
@@ -635,17 +741,27 @@ export async function fetchAvailableModels(config?: ProviderConfig): Promise<Ava
                 description: existing?.description || `OpenAI model ${id}`,
                 tag: existing?.tag || (id.startsWith("o") ? "🧠 Reasoning" : id.includes("mini") ? "⚡ Fast" : undefined),
                 recommended: existing?.recommended || id === "gpt-4o",
+                isLive: true,
               };
             });
             return mapped.sort((a, b) => (b.recommended ? 1 : 0) - (a.recommended ? 1 : 0));
           }
         }
+      } else if (options?.throwOnError) {
+        let errMessage = `HTTP ${res.status}`;
+        try {
+          const errJson = await res.json();
+          errMessage = errJson.error?.message || errJson.message || errMessage;
+        } catch {
+          errMessage = (await res.text()) || errMessage;
+        }
+        throw new Error(`OpenAI API error (${res.status}): ${errMessage}`);
       }
     } else if (provider === "groq" && apiKey) {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 4000);
+      const timeoutId = setTimeout(() => controller.abort(), 6000);
       const res = await fetch("https://api.groq.com/openai/v1/models", {
-        headers: { Authorization: `Bearer ${apiKey}` },
+        headers: { Authorization: `Bearer ${apiKey.trim()}` },
         signal: controller.signal,
       });
       clearTimeout(timeoutId);
@@ -664,17 +780,73 @@ export async function fetchAvailableModels(config?: ProviderConfig): Promise<Ava
                 description: existing?.description || `Groq LPU accelerated model (${m.owned_by || "Meta"})`,
                 tag: existing?.tag || (id.includes("70b") ? "✨ High Quality" : id.includes("8b") ? "⚡ Ultra Fast" : undefined),
                 recommended: existing?.recommended || id.includes("llama-3.3-70b"),
+                isLive: true,
               };
             });
           if (mapped.length > 0) {
             return mapped.sort((a, b) => (b.recommended ? 1 : 0) - (a.recommended ? 1 : 0));
           }
         }
+      } else if (options?.throwOnError) {
+        let errMessage = `HTTP ${res.status}`;
+        try {
+          const errJson = await res.json();
+          errMessage = errJson.error?.message || errJson.message || errMessage;
+        } catch {
+          errMessage = (await res.text()) || errMessage;
+        }
+        throw new Error(`Groq API error (${res.status}): ${errMessage}`);
+      }
+    } else if (provider === "anthropic" && apiKey) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 6000);
+      const res = await fetch("https://api.anthropic.com/v1/models", {
+        headers: {
+          "x-api-key": apiKey.trim(),
+          "anthropic-version": "2023-06-01",
+          "anthropic-dangerous-direct-browser-access": "true",
+        },
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data.data)) {
+          const mapped: AvailableModel[] = data.data.map((m: any) => {
+            const id = m.id;
+            const existing = defaultList.find((d) => d.id === id);
+            return {
+              id,
+              name: m.display_name || existing?.name || id,
+              description: existing?.description || `Anthropic model ${id}`,
+              tag: existing?.tag || (id.includes("sonnet") ? "🧠 Frontier" : id.includes("haiku") ? "⚡ Fast" : undefined),
+              recommended: existing?.recommended || id.includes("sonnet-3-7") || id.includes("sonnet-3-5"),
+              isLive: true,
+            };
+          });
+          if (mapped.length > 0) {
+            return mapped.sort((a, b) => (b.recommended ? 1 : 0) - (a.recommended ? 1 : 0));
+          }
+        }
+      } else if (options?.throwOnError) {
+        let errMessage = `HTTP ${res.status}`;
+        try {
+          const errJson = await res.json();
+          errMessage = errJson.error?.message || errMessage;
+        } catch {
+          errMessage = (await res.text()) || errMessage;
+        }
+        throw new Error(`Anthropic API error (${res.status}): ${errMessage}`);
       }
     } else if (provider === "ollama") {
-      const cleanBase = (baseUrl || "http://localhost:11434").replace(/\/+$/, "");
+      let cleanBase = (baseUrl || "http://localhost:11434").trim();
+      if (!cleanBase.startsWith("http://") && !cleanBase.startsWith("https://")) {
+        cleanBase = `http://${cleanBase}`;
+      }
+      cleanBase = cleanBase.replace(/\/+$/, "");
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3000);
+      const timeoutId = setTimeout(() => controller.abort(), 4000);
       const res = await fetch(`${cleanBase}/api/tags`, {
         signal: controller.signal,
       });
@@ -689,12 +861,21 @@ export async function fetchAvailableModels(config?: ProviderConfig): Promise<Ava
             description: `Locally pulled model (${Math.round(((m.size || 0) / 1024 / 1024 / 1024) * 10) / 10} GB)`,
             tag: idx === 0 ? "✨ Active Local" : "Local",
             recommended: idx === 0,
+            isLive: true,
           }));
           return installed;
+        } else if (options?.throwOnError) {
+          throw new Error(`Connected to Ollama, but no local models were found. Run 'ollama pull llama3.3' in your terminal.`);
         }
+      } else if (options?.throwOnError) {
+        throw new Error(`Ollama server returned HTTP ${res.status}. Check that 'ollama serve' is running.`);
       }
     }
-  } catch {}
+  } catch (err: any) {
+    if (options?.throwOnError) {
+      throw err;
+    }
+  }
 
   return defaultList;
 }
@@ -722,25 +903,25 @@ export async function testLLMConnection(
   let provider: LLMProvider = config?.provider || (serverStatus.activeProvider !== 'none' ? serverStatus.activeProvider : "ollama");
   let apiKey: string = config?.apiKey?.trim() || "";
   let model: string = config?.model?.trim() || "";
-  let baseUrl: string = (config?.baseUrl || (provider === 'openai' ? process.env.OPENAI_BASE_URL : undefined) || process.env.OLLAMA_BASE_URL || "http://localhost:11434").trim();
+  let baseUrl: string = (config?.baseUrl || (provider === 'openai' ? getEnv('OPENAI_BASE_URL') : undefined) || getEnv('OLLAMA_BASE_URL') || "http://localhost:11434").trim();
 
-  // If no apiKey provided, resolve from server environment
+  // If no apiKey provided, resolve from environment
   if (!apiKey && provider !== "ollama") {
     if (provider === "gemini") {
-      apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || "";
-      model = model || process.env.GEMINI_MODEL || "gemini-1.5-flash";
+      apiKey = getEnv('GEMINI_API_KEY') || getEnv('GOOGLE_API_KEY');
+      model = model || getEnv('GEMINI_MODEL') || "gemini-1.5-flash";
     } else if (provider === "groq") {
-      apiKey = process.env.GROQ_API_KEY || "";
-      model = model || process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
+      apiKey = getEnv('GROQ_API_KEY');
+      model = model || getEnv('GROQ_MODEL') || "llama-3.3-70b-versatile";
     } else if (provider === "openai") {
-      apiKey = process.env.OPENAI_API_KEY || "";
-      model = model || process.env.OPENAI_MODEL || "gpt-4o-mini";
-      if (!config?.baseUrl && process.env.OPENAI_BASE_URL) {
-        baseUrl = process.env.OPENAI_BASE_URL;
+      apiKey = getEnv('OPENAI_API_KEY');
+      model = model || getEnv('OPENAI_MODEL') || "gpt-4o-mini";
+      if (!config?.baseUrl && getEnv('OPENAI_BASE_URL')) {
+        baseUrl = getEnv('OPENAI_BASE_URL');
       }
     } else if (provider === "anthropic") {
-      apiKey = process.env.ANTHROPIC_API_KEY || "";
-      model = model || process.env.ANTHROPIC_MODEL || "claude-3-5-sonnet-20241022";
+      apiKey = getEnv('ANTHROPIC_API_KEY');
+      model = model || getEnv('ANTHROPIC_MODEL') || "claude-3-5-sonnet-20241022";
     }
   }
 
@@ -767,7 +948,9 @@ export async function testLLMConnection(
     // -----------------------------------------------------------
     if (provider === "gemini") {
       const geminiModel = model || "gemini-1.5-flash";
-      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${apiKey}`;
+      const cleanModel = encodeURIComponent(geminiModel.trim());
+      const cleanKey = encodeURIComponent(apiKey.trim());
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${cleanModel}:generateContent?key=${cleanKey}`;
 
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
@@ -824,9 +1007,13 @@ export async function testLLMConnection(
       if (provider === "groq") {
         endpoint = "https://api.groq.com/openai/v1/chat/completions";
       } else {
-        const customBase = config?.baseUrl || process.env.OPENAI_BASE_URL;
+        const customBase = config?.baseUrl || getEnv('OPENAI_BASE_URL');
         if (customBase) {
-          const cleanBase = customBase.replace(/\/+$/, "");
+          let cleanBase = customBase.trim();
+          if (!cleanBase.startsWith("http://") && !cleanBase.startsWith("https://")) {
+            cleanBase = `https://${cleanBase}`;
+          }
+          cleanBase = cleanBase.replace(/\/+$/, "");
           endpoint = cleanBase.endsWith("/chat/completions") ? cleanBase : `${cleanBase}/chat/completions`;
         }
       }
@@ -840,7 +1027,7 @@ export async function testLLMConnection(
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${apiKey}`,
+          "Authorization": `Bearer ${apiKey.trim()}`,
         },
         body: JSON.stringify({
           model: chosenModel,
@@ -898,8 +1085,9 @@ export async function testLLMConnection(
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": apiKey,
+          "x-api-key": apiKey.trim(),
           "anthropic-version": "2023-06-01",
+          "anthropic-dangerous-direct-browser-access": "true",
         },
         body: JSON.stringify({
           model: chosenModel,
@@ -947,7 +1135,11 @@ export async function testLLMConnection(
     // 4. Local Ollama Ping Probe
     // -----------------------------------------------------------
     if (provider === "ollama") {
-      const cleanBase = baseUrl.replace(/\/+$/, "");
+      let cleanBase = (baseUrl || "http://localhost:11434").trim();
+      if (!cleanBase.startsWith("http://") && !cleanBase.startsWith("https://")) {
+        cleanBase = `http://${cleanBase}`;
+      }
+      cleanBase = cleanBase.replace(/\/+$/, "");
       const tagsUrl = `${cleanBase}/api/tags`;
 
       const controller = new AbortController();

@@ -23,12 +23,14 @@ export interface PriorityIssue {
   category: 'Methodology' | 'Causal Claims' | 'Statistics' | 'Citations' | 'Scope/Fit' | 'Clarity';
   description: string;
   location?: string;
+  evidenceAnchor?: string; // Typed anchor: text: §X "...", equation: Eq. Y, absence: ...
   reviewerQuote: string; // How a reviewer or editor would formulate this critique
   actionableFix: string; // Specific concrete step to resolve before submission
+  rebuttalStrategy?: string; // Point-by-point author rebuttal framing for journal response letter
 }
 
 export interface ReviewerPersonaFeedback {
-  persona: 'methods_reviewer' | 'domain_expert' | 'journal_editor' | 'statistician';
+  persona: 'methods_reviewer' | 'domain_expert' | 'journal_editor' | 'statistician' | 'devils_advocate';
   name: string;
   title: string;
   affiliation: string;
@@ -40,6 +42,8 @@ export interface ReviewerPersonaFeedback {
   majorCritiques: string[];
   missingControlsOrAnalyses: string[];
   mustAddressItems: string[];
+  evidenceAnchors?: string[];
+  counterArguments?: string[];
 }
 
 export interface ReferenceVerification {
@@ -120,6 +124,37 @@ export interface ParsedManuscript {
   rawText: string;
   references: string[];
   classification?: DocumentClassification;
+  empiricalCues?: {
+    sampleSizes?: string[];
+    statisticalMetrics?: string[];
+    equations?: string[];
+    dataRepositories?: string[];
+    causalAssertions?: string[];
+    detectedGuidelines?: string[];
+    declaredLimitations?: string[];
+  };
+}
+
+export interface ReportingGuidelineCheck {
+  guidelineName: string; // e.g. STROBE, CONSORT, PRISMA, ARRIVE, Econometric Rigor
+  standardType: string; // e.g. "Observational / Customs Microdata", "Randomized Controlled Trial", "Nonlinear Model"
+  scorePercent: number; // 0 - 100
+  compliantItems: string[];
+  missingOrPartialItems: string[];
+}
+
+export interface PublishedArticleDetails {
+  isPublished: boolean;
+  doi?: string;
+  journalName?: string;
+  publisher?: string;
+  publicationDate?: string;
+  volume?: string;
+  issue?: string;
+  pages?: string;
+  articleUrl?: string;
+  citationCount?: number;
+  detectedVia: string;
 }
 
 export interface FullReviewReport {
@@ -128,14 +163,18 @@ export interface FullReviewReport {
   createdAt: string;
   title: string;
   targetJournal?: string;
-  overallScore: number; // 0 to 100
+  overallScore?: number; // 0 to 100 (omitted if non-academic or already published)
+  isEligibleForReview?: boolean; // false if already published OR non-academic manuscript
+  ineligibilityReason?: 'already_published' | 'non_academic_document';
+  publishedDetails?: PublishedArticleDetails;
   summary: string;
   classification: DocumentClassification;
-  dimensions: Record<ScoreDimension, DimensionScore>;
+  dimensions?: Record<ScoreDimension, DimensionScore>;
   priorityIssues: PriorityIssue[];
   reviewerPersonas: ReviewerPersonaFeedback[];
   journalRecommendations: JournalRecommendation[];
   citationIntegrity: CitationIntegritySummary;
+  reportingGuideline?: ReportingGuidelineCheck;
 }
 
 export interface BriefJournalFitReport {
@@ -185,5 +224,6 @@ export interface AvailableModel {
   description: string;
   tag?: string;
   recommended?: boolean;
+  isLive?: boolean;
 }
 
