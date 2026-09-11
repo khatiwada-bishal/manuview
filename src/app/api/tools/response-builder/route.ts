@@ -40,6 +40,13 @@ Return a JSON array of parsed reviewer comments with the following format:
       parsed = cleanAndRepairJson(raw, []);
     } catch {}
 
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      return NextResponse.json(
+        { error: "Unable to parse structured reviewer critiques from input." },
+        { status: 422 }
+      );
+    }
+
     return NextResponse.json({
       success: true,
       items: parsed,
