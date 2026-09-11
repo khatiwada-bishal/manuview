@@ -14,9 +14,9 @@ export async function POST(req: NextRequest) {
       providerConfig 
     } = await req.json();
 
-    if (!title?.trim() || !targetJournal?.trim() || !abstract?.trim() || !keywords?.trim()) {
+    if (!title?.trim() || !targetJournal?.trim() || !abstract?.trim()) {
       return NextResponse.json(
-        { error: "Target Journal, Manuscript Title, Abstract, and Keywords are all required." },
+        { error: "Target Journal, Manuscript Title, and Abstract are required." },
         { status: 400 }
       );
     }
@@ -29,7 +29,7 @@ MANUSCRIPT METADATA:
 - Abstract:
 ${abstract}
 
-- Keywords: ${keywords}
+- Keywords: ${keywords?.trim() || "Synthesize key thematic keywords directly from the Abstract."}
 
 ADDITIONAL CONTEXT (IF PROVIDED):
 - Primary Findings & Evidence: ${mainFindings?.trim() || "Synthesize the primary findings, experimental models, and quantitative evidence directly from the Abstract."}

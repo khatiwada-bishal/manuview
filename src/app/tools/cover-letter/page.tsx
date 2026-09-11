@@ -1,7 +1,17 @@
 "use client";
 
 import React, { useState } from "react";
-import { FileText, Copy, Check, Sparkles, RefreshCw, AlertCircle, Download } from "lucide-react";
+import {
+  FileText,
+  Copy,
+  Check,
+  Sparkles,
+  RefreshCw,
+  AlertCircle,
+  Download,
+  FileCode,
+  BookOpen,
+} from "lucide-react";
 import JournalCombobox from "@/components/JournalCombobox";
 
 export default function CoverLetterPage() {
@@ -13,14 +23,16 @@ export default function CoverLetterPage() {
   const [broadSignificance, setBroadSignificance] = useState("");
   const [suggestedReviewers, setSuggestedReviewers] = useState("");
   const [loading, setLoading] = useState(false);
-  const [letter, setLetter] = useState("");
+  const [letter, setLetter] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSample = () => {
     setTitle("Single-cell transcriptional profiling of DLL3 activation in neuroendocrine lung carcinoma");
     setTargetJournal("Nature Communications");
-    setAbstract("Small cell lung cancer (SCLC) exhibits rapid recurrence and therapy resistance. Delta-like ligand 3 (DLL3) is an established cell-surface target for antibody-drug conjugates and T-cell engagers. However, the precise cis-regulatory mechanisms controlling DLL3 transcription remain uncharacterized. Here, we perform marker-based CRISPR-Cas9 screens and identify the transcription factor POU2F1 as a primary driver of DLL3 expression. We demonstrate that POU2F1 directly binds the DLL3 distal enhancer element to drive chemoresistance in clinical isolates. Knockdown of POU2F1 caused significant downregulation of DLL3 mRNA across 8 patient-derived organoid lines. Our findings provide a mechanistic framework for DLL3 regulation and suggest POU2F1 as a candidate predictive biomarker for clinical stratification.");
+    setAbstract(
+      "Small cell lung cancer (SCLC) exhibits rapid recurrence and therapy resistance. Delta-like ligand 3 (DLL3) is an established cell-surface target for antibody-drug conjugates and T-cell engagers. However, the precise cis-regulatory mechanisms controlling DLL3 transcription remain uncharacterized. Here, we perform marker-based CRISPR-Cas9 screens and identify the transcription factor POU2F1 as a primary driver of DLL3 expression. We demonstrate that POU2F1 directly binds the DLL3 distal enhancer element to drive chemoresistance in clinical isolates. Knockdown of POU2F1 caused significant downregulation of DLL3 mRNA across 8 patient-derived organoid lines. Our findings provide a mechanistic framework for DLL3 regulation and suggest POU2F1 as a candidate predictive biomarker for clinical stratification."
+    );
     setKeywords("small cell lung cancer, DLL3, POU2F1, CRISPR-Cas9 screen, transcriptional regulation, organoids, chemoresistance");
     setMainFindings("Nominated transcription factor POU2F1 as the primary upstream regulator of DLL3 through genome-wide CRISPR knockout screens across 8 patient-derived organoid lines.");
     setBroadSignificance("Identifies the missing transcriptional mechanism behind DLL3 expression in small cell lung cancer and offers a biomarker to stratify patient response to T-cell engager therapies.");
@@ -42,13 +54,10 @@ export default function CoverLetterPage() {
       setError("Please provide the Manuscript Abstract.");
       return;
     }
-    if (!keywords.trim()) {
-      setError("Please provide at least 2-3 Keywords.");
-      return;
-    }
 
     setLoading(true);
     setError(null);
+    setLetter(null);
 
     try {
       const savedConfig = localStorage.getItem("manuview_provider_config");
@@ -68,7 +77,7 @@ export default function CoverLetterPage() {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      if (!res.ok) throw new Error(data.error || "Failed to generate cover letter.");
       setLetter(data.letter);
     } catch (err: any) {
       setError(err.message || "Failed to generate cover letter.");
@@ -78,36 +87,94 @@ export default function CoverLetterPage() {
   };
 
   const handleCopy = () => {
+    if (!letter) return;
     navigator.clipboard.writeText(letter);
     setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleDownloadTxt = () => {
+    if (!letter) return;
+    const blob = new Blob([letter], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Cover_Letter_${targetJournal.replace(/[^a-zA-Z0-9_-]/g, "_")}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExportLatex = () => {
+    if (!letter) return;
+    const escapedJournal = targetJournal.replace(/[#$%&_~^]/g, "\\$0");
+    const escapedTitle = title.replace(/[#$%&_~^]/g, "\\$0");
+    const formattedBody = letter
+      .split("\n\n")
+      .map((para) => para.trim())
+      .filter(Boolean)
+      .map((para) => para.replace(/[#$%&_~^]/g, "\\$0"))
+      .join("\n\n\\vspace{0.8em}\n\n");
+
+    const tex = `% ==============================================================================
+% ManuView Academic Journal Submission Cover Letter
+% Target Journal: ${escapedJournal}
+% Manuscript: ${escapedTitle}
+% Generated: ${new Date().toISOString()}
+% ==============================================================================
+\\documentclass[11pt,a4paper]{article}
+\\usepackage[utf8]{inputenc}
+\\usepackage[margin=1in]{geometry}
+\\usepackage{hyperref}
+\\usepackage{parskip}
+
+\\begin{document}
+\\pagestyle{empty}
+
+${formattedBody}
+
+\\end{document}`;
+
+    const blob = new Blob([tex], { type: "application/x-latex;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Cover_Letter_${targetJournal.replace(/[^a-zA-Z0-9_-]/g, "_")}.tex`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
   return (
     <div className="min-h-screen bg-[#08090D] text-white py-12 aura-bg-gradient aura-grid-pattern">
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-10 text-center max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-white/[0.06] text-neutral-300 border border-white/10 shadow-sm mb-3">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 space-y-8">
+        {/* Header */}
+        <div className="mb-8 text-center max-w-2xl mx-auto space-y-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shadow-xs">
             <FileText className="w-3.5 h-3.5" />
-            Editor-Calibrated Submissions
+            <span>Editor-Calibrated Formal Letter</span>
           </div>
-          <h1 className="text-3xl font-serif font-bold text-white mb-2">
+          <h1 className="text-3xl sm:text-4xl font-serif font-bold text-white tracking-tight">
             Journal Cover Letter Generator
           </h1>
           <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed">
-            Generate an editor-ready formal submission letter highlighting why your paper matters to the journal&apos;s specific readership.
+            Generate formal, high-impact submission cover letters tailored to your target journal&apos;s editorial criteria, highlighting novel discoveries and mandatory compliance affirmations.
           </p>
         </div>
 
-        <div className="aura-paper-sheet rounded-2xl p-6 sm:p-8 shadow-2xl mb-10 text-[#111827]">
+        {/* Input Form Card */}
+        <div className="aura-paper-sheet rounded-2xl p-6 sm:p-8 shadow-2xl text-[#111827]">
           <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-3 mb-4">
-            <span className="text-xs font-semibold text-[#111827]">Letter Specifications</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-[#4B5563]">
+              Manuscript Submission Details
+            </span>
             <button
               type="button"
               onClick={handleSample}
-              className="text-xs text-teal-400 hover:underline flex items-center gap-1"
+              className="text-xs font-semibold text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1.5 cursor-pointer"
             >
-              <RefreshCw className="w-3 h-3" /> Load Sample Details
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Load Sample Preprint</span>
             </button>
           </div>
 
@@ -115,25 +182,25 @@ export default function CoverLetterPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-[#374151] mb-1">
-                  Target Journal <span className="text-[#E03E3E] font-bold text-xs">*</span>
+                  Target Journal <span className="text-rose-600 font-bold">*</span>
                 </label>
                 <JournalCombobox
                   value={targetJournal}
                   onChange={(val) => setTargetJournal(val)}
-                  placeholder="e.g. Nature Communications, Cell"
+                  placeholder="Select or type target journal..."
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-[#374151] mb-1">
-                  Manuscript Title <span className="text-[#E03E3E] font-bold text-xs">*</span>
+                  Manuscript Title <span className="text-rose-600 font-bold">*</span>
                 </label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. Single-cell transcriptional profiling of..."
-                  className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-teal-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D1D5DB] text-xs sm:text-sm text-[#111827] focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
                 />
               </div>
             </div>
@@ -141,7 +208,7 @@ export default function CoverLetterPage() {
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="block text-xs font-semibold uppercase tracking-wider text-[#374151]">
-                  Manuscript Abstract <span className="text-[#E03E3E] font-bold text-xs">*</span>
+                  Manuscript Abstract <span className="text-rose-600 font-bold">*</span>
                 </label>
                 <span className="text-[11px] text-neutral-400">
                   {abstract.trim() ? `${abstract.trim().split(/\s+/).length} words` : "Mandatory"}
@@ -152,31 +219,31 @@ export default function CoverLetterPage() {
                 value={abstract}
                 onChange={(e) => setAbstract(e.target.value)}
                 placeholder="Paste the complete abstract (core research question, methodology, primary findings, and conclusion)..."
-                className="w-full p-3 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-teal-500 leading-relaxed"
+                className="w-full p-3.5 rounded-xl bg-white border border-[#D1D5DB] text-xs sm:text-sm text-[#111827] focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 leading-relaxed resize-none font-sans"
               />
             </div>
 
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-[#374151] mb-1">
-                Manuscript Keywords <span className="text-[#E03E3E] font-bold text-xs">*</span>
+                Manuscript Keywords <span className="text-neutral-400 font-normal text-[11px]">(Optional)</span>
               </label>
               <input
                 type="text"
                 value={keywords}
                 onChange={(e) => setKeywords(e.target.value)}
                 placeholder="Comma-separated keywords, e.g. CRISPR screen, organoids, chemoresistance, oncology"
-                className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-teal-500"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D1D5DB] text-xs sm:text-sm text-[#111827] focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
               />
             </div>
 
             {/* Optional Section */}
             <div className="pt-3 border-t border-[#E5E7EB] space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">
-                  Optional Highlights
+                <span className="text-[11px] font-bold text-[#4B5563] uppercase tracking-wider">
+                  Optional Context &amp; Editorial Highlights
                 </span>
                 <span className="text-[11px] text-neutral-400">
-                  If omitted, synthesized automatically from Abstract
+                  Synthesized automatically from Abstract if omitted
                 </span>
               </div>
 
@@ -189,7 +256,7 @@ export default function CoverLetterPage() {
                   value={mainFindings}
                   onChange={(e) => setMainFindings(e.target.value)}
                   placeholder="Key breakthroughs or experimental data you specifically want highlighted in the cover letter..."
-                  className="w-full p-3 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-teal-500"
+                  className="w-full p-3 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 resize-none"
                 />
               </div>
 
@@ -202,31 +269,44 @@ export default function CoverLetterPage() {
                   value={broadSignificance}
                   onChange={(e) => setBroadSignificance(e.target.value)}
                   placeholder="Why the journal's specific readership should care about this discovery today..."
-                  className="w-full p-3 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-teal-500"
+                  className="w-full p-3 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 resize-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-[#374151] mb-1">
+                  Suggested / Opposed Reviewers <span className="text-neutral-400 font-normal text-[11px]">(Optional)</span>
+                </label>
+                <input
+                  type="text"
+                  value={suggestedReviewers}
+                  onChange={(e) => setSuggestedReviewers(e.target.value)}
+                  placeholder="e.g. Dr. Jane Doe (MSKCC, no conflicts), Dr. Alan Smith (Francis Crick)"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
                 />
               </div>
             </div>
 
             {error && (
-              <div className="p-3 rounded-xl bg-rose-950/40 border border-rose-800/60 text-rose-300 text-xs flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                <span>{error}</span>
+              <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+                <span className="font-medium">{error}</span>
               </div>
             )}
 
             <button
               type="submit"
-              disabled={loading}
-              className="w-full py-3 rounded-xl bg-black hover:bg-neutral-800 disabled:opacity-50 text-white font-semibold text-xs shadow-lg transition flex items-center justify-center gap-2 cursor-pointer"
+              disabled={loading || !title.trim() || !targetJournal.trim() || !abstract.trim()}
+              className="w-full py-3.5 rounded-xl bg-black hover:bg-neutral-900 disabled:opacity-50 text-white font-semibold text-xs shadow-lg transition flex items-center justify-center gap-2 cursor-pointer"
             >
               {loading ? (
                 <>
                   <RefreshCw className="w-4 h-4 animate-spin" />
-                  <span>Drafting Editor-Grade Letter...</span>
+                  <span>Calibrating with Editorial Standards...</span>
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-4 h-4" />
+                  <FileText className="w-4 h-4" />
                   <span>Generate Submission Cover Letter</span>
                 </>
               )}
@@ -234,26 +314,27 @@ export default function CoverLetterPage() {
           </form>
         </div>
 
+        {/* Output Section */}
         {letter && (
-          <div className="rounded-2xl bg-[#0F121C] border border-white/10 p-6 space-y-4 shadow-xl">
+          <div className="rounded-2xl bg-[#0F1117] border border-white/10 p-6 space-y-4 shadow-xl animate-in fade-in duration-300">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
               <div>
-                <span className="text-sm font-semibold text-white">Generated Submission Cover Letter</span>
-                <p className="text-xs text-neutral-400 mt-0.5">Addressed to the Senior Editor of {targetJournal}</p>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-bold text-white">Generated Submission Cover Letter</span>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                    {letter.split(/\s+/).length} words
+                  </span>
+                </div>
+                <p className="text-xs text-neutral-400 mt-0.5">
+                  Addressed to the Senior Editor-in-Chief of {targetJournal}
+                </p>
               </div>
+
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => {
-                    const blob = new Blob([letter], { type: "text/plain;charset=utf-8" });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement("a");
-                    a.href = url;
-                    a.download = `Cover_Letter_${targetJournal.replace(/[^a-zA-Z0-9_-]/g, "_")}.txt`;
-                    a.click();
-                    URL.revokeObjectURL(url);
-                  }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs text-white transition cursor-pointer"
+                  onClick={handleDownloadTxt}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-semibold text-white border border-white/10 transition cursor-pointer"
                   title="Download plain text file"
                 >
                   <Download className="w-3.5 h-3.5" />
@@ -261,8 +342,17 @@ export default function CoverLetterPage() {
                 </button>
                 <button
                   type="button"
+                  onClick={handleExportLatex}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 text-xs font-semibold text-purple-300 border border-purple-500/30 transition cursor-pointer shadow-xs"
+                  title="Export compile-ready LaTeX document"
+                >
+                  <FileCode className="w-3.5 h-3.5 text-purple-400" />
+                  <span>Export LaTeX (.tex)</span>
+                </button>
+                <button
+                  type="button"
                   onClick={handleCopy}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white text-black hover:bg-neutral-200 text-xs font-semibold transition cursor-pointer shadow-xs"
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white text-black hover:bg-neutral-200 text-xs font-semibold transition cursor-pointer shadow-xs"
                 >
                   {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                   <span>{copied ? "Copied!" : "Copy Letter"}</span>
@@ -270,7 +360,7 @@ export default function CoverLetterPage() {
               </div>
             </div>
 
-            <div className="p-8 rounded-xl bg-white border border-[#E5E7EB] text-xs sm:text-sm text-[#1E293B] whitespace-pre-wrap font-serif leading-relaxed shadow-sm">
+            <div className="p-8 sm:p-10 rounded-xl bg-white border border-[#E5E7EB] text-xs sm:text-sm text-[#1E293B] whitespace-pre-wrap font-serif leading-relaxed shadow-sm">
               {letter}
             </div>
           </div>
@@ -279,3 +369,4 @@ export default function CoverLetterPage() {
     </div>
   );
 }
+
