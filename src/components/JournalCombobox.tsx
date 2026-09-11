@@ -21,7 +21,7 @@ export default function JournalCombobox({
   onChange,
   hasError = false,
   errorMessage,
-  placeholder = "Search verified journals or type custom title...",
+  placeholder = "Type at least 3 letters to search journals...",
   className = "",
 }: JournalComboboxProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -77,12 +77,13 @@ export default function JournalCombobox({
     return result;
   }, [customJournals]);
 
-  // Filtered journals based on user search query
+  // Filtered journals based on user search query (minimum 3 characters required)
+  const trimmedQuery = searchQuery.trim();
+  const queryLower = trimmedQuery.toLowerCase();
+
   const filteredJournals = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
-    if (!q) {
-      // Return top curated + custom items when empty
-      return allJournals.slice(0, 40);
+    if (queryLower.length < 3) {
+      return [];
     }
 
     const exactMatches: string[] = [];
@@ -92,29 +93,27 @@ export default function JournalCombobox({
 
     for (const j of allJournals) {
       const lower = j.toLowerCase();
-      if (lower === q) {
+      if (lower === queryLower) {
         exactMatches.push(j);
-      } else if (lower.startsWith(q)) {
+      } else if (lower.startsWith(queryLower)) {
         prefixMatches.push(j);
-      } else if (lower.includes(" " + q) || lower.includes("-" + q) || lower.includes(":" + q)) {
+      } else if (lower.includes(" " + queryLower) || lower.includes("-" + queryLower) || lower.includes(":" + queryLower)) {
         wordPrefixMatches.push(j);
-      } else if (lower.includes(q)) {
+      } else if (lower.includes(queryLower)) {
         containsMatches.push(j);
       }
     }
 
-    return [...exactMatches, ...prefixMatches, ...wordPrefixMatches, ...containsMatches].slice(0, 50);
-  }, [allJournals, searchQuery]);
+    return [...exactMatches, ...prefixMatches, ...wordPrefixMatches, ...containsMatches];
+  }, [allJournals, queryLower]);
 
   // Determine if typed query is a brand new journal not in the list
-  const trimmedQuery = searchQuery.trim();
   const isExactMatch = useMemo(() => {
-    if (!trimmedQuery) return true;
-    const q = trimmedQuery.toLowerCase();
-    return allJournals.some((j) => j.toLowerCase() === q);
-  }, [allJournals, trimmedQuery]);
+    if (!trimmedQuery || trimmedQuery.length < 3) return true;
+    return allJournals.some((j) => j.toLowerCase() === queryLower);
+  }, [allJournals, trimmedQuery, queryLower]);
 
-  const canAddNew = trimmedQuery.length >= 2 && !isExactMatch;
+  const canAddNew = trimmedQuery.length >= 3 && !isExactMatch;
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -122,9 +121,7 @@ export default function JournalCombobox({
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setIsOpen(false);
         // If user left text without explicitly selecting, keep current value
-        if (value) {
-          setSearchQuery(value);
-        }
+        setSearchQuery(value || "");
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -219,7 +216,17 @@ export default function JournalCombobox({
       return;
     }
 
+    if (trimmedQuery.length < 3) {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setIsOpen(false);
+        setSearchQuery(value || "");
+      }
+      return;
+    }
+
     const totalItems = filteredJournals.length + (canAddNew ? 1 : 0);
+    if (totalItems === 0) return;
 
     if (e.key === "ArrowDown") {
       e.preventDefault();
@@ -244,7 +251,7 @@ export default function JournalCombobox({
     } else if (e.key === "Escape") {
       e.preventDefault();
       setIsOpen(false);
-      if (value) setSearchQuery(value);
+      setSearchQuery(value || "");
     }
   };
 
@@ -324,7 +331,9 @@ export default function JournalCombobox({
               <Search className="w-2.5 h-2.5 text-[#9B9A97]" />
               <span>{allJournals.length.toLocaleString()} catalogued journals</span>
             </span>
-            <span>{filteredJournals.length} matches</span>
+            <span>
+              {trimmedQuery.length < 3 ? "Type 3+ letters" : `${filteredJournals.length} matches`}
+            </span>
           </div>
 
           {/* "+ Add New Journal" Action Row if user typed a non-existing journal */}
@@ -360,12 +369,20 @@ export default function JournalCombobox({
             ref={listRef}
             className="max-h-64 overflow-y-auto divide-y divide-[#F7F7F5] overscroll-contain"
           >
-            {filteredJournals.length === 0 && !canAddNew ? (
+            {trimmedQuery.length < 3 ? (
+              <div className="px-4 py-8 text-center text-[#787774]">
+                <BookOpen className="w-5 h-5 mx-auto mb-2 text-[#9B9A97]" />
+                <p className="font-semibold text-xs text-[#2F3437]">Type at least 3 letters to search</p>
+                <p className="text-[11px] text-[#9B9A97] mt-1 max-w-xs mx-auto">
+                  Type 3 or more characters to display and scroll through all matching academic journals.
+                </p>
+              </div>
+            ) : filteredJournals.length === 0 && !canAddNew ? (
               <div className="px-4 py-6 text-center text-[#787774]">
                 <BookOpen className="w-6 h-6 mx-auto mb-2 text-[#CCCCCC]" />
                 <p className="font-medium text-xs text-[#2F3437]">No matching journals found</p>
                 <p className="text-[11px] text-[#9B9A97] mt-1">
-                  Type at least 2 characters to create and add a new journal title.
+                  Type at least 3 characters to create and add a new journal title.
                 </p>
               </div>
             ) : (
