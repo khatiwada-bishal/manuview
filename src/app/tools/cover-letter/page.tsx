@@ -146,32 +146,32 @@ ${formattedBody}
   };
 
   return (
-    <div className="min-h-screen bg-[#08090D] text-white py-12 aura-bg-gradient aura-grid-pattern">
+    <div className="min-h-screen text-neutral-900 dark:text-white py-12 aura-bg-gradient aura-grid-pattern">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 space-y-8">
         {/* Header */}
         <div className="mb-8 text-center max-w-2xl mx-auto space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shadow-xs">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-500/20 shadow-xs">
             <FileText className="w-3.5 h-3.5" />
             <span>Editor-Calibrated Formal Letter</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-serif font-bold text-white tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-serif font-bold text-neutral-900 dark:text-white tracking-tight">
             Journal Cover Letter Generator
           </h1>
-          <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed">
+          <p className="text-neutral-600 dark:text-neutral-400 text-xs sm:text-sm leading-relaxed">
             Generate formal, high-impact submission cover letters tailored to your target journal&apos;s editorial criteria, highlighting novel discoveries and mandatory compliance affirmations.
           </p>
         </div>
 
         {/* Input Form Card */}
-        <div className="aura-paper-sheet rounded-2xl p-6 sm:p-8 shadow-2xl text-[#111827]">
-          <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-3 mb-4">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#4B5563]">
+        <div className="liquid-glass-card rounded-3xl p-6 sm:p-8 space-y-4">
+          <div className="flex items-center justify-between border-b border-black/5 dark:border-white/10 pb-3 mb-4">
+            <span className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
               Manuscript Submission Details
             </span>
             <button
               type="button"
               onClick={handleSample}
-              className="text-xs font-semibold text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1.5 cursor-pointer"
+              className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1.5 cursor-pointer"
             >
               <Sparkles className="w-3.5 h-3.5" />
               <span>Load Sample Preprint</span>
@@ -181,7 +181,7 @@ ${formattedBody}
           <form onSubmit={handleGenerate} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#374151] mb-1">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
                   Target Journal <span className="text-rose-600 font-bold">*</span>
                 </label>
                 <JournalCombobox
@@ -192,7 +192,7 @@ ${formattedBody}
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#374151] mb-1">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
                   Manuscript Title <span className="text-rose-600 font-bold">*</span>
                 </label>
                 <input
@@ -200,17 +200,17 @@ ${formattedBody}
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. Single-cell transcriptional profiling of..."
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D1D5DB] text-xs sm:text-sm text-[#111827] focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl liquid-glass-input text-xs sm:text-sm focus:outline-none"
                 />
               </div>
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#374151]">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300">
                   Manuscript Abstract <span className="text-rose-600 font-bold">*</span>
                 </label>
-                <span className="text-[11px] text-neutral-400">
+                <span className="text-[11px] text-neutral-500 dark:text-neutral-400">
                   {abstract.trim() ? `${abstract.trim().split(/\s+/).length} words` : "Mandatory"}
                 </span>
               </div>
@@ -219,12 +219,12 @@ ${formattedBody}
                 value={abstract}
                 onChange={(e) => setAbstract(e.target.value)}
                 placeholder="Paste the complete abstract (core research question, methodology, primary findings, and conclusion)..."
-                className="w-full p-3.5 rounded-xl bg-white border border-[#D1D5DB] text-xs sm:text-sm text-[#111827] focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 leading-relaxed resize-none font-sans"
+                className="w-full p-3.5 rounded-xl liquid-glass-input text-xs sm:text-sm focus:outline-none leading-relaxed resize-none font-sans"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-[#374151] mb-1">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
                 Manuscript Keywords <span className="text-neutral-400 font-normal text-[11px]">(Optional)</span>
               </label>
               <input
@@ -232,14 +232,14 @@ ${formattedBody}
                 value={keywords}
                 onChange={(e) => setKeywords(e.target.value)}
                 placeholder="Comma-separated keywords, e.g. CRISPR screen, organoids, chemoresistance, oncology"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D1D5DB] text-xs sm:text-sm text-[#111827] focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                className="w-full px-3.5 py-2.5 rounded-xl liquid-glass-input text-xs sm:text-sm focus:outline-none"
               />
             </div>
 
             {/* Optional Section */}
-            <div className="pt-3 border-t border-[#E5E7EB] space-y-3">
+            <div className="pt-3 border-t border-black/5 dark:border-white/10 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-bold text-[#4B5563] uppercase tracking-wider">
+                <span className="text-[11px] font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
                   Optional Context &amp; Editorial Highlights
                 </span>
                 <span className="text-[11px] text-neutral-400">
@@ -248,7 +248,7 @@ ${formattedBody}
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#374151] mb-1">
+                <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
                   Primary Findings &amp; Evidence <span className="text-neutral-400 font-normal text-[11px]">(Optional)</span>
                 </label>
                 <textarea
@@ -256,12 +256,12 @@ ${formattedBody}
                   value={mainFindings}
                   onChange={(e) => setMainFindings(e.target.value)}
                   placeholder="Key breakthroughs or experimental data you specifically want highlighted in the cover letter..."
-                  className="w-full p-3 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 resize-none"
+                  className="w-full p-3 rounded-xl liquid-glass-input text-xs focus:outline-none resize-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#374151] mb-1">
+                <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
                   Broader Impact / Fit with Journal Readership <span className="text-neutral-400 font-normal text-[11px]">(Optional)</span>
                 </label>
                 <textarea
@@ -269,12 +269,12 @@ ${formattedBody}
                   value={broadSignificance}
                   onChange={(e) => setBroadSignificance(e.target.value)}
                   placeholder="Why the journal's specific readership should care about this discovery today..."
-                  className="w-full p-3 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 resize-none"
+                  className="w-full p-3 rounded-xl liquid-glass-input text-xs focus:outline-none resize-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#374151] mb-1">
+                <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
                   Suggested / Opposed Reviewers <span className="text-neutral-400 font-normal text-[11px]">(Optional)</span>
                 </label>
                 <input
@@ -282,14 +282,14 @@ ${formattedBody}
                   value={suggestedReviewers}
                   onChange={(e) => setSuggestedReviewers(e.target.value)}
                   placeholder="e.g. Dr. Jane Doe (MSKCC, no conflicts), Dr. Alan Smith (Francis Crick)"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl liquid-glass-input text-xs sm:text-sm focus:outline-none"
                 />
               </div>
             </div>
 
             {error && (
-              <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+              <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-700 dark:text-rose-300 text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
                 <span className="font-medium">{error}</span>
               </div>
             )}
@@ -297,7 +297,7 @@ ${formattedBody}
             <button
               type="submit"
               disabled={loading || !title.trim() || !targetJournal.trim() || !abstract.trim()}
-              className="w-full py-3.5 rounded-xl bg-black hover:bg-neutral-900 disabled:opacity-50 text-white font-semibold text-xs shadow-lg transition flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-3.5 rounded-xl liquid-glass-btn-primary disabled:opacity-50 text-white font-semibold text-xs shadow-xs transition flex items-center justify-center gap-2 cursor-pointer"
             >
               {loading ? (
                 <>
@@ -316,16 +316,16 @@ ${formattedBody}
 
         {/* Output Section */}
         {letter && (
-          <div className="rounded-2xl bg-[#0F1117] border border-white/10 p-6 space-y-4 shadow-xl animate-in fade-in duration-300">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
+          <div className="rounded-3xl liquid-glass-card p-6 space-y-4 animate-in fade-in duration-300">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-black/5 dark:border-white/10 pb-3">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-white">Generated Submission Cover Letter</span>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                  <span className="text-sm font-bold text-neutral-900 dark:text-white">Generated Submission Cover Letter</span>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30">
                     {letter.split(/\s+/).length} words
                   </span>
                 </div>
-                <p className="text-xs text-neutral-400 mt-0.5">
+                <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
                   Addressed to the Senior Editor-in-Chief of {targetJournal}
                 </p>
               </div>
@@ -334,7 +334,7 @@ ${formattedBody}
                 <button
                   type="button"
                   onClick={handleDownloadTxt}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-semibold text-white border border-white/10 transition cursor-pointer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl liquid-glass-btn-secondary text-xs font-semibold text-neutral-700 dark:text-neutral-300 transition cursor-pointer"
                   title="Download plain text file"
                 >
                   <Download className="w-3.5 h-3.5" />
@@ -343,24 +343,24 @@ ${formattedBody}
                 <button
                   type="button"
                   onClick={handleExportLatex}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 text-xs font-semibold text-purple-300 border border-purple-500/30 transition cursor-pointer shadow-xs"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl liquid-glass-btn-secondary text-xs font-semibold text-purple-700 dark:text-purple-300 transition cursor-pointer shadow-xs"
                   title="Export compile-ready LaTeX document"
                 >
-                  <FileCode className="w-3.5 h-3.5 text-purple-400" />
+                  <FileCode className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
                   <span>Export LaTeX (.tex)</span>
                 </button>
                 <button
                   type="button"
                   onClick={handleCopy}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white text-black hover:bg-neutral-200 text-xs font-semibold transition cursor-pointer shadow-xs"
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl liquid-glass-btn-primary text-white text-xs font-semibold transition cursor-pointer shadow-xs"
                 >
-                  {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                  {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                   <span>{copied ? "Copied!" : "Copy Letter"}</span>
                 </button>
               </div>
             </div>
 
-            <div className="p-8 sm:p-10 rounded-xl bg-white border border-[#E5E7EB] text-xs sm:text-sm text-[#1E293B] whitespace-pre-wrap font-serif leading-relaxed shadow-sm">
+            <div className="p-8 sm:p-10 rounded-2xl bg-white/80 dark:bg-black/20 border border-black/5 dark:border-white/10 text-xs sm:text-sm text-neutral-800 dark:text-neutral-200 whitespace-pre-wrap font-serif leading-relaxed shadow-2xs">
               {letter}
             </div>
           </div>

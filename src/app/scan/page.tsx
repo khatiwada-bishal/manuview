@@ -387,25 +387,25 @@ export default function ScanPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#08090D] text-white py-8 sm:py-12 print:bg-white print:p-0 aura-bg-gradient aura-grid-pattern">
+    <div className="min-h-screen text-[#111827] dark:text-[#F8FAFC] py-8 sm:py-12 print:bg-white print:p-0 aura-bg-gradient aura-grid-pattern">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 print:max-w-none print:p-0">
         
         {/* Top Breadcrumb & Page Controls */}
         <div className="mb-4 flex items-center justify-between print:hidden">
-          <div className="flex items-center gap-2 text-xs text-neutral-400">
+          <div className="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
             <span>Workspace</span>
             <span>/</span>
             <span>Diagnostics</span>
             <span>/</span>
-            <span className="text-white font-medium">Pre-Submission Scan</span>
+            <span className="text-neutral-900 dark:text-white font-medium">Pre-Submission Scan</span>
           </div>
 
           <button
             type="button"
             onClick={() => setSettingsOpen(true)}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 text-xs text-neutral-300 hover:text-white transition shadow-sm cursor-pointer"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-xl liquid-glass-btn-secondary text-xs text-neutral-700 dark:text-neutral-300 transition shadow-xs cursor-pointer"
           >
-            <Settings className="w-3.5 h-3.5 text-neutral-400" />
+            <Settings className="w-3.5 h-3.5 text-neutral-500 dark:text-neutral-400" />
             <span>{activeProviderInfo.name}</span>
           </button>
         </div>

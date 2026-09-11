@@ -78,18 +78,18 @@ export default function ToolsIndexPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#08090D] text-white py-14 aura-bg-gradient aura-grid-pattern">
+    <div className="min-h-screen text-neutral-900 dark:text-white py-14 aura-bg-gradient aura-grid-pattern">
       <div className="mx-auto max-w-5xl px-4 sm:px-6">
         <div className="text-center max-w-xl mx-auto mb-14">
           <div className="text-4xl mb-3 select-none">🧰</div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-white/[0.06] text-neutral-300 border border-white/10 mb-3 shadow-sm">
-            <Sliders className="w-3.5 h-3.5 text-emerald-400" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-black/[0.04] dark:bg-white/[0.06] text-neutral-700 dark:text-neutral-300 border border-black/10 dark:border-white/10 mb-3 shadow-2xs">
+            <Sliders className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
             <span>100% Free Research Utilities</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-3 font-serif">
+          <h1 className="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-white tracking-tight mb-3 font-serif">
             Single-Purpose Submission Tools
           </h1>
-          <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed">
+          <p className="text-neutral-600 dark:text-neutral-400 text-xs sm:text-sm leading-relaxed">
             Modular utilities for choosing a journal, checking evidence, assembling submission packages, and answering peer review. No sign-up required.
           </p>
         </div>
@@ -101,30 +101,30 @@ export default function ToolsIndexPage() {
               <Link
                 key={t.id}
                 href={t.href}
-                className="group flex flex-col justify-between p-6 rounded-2xl bg-white text-[#111827] border border-[#E5E7EB] shadow-xl hover:shadow-2xl hover:border-neutral-300 transition"
+                className="group flex flex-col justify-between p-6 rounded-3xl liquid-glass-card-interactive transition"
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-2.5 rounded-xl bg-[#EBF3FB] text-[#1D4ED8]">
+                    <div className="p-2.5 rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
                       <Icon className="w-5 h-5" />
                     </div>
-                    <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-md bg-[#F9FAFB] text-[#4B5563] border border-[#E5E7EB] font-medium">
+                    <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-md bg-black/[0.03] dark:bg-white/[0.05] text-neutral-600 dark:text-neutral-400 border border-black/5 dark:border-white/10 font-medium">
                       {t.runtime}
                     </span>
                   </div>
 
-                  <span className="text-[11px] font-semibold text-[#1D4ED8] block mb-1">
+                  <span className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 block mb-1">
                     {t.badge}
                   </span>
-                  <h3 className="text-base font-bold text-[#111827] mb-2 group-hover:text-[#2563EB] transition">
+                  <h3 className="text-base font-bold text-neutral-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">
                     {t.title}
                   </h3>
-                  <p className="text-xs text-[#4B5563] leading-relaxed mb-4">
+                  <p className="text-xs text-neutral-600 dark:text-neutral-300 leading-relaxed mb-4">
                     {t.description}
                   </p>
                 </div>
 
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-[#1D4ED8] group-hover:translate-x-1 transition-transform pt-3 border-t border-[#E5E7EB]">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-blue-600 dark:text-blue-400 group-hover:translate-x-1 transition-transform pt-3 border-t border-black/5 dark:border-white/10">
                   <span>Open tool</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </div>
@@ -133,22 +133,22 @@ export default function ToolsIndexPage() {
           })}
         </div>
 
-        {/* Banner to Full Scan in Frosted Glass style */}
-        <div className="p-6 sm:p-7 rounded-2xl aura-glass border border-white/15 flex flex-col sm:flex-row items-center justify-between gap-5 shadow-2xl">
+        {/* Banner to Full Scan in Liquid Glass style */}
+        <div className="p-6 sm:p-7 rounded-3xl liquid-glass-card flex flex-col sm:flex-row items-center justify-between gap-5">
           <div className="flex items-start gap-4">
             <span className="text-3xl select-none">📄</span>
             <div>
-              <h3 className="text-base font-bold text-white mb-1">
+              <h3 className="text-base font-bold text-neutral-900 dark:text-white mb-1">
                 Need a comprehensive pre-submission diagnostic?
               </h3>
-              <p className="text-xs text-neutral-400 leading-relaxed">
+              <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
                 The Pre-Submission Scan evaluates claims, statistics, controls, and 4 reviewer personas in one pass.
               </p>
             </div>
           </div>
           <Link
             href="/scan"
-            className="flex-shrink-0 px-5 py-2.5 rounded-lg bg-white hover:bg-neutral-200 text-black font-semibold text-xs shadow-md transition active:scale-[0.98]"
+            className="flex-shrink-0 px-5 py-2.5 rounded-xl liquid-glass-btn-primary text-white font-semibold text-xs shadow-xs transition active:scale-[0.98]"
           >
             Run Pre-Submission Scan &rarr;
           </Link>

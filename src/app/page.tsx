@@ -27,20 +27,20 @@ import {
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState<'paper' | 'personas' | 'crossref' | 'recommendations'>('paper');
   return (
-    <div className="flex flex-col bg-[#08090D] text-white min-h-screen">
+    <div className="flex flex-col min-h-screen text-neutral-900 dark:text-white">
       {/* ------------------------------------------------------------- */}
       {/* 1. HERO SECTION                                               */}
       {/* ------------------------------------------------------------- */}
       <section className="relative pt-16 sm:pt-24 pb-16 sm:pb-24 px-4 sm:px-6 overflow-hidden aura-bg-gradient aura-grid-pattern">
         <div className="mx-auto max-w-5xl text-center">
           {/* AI Badge Chip */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 text-neutral-300 text-xs font-medium mb-6 shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
-            <span className="font-mono text-[11px] text-emerald-400">Pre-Submission Scientific Diagnostics</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/[0.04] dark:bg-white/[0.05] border border-black/10 dark:border-white/10 text-neutral-700 dark:text-neutral-300 text-xs font-medium mb-6 shadow-2xs">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+            <span className="font-mono text-[11px] text-emerald-600 dark:text-emerald-400">Pre-Submission Scientific Diagnostics</span>
           </div>
 
           {/* Main Headline with Iconic Inline Yellow Pill */}
-          <h1 className="text-4xl sm:text-6xl md:text-[68px] font-bold text-white tracking-[-0.03em] leading-[1.08] mb-6">
+          <h1 className="text-4xl sm:text-6xl md:text-[68px] font-bold text-neutral-900 dark:text-white tracking-[-0.03em] leading-[1.08] mb-6">
             Where researchers and <br />
             agents{" "}
             <span className="inline-flex items-center gap-2 px-3.5 py-1 sm:px-4 sm:py-1.5 rounded-full bg-[#fcedd7] text-[#915809] border border-[#f5dcb7] font-semibold text-2xl sm:text-4xl md:text-5xl align-middle mx-1 sm:mx-2 shadow-md select-none">
@@ -51,7 +51,7 @@ export default function HomePage() {
           </h1>
 
           {/* Subtitle */}
-          <p className="text-base sm:text-lg text-neutral-400 mb-8 max-w-2xl mx-auto leading-relaxed font-normal">
+          <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-400 mb-8 max-w-2xl mx-auto leading-relaxed font-normal">
             Catch desk-reject flaws, citation hallucinations, and causal overclaims before submitting to top journals. A free, open-source editorial diagnostic for science.
           </p>
 
@@ -59,15 +59,15 @@ export default function HomePage() {
           <div className="flex flex-wrap items-center justify-center gap-3.5 mb-14 sm:mb-18">
             <Link
               href="/scan"
-              className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-white hover:bg-neutral-200 text-black font-semibold text-sm shadow-[0_0_25px_rgba(255,255,255,0.25)] transition active:scale-[0.98]"
+              className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl liquid-glass-btn-primary text-white font-semibold text-sm shadow-xs transition active:scale-[0.98]"
             >
-              <Sparkles className="w-4 h-4 text-black" />
+              <Sparkles className="w-4 h-4 text-white" />
               <span>Try ManuView free</span>
             </Link>
 
             <Link
               href="/tools"
-              className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-lg text-neutral-300 hover:text-white hover:bg-white/10 font-medium text-sm transition border border-white/10"
+              className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl liquid-glass-btn-secondary text-neutral-700 dark:text-neutral-200 font-medium text-sm transition"
             >
               <span>Explore Research Tools</span>
               <ArrowRight className="w-4 h-4" />
@@ -461,19 +461,19 @@ export default function HomePage() {
       {/* ------------------------------------------------------------- */}
       {/* 2. LOGO BAR (Scholarly Publisher Venues)                      */}
       {/* ------------------------------------------------------------- */}
-      <section className="py-10 border-y border-white/10 bg-[#12151B]">
+      <section className="py-10 border-y border-black/5 dark:border-white/10 bg-black/[0.02] dark:bg-[#12151B]/60 backdrop-blur-md">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 text-center">
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-neutral-400 mb-6">
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400 mb-6">
             Calibrated for formatting and editorial standards of leading peer-reviewed venues
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-14 text-sm sm:text-base font-serif font-bold text-neutral-300 tracking-wider">
-            <span className="hover:text-white transition">NATURE</span>
-            <span className="hover:text-white transition">SCIENCE</span>
-            <span className="hover:text-white transition">CELL</span>
-            <span className="hover:text-white transition">THE LANCET</span>
-            <span className="hover:text-white transition">PNAS</span>
-            <span className="hover:text-white transition">PLOS ONE</span>
-            <span className="hover:text-white transition">IEEE TPAMI</span>
+          <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-14 text-sm sm:text-base font-serif font-bold text-neutral-600 dark:text-neutral-300 tracking-wider">
+            <span className="hover:text-neutral-900 dark:hover:text-white transition">NATURE</span>
+            <span className="hover:text-neutral-900 dark:hover:text-white transition">SCIENCE</span>
+            <span className="hover:text-neutral-900 dark:hover:text-white transition">CELL</span>
+            <span className="hover:text-neutral-900 dark:hover:text-white transition">THE LANCET</span>
+            <span className="hover:text-neutral-900 dark:hover:text-white transition">PNAS</span>
+            <span className="hover:text-neutral-900 dark:hover:text-white transition">PLOS ONE</span>
+            <span className="hover:text-neutral-900 dark:hover:text-white transition">IEEE TPAMI</span>
           </div>
         </div>
       </section>
@@ -481,61 +481,61 @@ export default function HomePage() {
       {/* ------------------------------------------------------------- */}
       {/* 3. BENTO GRID SECTION: "AI where your research works."        */}
       {/* ------------------------------------------------------------- */}
-      <section className="py-20 px-4 sm:px-6 bg-[#0A0B0E]">
+      <section className="py-20 px-4 sm:px-6 bg-transparent">
         <div className="mx-auto max-w-5xl">
-          <h2 className="text-3xl sm:text-5xl font-bold text-white tracking-tight mb-12">
+          <h2 className="text-3xl sm:text-5xl font-bold text-neutral-900 dark:text-white tracking-tight mb-12">
             AI where your research works.
           </h2>
 
           {/* Bento Top Row (Two 50% Cards) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             {/* Bento Card 1 */}
-            <div className="rounded-2xl border border-[#EBEBEA] bg-white p-7 sm:p-8 shadow-xs flex flex-col justify-between hover:shadow-md transition">
+            <div className="rounded-3xl liquid-glass-card p-7 sm:p-8 flex flex-col justify-between transition">
               <div>
-                <div className="flex items-center justify-between text-xs text-[#9B9A97] mb-2 font-medium">
+                <div className="flex items-center justify-between text-xs text-neutral-500 dark:text-neutral-400 mb-2 font-medium">
                   <span>Editorial Synthesis</span>
-                  <div className="w-4 h-4 rounded-full bg-black text-white flex items-center justify-center text-[10px]">
+                  <div className="w-4 h-4 rounded-full bg-black dark:bg-white text-white dark:text-black flex items-center justify-center text-[10px]">
                     <Check className="w-2.5 h-2.5" />
                   </div>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-[#2F3437] tracking-tight mb-4">
+                <h3 className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-white tracking-tight mb-4">
                   Bring everything into one system of record.
                 </h3>
               </div>
 
               {/* Mini UI Mockup inside card */}
-              <div className="rounded-xl border border-[#EBEBEA] bg-[#F7F7F5] p-4 text-xs space-y-2 mt-4">
-                <div className="flex items-center justify-between pb-2 border-b border-[#ecece9]">
-                  <span className="font-semibold text-[#2F3437]">Pre-Submission Rubric</span>
-                  <span className="text-[11px] text-[#9B9A97]">Calibrated to Nature</span>
+              <div className="rounded-2xl border border-black/5 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.03] p-4 text-xs space-y-2 mt-4">
+                <div className="flex items-center justify-between pb-2 border-b border-black/5 dark:border-white/10">
+                  <span className="font-semibold text-neutral-900 dark:text-neutral-200">Pre-Submission Rubric</span>
+                  <span className="text-[11px] text-neutral-500 dark:text-neutral-400">Calibrated to Nature</span>
                 </div>
                 <div className="space-y-1.5 pt-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-[#787774]">Originality &amp; Novelty</span>
-                    <span className="px-2 py-0.5 rounded bg-[#EDF6EE] text-[#1E5A2A] border border-[#CBE7CE] font-medium">4.5 / 5.0</span>
+                    <span className="text-neutral-600 dark:text-neutral-400">Originality &amp; Novelty</span>
+                    <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 border border-emerald-500/20 font-medium">4.5 / 5.0</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[#787774]">Claims vs Evidence</span>
-                    <span className="px-2 py-0.5 rounded bg-[#FBF3DB] text-[#78510E] border border-[#F4E2B6] font-medium">Overclaim Risk</span>
+                    <span className="text-neutral-600 dark:text-neutral-400">Claims vs Evidence</span>
+                    <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-800 dark:text-amber-300 border border-amber-500/20 font-medium">Overclaim Risk</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[#787774]">Methodological Soundness</span>
-                    <span className="px-2 py-0.5 rounded bg-[#f5f5f4] text-[#787774] font-medium">Power Calculation Needed</span>
+                    <span className="text-neutral-600 dark:text-neutral-400">Methodological Soundness</span>
+                    <span className="px-2 py-0.5 rounded bg-neutral-500/10 text-neutral-700 dark:text-neutral-300 font-medium">Power Calculation Needed</span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Bento Card 2 */}
-            <div className="rounded-2xl border border-[#EBEBEA] bg-white p-7 sm:p-8 shadow-xs flex flex-col justify-between hover:shadow-md transition">
+            <div className="rounded-3xl liquid-glass-card p-7 sm:p-8 flex flex-col justify-between transition">
               <div>
-                <div className="flex items-center justify-between text-xs text-[#9B9A97] mb-2 font-medium">
+                <div className="flex items-center justify-between text-xs text-neutral-500 dark:text-neutral-400 mb-2 font-medium">
                   <span>Citation Audit</span>
-                  <div className="w-4 h-4 rounded-full bg-black text-white flex items-center justify-center text-[10px]">
+                  <div className="w-4 h-4 rounded-full bg-black dark:bg-white text-white dark:text-black flex items-center justify-center text-[10px]">
                     <Check className="w-2.5 h-2.5" />
                   </div>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-[#2F3437] tracking-tight mb-4">
+                <h3 className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-white tracking-tight mb-4">
                   Get answers instantly with live verification.
                 </h3>
               </div>
@@ -564,67 +564,67 @@ export default function HomePage() {
           </div>
 
           {/* Bento Middle Row (Wide 100% Card) */}
-          <div className="rounded-2xl border border-[#E5E7EB] bg-white p-7 sm:p-8 shadow-2xl mb-6 transition">
-            <div className="flex items-center justify-between text-xs text-[#9B9A97] mb-2 font-medium">
-              <span className="font-mono text-[11px] uppercase tracking-wider text-neutral-500 font-semibold">Peer-Review Simulation</span>
-              <div className="w-4 h-4 rounded-full bg-black text-white flex items-center justify-center text-[10px]">
+          <div className="rounded-3xl liquid-glass-card p-7 sm:p-8 mb-6 transition">
+            <div className="flex items-center justify-between text-xs text-neutral-500 dark:text-neutral-400 mb-2 font-medium">
+              <span className="font-mono text-[11px] uppercase tracking-wider text-neutral-600 dark:text-neutral-400 font-semibold">Peer-Review Simulation</span>
+              <div className="w-4 h-4 rounded-full bg-black dark:bg-white text-white dark:text-black flex items-center justify-center text-[10px]">
                 <Check className="w-2.5 h-2.5" />
               </div>
             </div>
-            <h3 className="text-xl sm:text-2xl font-bold text-[#111827] tracking-tight mb-4">
+            <h3 className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-white tracking-tight mb-4">
               Keep reviews moving 24/7 with expert referee agents.
             </h3>
 
             {/* 4 Persona Cards in Bento */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 mt-4">
-              <div className="p-4 rounded-xl bg-[#F0FDF4] border border-[#BBF7D0] shadow-xs space-y-2.5 hover:shadow-md transition">
-                <div className="flex items-center gap-2 font-semibold text-xs text-[#166534]">
-                  <FlaskConical className="w-4 h-4 text-[#16A34A]" />
+              <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 shadow-xs space-y-2.5 hover:shadow-md transition">
+                <div className="flex items-center gap-2 font-semibold text-xs text-emerald-800 dark:text-emerald-300">
+                  <FlaskConical className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                   <span>Methods Specialist</span>
                 </div>
-                <p className="text-[11px] text-[#374151] leading-relaxed">
+                <p className="text-[11px] text-neutral-700 dark:text-neutral-300 leading-relaxed">
                   Assesses CRISPR library representation, sequencing coverage, and negative controls.
                 </p>
-                <div className="text-[10px] font-semibold text-[#166534] bg-white/80 border border-[#BBF7D0] px-2 py-0.5 rounded">
+                <div className="text-[10px] font-semibold text-emerald-800 dark:text-emerald-300 bg-white/70 dark:bg-emerald-950/40 border border-emerald-500/20 px-2 py-0.5 rounded">
                   Protocol Reproducibility
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#F5F3FF] border border-[#DDD6FE] shadow-xs space-y-2.5 hover:shadow-md transition">
-                <div className="flex items-center gap-2 font-semibold text-xs text-[#5B21B6]">
-                  <GraduationCap className="w-4 h-4 text-[#7C3AED]" />
+              <div className="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/20 shadow-xs space-y-2.5 hover:shadow-md transition">
+                <div className="flex items-center gap-2 font-semibold text-xs text-purple-800 dark:text-purple-300">
+                  <GraduationCap className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                   <span>Domain Expert</span>
                 </div>
-                <p className="text-[11px] text-[#374151] leading-relaxed">
+                <p className="text-[11px] text-neutral-700 dark:text-neutral-300 leading-relaxed">
                   Evaluates biological plausibility, pathway mechanism, and novelty against 2024 literature.
                 </p>
-                <div className="text-[10px] font-semibold text-[#5B21B6] bg-white/80 border border-[#DDD6FE] px-2 py-0.5 rounded">
+                <div className="text-[10px] font-semibold text-purple-800 dark:text-purple-300 bg-white/70 dark:bg-purple-950/40 border border-purple-500/20 px-2 py-0.5 rounded">
                   Mechanistic Novelty
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#FFFBEB] border border-[#FDE68A] shadow-xs space-y-2.5 hover:shadow-md transition">
-                <div className="flex items-center gap-2 font-semibold text-xs text-[#92400E]">
-                  <BookOpen className="w-4 h-4 text-[#D97706]" />
+              <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 shadow-xs space-y-2.5 hover:shadow-md transition">
+                <div className="flex items-center gap-2 font-semibold text-xs text-amber-800 dark:text-amber-300">
+                  <BookOpen className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                   <span>Senior Journal Editor</span>
                 </div>
-                <p className="text-[11px] text-[#374151] leading-relaxed">
+                <p className="text-[11px] text-neutral-700 dark:text-neutral-300 leading-relaxed">
                   Screens broad interest, translational implications, and immediate desk-rejection hazards.
                 </p>
-                <div className="text-[10px] font-semibold text-[#92400E] bg-white/80 border border-[#FDE68A] px-2 py-0.5 rounded">
+                <div className="text-[10px] font-semibold text-amber-800 dark:text-amber-300 bg-white/70 dark:bg-amber-950/40 border border-amber-500/20 px-2 py-0.5 rounded">
                   Desk-Reject Triage
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#ECFEFF] border border-[#A5F3FC] shadow-xs space-y-2.5 hover:shadow-md transition">
-                <div className="flex items-center gap-2 font-semibold text-xs text-[#155E75]">
-                  <BarChart3 className="w-4 h-4 text-[#0891B2]" />
+              <div className="p-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 shadow-xs space-y-2.5 hover:shadow-md transition">
+                <div className="flex items-center gap-2 font-semibold text-xs text-cyan-800 dark:text-cyan-300">
+                  <BarChart3 className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
                   <span>Biostatistician</span>
                 </div>
-                <p className="text-[11px] text-[#374151] leading-relaxed">
+                <p className="text-[11px] text-neutral-700 dark:text-neutral-300 leading-relaxed">
                   Audits sample power calculations, multiplicity adjustments (FDR), and variance metrics.
                 </p>
-                <div className="text-[10px] font-semibold text-[#155E75] bg-white/80 border border-[#A5F3FC] px-2 py-0.5 rounded">
+                <div className="text-[10px] font-semibold text-cyan-800 dark:text-cyan-300 bg-white/70 dark:bg-cyan-950/40 border border-cyan-500/20 px-2 py-0.5 rounded">
                   Statistical Validity
                 </div>
               </div>
@@ -635,81 +635,81 @@ export default function HomePage() {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
             <Link
               href="/tools/reference-checker"
-              className="p-4 rounded-xl border border-[#EBEBEA] bg-white hover:border-[#cccccc] hover:shadow-sm transition flex flex-col justify-between group"
+              className="p-4 rounded-2xl liquid-glass-card-interactive flex flex-col justify-between group"
             >
-              <div className="w-8 h-8 rounded-lg bg-[#EBF3FB] text-[#18569C] border border-[#CDE1F8] flex items-center justify-center mb-3">
+              <div className="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/20 flex items-center justify-center mb-3">
                 <CheckCircle2 className="w-4 h-4" />
               </div>
               <div>
-                <div className="font-semibold text-xs text-[#2F3437] group-hover:text-[#0075eb] flex items-center justify-between">
+                <div className="font-semibold text-xs text-neutral-900 dark:text-neutral-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 flex items-center justify-between">
                   <span>Reference Audit</span>
-                  <span className="text-[#9B9A97]">&rarr;</span>
+                  <span className="text-neutral-400 group-hover:translate-x-0.5 transition-transform">&rarr;</span>
                 </div>
-                <p className="text-[11px] text-[#787774] mt-0.5">Crossref verification</p>
+                <p className="text-[11px] text-neutral-500 dark:text-neutral-400 mt-0.5">Crossref verification</p>
               </div>
             </Link>
 
             <Link
               href="/tools/prisma"
-              className="p-4 rounded-xl border border-[#EBEBEA] bg-white hover:border-[#cccccc] hover:shadow-sm transition flex flex-col justify-between group"
+              className="p-4 rounded-2xl liquid-glass-card-interactive flex flex-col justify-between group"
             >
-              <div className="w-8 h-8 rounded-lg bg-[#FBF3DB] text-[#78510E] border border-[#F4E2B6] flex items-center justify-center mb-3">
+              <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20 flex items-center justify-center mb-3">
                 <Layers className="w-4 h-4" />
               </div>
               <div>
-                <div className="font-semibold text-xs text-[#2F3437] group-hover:text-[#915809] flex items-center justify-between">
+                <div className="font-semibold text-xs text-neutral-900 dark:text-neutral-100 group-hover:text-amber-600 dark:group-hover:text-amber-400 flex items-center justify-between">
                   <span>PRISMA 2020</span>
-                  <span className="text-[#9B9A97]">&rarr;</span>
+                  <span className="text-neutral-400 group-hover:translate-x-0.5 transition-transform">&rarr;</span>
                 </div>
-                <p className="text-[11px] text-[#787774] mt-0.5">Flow diagrams &amp; SVG</p>
+                <p className="text-[11px] text-neutral-500 dark:text-neutral-400 mt-0.5">Flow diagrams &amp; SVG</p>
               </div>
             </Link>
 
             <Link
               href="/tools/journal-fit"
-              className="p-4 rounded-xl border border-[#EBEBEA] bg-white hover:border-[#cccccc] hover:shadow-sm transition flex flex-col justify-between group"
+              className="p-4 rounded-2xl liquid-glass-card-interactive flex flex-col justify-between group"
             >
-              <div className="w-8 h-8 rounded-lg bg-[#FDF0EF] text-[#7C2D2B] flex items-center justify-center mb-3">
+              <div className="w-8 h-8 rounded-lg bg-red-500/10 text-red-700 dark:text-red-300 border border-red-500/20 flex items-center justify-center mb-3">
                 <BookOpen className="w-4 h-4" />
               </div>
               <div>
-                <div className="font-semibold text-xs text-[#2F3437] group-hover:text-[#7C2D2B] flex items-center justify-between">
+                <div className="font-semibold text-xs text-neutral-900 dark:text-neutral-100 group-hover:text-red-600 dark:group-hover:text-red-400 flex items-center justify-between">
                   <span>Journal Fit</span>
-                  <span className="text-[#9B9A97]">&rarr;</span>
+                  <span className="text-neutral-400 group-hover:translate-x-0.5 transition-transform">&rarr;</span>
                 </div>
-                <p className="text-[11px] text-[#787774] mt-0.5">Match 20+ venues</p>
+                <p className="text-[11px] text-neutral-500 dark:text-neutral-400 mt-0.5">Match 20+ venues</p>
               </div>
             </Link>
 
             <Link
               href="/tools/citation-claim"
-              className="p-4 rounded-xl border border-[#EBEBEA] bg-white hover:border-[#cccccc] hover:shadow-sm transition flex flex-col justify-between group"
+              className="p-4 rounded-2xl liquid-glass-card-interactive flex flex-col justify-between group"
             >
-              <div className="w-8 h-8 rounded-lg bg-[#EDF6EE] text-[#1E5A2A] border border-[#CBE7CE] flex items-center justify-center mb-3">
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 flex items-center justify-center mb-3">
                 <Sparkles className="w-4 h-4" />
               </div>
               <div>
-                <div className="font-semibold text-xs text-[#2F3437] group-hover:text-[#2b7a4b] flex items-center justify-between">
+                <div className="font-semibold text-xs text-neutral-900 dark:text-neutral-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 flex items-center justify-between">
                   <span>Citation Claim</span>
-                  <span className="text-[#9B9A97]">&rarr;</span>
+                  <span className="text-neutral-400 group-hover:translate-x-0.5 transition-transform">&rarr;</span>
                 </div>
-                <p className="text-[11px] text-[#787774] mt-0.5">Audit claim accuracy</p>
+                <p className="text-[11px] text-neutral-500 dark:text-neutral-400 mt-0.5">Audit claim accuracy</p>
               </div>
             </Link>
 
             <Link
               href="/tools/cover-letter"
-              className="p-4 rounded-xl border border-[#EBEBEA] bg-white hover:border-[#cccccc] hover:shadow-sm transition flex flex-col justify-between group col-span-2 sm:col-span-1"
+              className="p-4 rounded-2xl liquid-glass-card-interactive flex flex-col justify-between group col-span-2 sm:col-span-1"
             >
-              <div className="w-8 h-8 rounded-lg bg-[#F6F3F9] text-[#57338C] border border-[#DFD5F5] flex items-center justify-center mb-3">
+              <div className="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20 flex items-center justify-center mb-3">
                 <FileText className="w-4 h-4" />
               </div>
               <div>
-                <div className="font-semibold text-xs text-[#2F3437] group-hover:text-[#7642bb] flex items-center justify-between">
+                <div className="font-semibold text-xs text-neutral-900 dark:text-neutral-100 group-hover:text-purple-600 dark:group-hover:text-purple-400 flex items-center justify-between">
                   <span>Cover Letter</span>
-                  <span className="text-[#9B9A97]">&rarr;</span>
+                  <span className="text-neutral-400 group-hover:translate-x-0.5 transition-transform">&rarr;</span>
                 </div>
-                <p className="text-[11px] text-[#787774] mt-0.5">Editor-grade letters</p>
+                <p className="text-[11px] text-neutral-500 dark:text-neutral-400 mt-0.5">Editor-grade letters</p>
               </div>
             </Link>
           </div>
@@ -719,66 +719,66 @@ export default function HomePage() {
       {/* ------------------------------------------------------------- */}
       {/* 4. SCHOLARLY STANDARDS & VERIFIABLE INTEGRITY                 */}
       {/* ------------------------------------------------------------- */}
-      <section className="py-20 px-4 sm:px-6 bg-[#0A0B0E] border-t border-white/10">
+      <section className="py-20 px-4 sm:px-6 bg-transparent border-t border-black/5 dark:border-white/10">
         <div className="mx-auto max-w-5xl">
           <div className="max-w-2xl mb-12">
-            <h2 className="text-3xl sm:text-5xl font-bold text-white tracking-tight mb-4">
+            <h2 className="text-3xl sm:text-5xl font-bold text-neutral-900 dark:text-white tracking-tight mb-4">
               Built for verifiable publishing standards.
             </h2>
-            <p className="text-sm text-neutral-400 font-light leading-relaxed">
+            <p className="text-sm text-neutral-600 dark:text-neutral-400 font-light leading-relaxed">
               Designed around empirical integrity checks, real-time registry lookups, and standardized editorial guidelines to catch fatal rejection hazards before journal submission.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Standard Card 1: CrossRef Registry */}
-            <div className="rounded-2xl border border-[#E5E7EB] bg-white p-7 flex flex-col justify-between shadow-xl hover:shadow-2xl transition">
+            <div className="rounded-3xl liquid-glass-card p-7 flex flex-col justify-between transition">
               <div>
-                <div className="w-10 h-10 rounded-xl bg-[#EBF3FB] border border-[#CDE1F8] flex items-center justify-center text-lg mb-5 shadow-sm">
+                <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-lg mb-5 shadow-xs">
                   🔍
                 </div>
-                <h3 className="text-base font-bold text-[#111827] mb-2">CrossRef Registry Verification</h3>
-                <p className="text-xs text-[#4B5563] leading-relaxed">
+                <h3 className="text-base font-bold text-neutral-900 dark:text-white mb-2">CrossRef Registry Verification</h3>
+                <p className="text-xs text-neutral-600 dark:text-neutral-300 leading-relaxed">
                   Directly resolves cited DOIs against CrossRef APIs to flag unresolvable citations, dead URLs, and hallucinated reference titles that trigger immediate editorial red flags.
                 </p>
               </div>
-              <div className="pt-4 mt-6 border-t border-[#E5E7EB] flex items-center justify-between text-[11px] text-[#6B7280]">
-                <span className="font-semibold text-[#111827]">Deterministic Audit</span>
-                <span className="font-mono text-[#1D4ED8]">api.crossref.org</span>
+              <div className="pt-4 mt-6 border-t border-black/5 dark:border-white/10 flex items-center justify-between text-[11px] text-neutral-500 dark:text-neutral-400">
+                <span className="font-semibold text-neutral-900 dark:text-neutral-200">Deterministic Audit</span>
+                <span className="font-mono text-blue-600 dark:text-blue-400">api.crossref.org</span>
               </div>
             </div>
 
             {/* Standard Card 2: Retraction Watch */}
-            <div className="rounded-2xl border border-[#E5E7EB] bg-white p-7 flex flex-col justify-between shadow-xl hover:shadow-2xl transition">
+            <div className="rounded-3xl liquid-glass-card p-7 flex flex-col justify-between transition">
               <div>
-                <div className="w-10 h-10 rounded-xl bg-[#FDF0EF] border border-[#F7CECC] flex items-center justify-center text-lg mb-5 shadow-sm">
+                <div className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-lg mb-5 shadow-xs">
                   ⚠️
                 </div>
-                <h3 className="text-base font-bold text-[#111827] mb-2">Retraction Screening</h3>
-                <p className="text-xs text-[#4B5563] leading-relaxed">
+                <h3 className="text-base font-bold text-neutral-900 dark:text-white mb-2">Retraction Screening</h3>
+                <p className="text-xs text-neutral-600 dark:text-neutral-300 leading-relaxed">
                   Screens bibliography DOIs against retraction registries and publisher notices. Automatically detects whether your foundational literature has been retracted or corrected.
                 </p>
               </div>
-              <div className="pt-4 mt-6 border-t border-[#E5E7EB] flex items-center justify-between text-[11px] text-[#6B7280]">
-                <span className="font-semibold text-[#111827]">Integrity Shield</span>
-                <span className="font-mono text-[#B91C1C]">Zero Retraction Policy</span>
+              <div className="pt-4 mt-6 border-t border-black/5 dark:border-white/10 flex items-center justify-between text-[11px] text-neutral-500 dark:text-neutral-400">
+                <span className="font-semibold text-neutral-900 dark:text-neutral-200">Integrity Shield</span>
+                <span className="font-mono text-rose-600 dark:text-rose-400">Zero Retraction Policy</span>
               </div>
             </div>
 
             {/* Standard Card 3: EQUATOR & PRISMA */}
-            <div className="rounded-2xl border border-[#E5E7EB] bg-white p-7 flex flex-col justify-between shadow-xl hover:shadow-2xl transition">
+            <div className="rounded-3xl liquid-glass-card p-7 flex flex-col justify-between transition">
               <div>
-                <div className="w-10 h-10 rounded-xl bg-[#EDF6EE] border border-[#CBE7CE] flex items-center justify-center text-lg mb-5 shadow-sm">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-lg mb-5 shadow-xs">
                   📋
                 </div>
-                <h3 className="text-base font-bold text-[#111827] mb-2">Reporting Guideline Compliance</h3>
-                <p className="text-xs text-[#4B5563] leading-relaxed">
+                <h3 className="text-base font-bold text-neutral-900 dark:text-white mb-2">Reporting Guideline Compliance</h3>
+                <p className="text-xs text-neutral-600 dark:text-neutral-300 leading-relaxed">
                   Calibrated against EQUATOR Network checklists (PRISMA 2020, CONSORT, STROBE) to ensure sample size power justifications, randomization, and blinding statements are complete.
                 </p>
               </div>
-              <div className="pt-4 mt-6 border-t border-[#E5E7EB] flex items-center justify-between text-[11px] text-[#6B7280]">
-                <span className="font-semibold text-[#111827]">EQUATOR Guidelines</span>
-                <span className="font-mono text-[#15803D]">Checklist Auditing</span>
+              <div className="pt-4 mt-6 border-t border-black/5 dark:border-white/10 flex items-center justify-between text-[11px] text-neutral-500 dark:text-neutral-400">
+                <span className="font-semibold text-neutral-900 dark:text-neutral-200">EQUATOR Guidelines</span>
+                <span className="font-mono text-emerald-600 dark:text-emerald-400">Checklist Auditing</span>
               </div>
             </div>
           </div>
@@ -788,30 +788,30 @@ export default function HomePage() {
       {/* ------------------------------------------------------------- */}
       {/* 5. GET STARTED TODAY CTA SECTION                              */}
       {/* ------------------------------------------------------------- */}
-      <section className="py-24 sm:py-32 px-4 sm:px-6 bg-[#08090D] border-t border-white/10 text-center relative overflow-hidden aura-bg-gradient">
+      <section className="py-24 sm:py-32 px-4 sm:px-6 border-t border-black/5 dark:border-white/10 text-center relative overflow-hidden aura-bg-gradient">
         <div className="mx-auto max-w-2xl relative z-10">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.06] border border-white/10 text-neutral-300 text-xs font-medium mb-5">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/[0.04] dark:bg-white/[0.06] border border-black/10 dark:border-white/10 text-neutral-700 dark:text-neutral-300 text-xs font-medium mb-5">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
             <span>Open Source Scientific Integrity</span>
           </div>
-          <h2 className="text-3xl sm:text-5xl font-bold text-white tracking-tight mb-4 font-serif">
+          <h2 className="text-3xl sm:text-5xl font-bold text-neutral-900 dark:text-white tracking-tight mb-4 font-serif">
             Empower your next submission.
           </h2>
-          <p className="text-sm text-neutral-400 mb-8 max-w-lg mx-auto leading-relaxed">
+          <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-8 max-w-lg mx-auto leading-relaxed">
             Diagnose methodological vulnerabilities, verify cited DOIs in real time, and simulate 4 expert peer reviews before journal editors do.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-3.5">
             <Link
               href="/scan"
-              className="px-6 py-2.5 rounded-lg bg-white hover:bg-neutral-200 text-black font-semibold text-sm shadow-[0_0_25px_rgba(255,255,255,0.25)] transition active:scale-[0.98]"
+              className="px-6 py-2.5 rounded-xl liquid-glass-btn-primary text-white font-semibold text-sm shadow-xs transition active:scale-[0.98]"
             >
               Try ManuView free
             </Link>
 
             <Link
               href="/examples"
-              className="px-5 py-2.5 rounded-lg text-neutral-300 hover:text-white hover:bg-white/10 border border-white/10 font-medium text-sm transition"
+              className="px-5 py-2.5 rounded-xl liquid-glass-btn-secondary text-neutral-700 dark:text-neutral-200 font-medium text-sm transition"
             >
               Explore sample preprints
             </Link>

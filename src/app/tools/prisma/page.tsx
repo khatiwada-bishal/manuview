@@ -102,19 +102,19 @@ export default function PrismaPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#08090D] text-white py-12 aura-bg-gradient aura-grid-pattern">
+    <div className="min-h-screen text-neutral-900 dark:text-white py-12 aura-bg-gradient aura-grid-pattern">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 space-y-8">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-500/10 text-purple-400 border border-purple-500/20 shadow-xs">
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20 shadow-xs">
               <Layers className="w-3.5 h-3.5" />
               <span>PRISMA 2020 Standard</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-serif font-bold text-white tracking-tight">
+            <h1 className="text-3xl sm:text-4xl font-serif font-bold text-neutral-900 dark:text-white tracking-tight">
               Systematic Review Flow Diagram Generator
             </h1>
-            <p className="text-neutral-400 text-xs sm:text-sm max-w-2xl leading-relaxed">
+            <p className="text-neutral-600 dark:text-neutral-400 text-xs sm:text-sm max-w-2xl leading-relaxed">
               Calibrate your study identification, screening, and eligibility numbers. Reconciles stage arithmetic automatically and exports publication-ready vector SVGs.
             </p>
           </div>
@@ -123,16 +123,16 @@ export default function PrismaPage() {
             <button
               type="button"
               onClick={handleDownloadCSV}
-              className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-semibold border border-white/10 transition cursor-pointer shadow-xs"
+              className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl liquid-glass-btn-secondary text-xs font-semibold text-neutral-700 dark:text-neutral-300 transition cursor-pointer shadow-xs"
               title="Download CSV counts for supplementary data"
             >
-              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
               <span>Export CSV</span>
             </button>
             <button
               type="button"
               onClick={handleDownloadSVG}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold tracking-wide transition cursor-pointer shadow-lg"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl liquid-glass-btn-primary text-white text-xs font-semibold tracking-wide transition cursor-pointer shadow-xs"
             >
               <Download className="w-4 h-4" />
               <span>Export SVG Vector</span>
@@ -142,11 +142,11 @@ export default function PrismaPage() {
 
         {/* Arithmetic Status Banner */}
         {hasMathDiscrepancy ? (
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-3xl bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-200 text-xs">
             <div className="flex items-start gap-2.5">
-              <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+              <AlertCircle className="w-4 h-4 text-amber-500 dark:text-amber-400 shrink-0 mt-0.5" />
               <div>
-                <span className="font-bold text-amber-300">Arithmetic Discrepancy Detected: </span>
+                <span className="font-bold text-amber-800 dark:text-amber-300">Arithmetic Discrepancy Detected: </span>
                 Your input counts do not reconcile mathematically across screening phases. Reviewers frequently desk-reject systematic reviews with count discrepancies.
               </div>
             </div>
@@ -159,8 +159,8 @@ export default function PrismaPage() {
             </button>
           </div>
         ) : (
-          <div className="flex items-center gap-2 p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-300 text-xs">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <div className="flex items-center gap-2 p-3.5 rounded-3xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-800 dark:text-emerald-300 text-xs">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
             <span>PRISMA counts perfectly reconciled across all 4 evaluation phases (0 conflicts).</span>
           </div>
         )}
@@ -168,15 +168,15 @@ export default function PrismaPage() {
         {/* Two-Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Inputs Column */}
-          <div className="lg:col-span-4 aura-paper-sheet rounded-2xl p-6 shadow-2xl text-[#111827] space-y-5">
-            <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#4B5563]">
+          <div className="lg:col-span-4 liquid-glass-card rounded-3xl p-6 shadow-xl space-y-5">
+            <div className="flex items-center justify-between border-b border-black/5 dark:border-white/10 pb-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
                 Phase 1: Identification
               </span>
               <button
                 type="button"
                 onClick={handleResetDefaults}
-                className="text-xs text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1 cursor-pointer font-medium"
+                className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 cursor-pointer font-medium"
                 title="Reset sample values"
               >
                 <RotateCcw className="w-3 h-3" />
@@ -186,135 +186,135 @@ export default function PrismaPage() {
 
             <div className="space-y-3 text-xs">
               <div>
-                <label className="block text-xs font-semibold text-[#374151] mb-1">
+                <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
                   Databases Identified (n):
                 </label>
                 <input
                   type="number"
                   value={dbIdentified}
                   onChange={(e) => setDbIdentified(Number(e.target.value))}
-                  className="w-full px-3 py-2 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                  className="w-full px-3 py-2 rounded-xl liquid-glass-input text-xs focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#374151] mb-1">
+                <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
                   Registers Identified (n):
                 </label>
                 <input
                   type="number"
                   value={registersIdentified}
                   onChange={(e) => setRegistersIdentified(Number(e.target.value))}
-                  className="w-full px-3 py-2 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                  className="w-full px-3 py-2 rounded-xl liquid-glass-input text-xs focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#374151] mb-1">
+                <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
                   Duplicates Removed (n):
                 </label>
                 <input
                   type="number"
                   value={duplicatesRemoved}
                   onChange={(e) => setDuplicatesRemoved(Number(e.target.value))}
-                  className="w-full px-3 py-2 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                  className="w-full px-3 py-2 rounded-xl liquid-glass-input text-xs focus:outline-none"
                 />
               </div>
             </div>
 
-            <div className="border-t border-[#E5E7EB] pt-4">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#4B5563] block mb-3">
+            <div className="border-t border-black/5 dark:border-white/10 pt-4">
+              <span className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 block mb-3">
                 Phase 2: Screening &amp; Retrieval
               </span>
               <div className="space-y-3 text-xs">
                 <div>
-                  <label className="block text-xs font-semibold text-[#374151] mb-1">
+                  <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
                     Records Screened (n):
                   </label>
                   <input
                     type="number"
                     value={screened}
                     onChange={(e) => setScreened(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                    className="w-full px-3 py-2 rounded-xl liquid-glass-input text-xs focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-[#374151] mb-1">
+                  <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
                     Records Excluded (n):
                   </label>
                   <input
                     type="number"
                     value={screenExcluded}
                     onChange={(e) => setScreenExcluded(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                    className="w-full px-3 py-2 rounded-xl liquid-glass-input text-xs focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-[#374151] mb-1">
+                  <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
                     Reports Sought (n):
                   </label>
                   <input
                     type="number"
                     value={sought}
                     onChange={(e) => setSought(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                    className="w-full px-3 py-2 rounded-xl liquid-glass-input text-xs focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-[#374151] mb-1">
+                  <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
                     Reports Not Retrieved (n):
                   </label>
                   <input
                     type="number"
                     value={notRetrieved}
                     onChange={(e) => setNotRetrieved(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                    className="w-full px-3 py-2 rounded-xl liquid-glass-input text-xs focus:outline-none"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="border-t border-[#E5E7EB] pt-4">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#4B5563] block mb-3">
+            <div className="border-t border-black/5 dark:border-white/10 pt-4">
+              <span className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 block mb-3">
                 Phase 3: Eligibility &amp; Included
               </span>
               <div className="space-y-3 text-xs">
                 <div>
-                  <label className="block text-xs font-semibold text-[#374151] mb-1">
+                  <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
                     Reports Assessed for Eligibility (n):
                   </label>
                   <input
                     type="number"
                     value={assessed}
                     onChange={(e) => setAssessed(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                    className="w-full px-3 py-2 rounded-xl liquid-glass-input text-xs focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-[#374151] mb-1">
+                  <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
                     Reports Excluded with Reason (n):
                   </label>
                   <input
                     type="number"
                     value={excludedEligibility}
                     onChange={(e) => setExcludedEligibility(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                    className="w-full px-3 py-2 rounded-xl liquid-glass-input text-xs focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-purple-700 mb-1">
+                  <label className="block text-xs font-bold text-purple-700 dark:text-purple-300 mb-1">
                     Total Studies Included in Review (n):
                   </label>
                   <input
                     type="number"
                     value={included}
                     onChange={(e) => setIncluded(Number(e.target.value))}
-                    className="w-full px-3 py-2.5 rounded-xl border-2 border-purple-400 bg-purple-50 text-xs font-bold text-purple-950 focus:outline-none focus:ring-2 focus:ring-purple-500/30"
+                    className="w-full px-3 py-2.5 rounded-xl border-2 border-purple-400 bg-purple-50 dark:bg-purple-950/40 text-xs font-bold text-purple-950 dark:text-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-500/30"
                   />
                 </div>
               </div>
@@ -324,10 +324,10 @@ export default function PrismaPage() {
           {/* Diagram Preview Column */}
           <div className="lg:col-span-8 space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-white">
+              <span className="text-xs font-bold uppercase tracking-wider text-neutral-900 dark:text-white">
                 Live PRISMA 2020 Flow Diagram
               </span>
-              <span className="text-[11px] text-neutral-400">
+              <span className="text-[11px] text-neutral-500 dark:text-neutral-400">
                 Vector SVG · Publication-Ready
               </span>
             </div>

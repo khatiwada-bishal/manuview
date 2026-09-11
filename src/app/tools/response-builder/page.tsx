@@ -152,32 +152,32 @@ ${rows}
   };
 
   return (
-    <div className="min-h-screen bg-[#08090D] text-white py-12 aura-bg-gradient aura-grid-pattern">
+    <div className="min-h-screen text-neutral-900 dark:text-white py-12">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 space-y-8">
         {/* Header */}
         <div className="mb-8 text-center max-w-2xl mx-auto space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20 shadow-xs">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 shadow-xs">
             <MessageSquare className="w-3.5 h-3.5" />
             <span>Response to Reviewers Rebuttal Matrix</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-serif font-bold text-white tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-serif font-bold text-neutral-900 dark:text-white tracking-tight">
             Peer Review Response &amp; Rebuttal Builder
           </h1>
-          <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed">
+          <p className="text-neutral-600 dark:text-neutral-400 text-xs sm:text-sm leading-relaxed">
             Automatically ingest editorial decision letters and referee reports. Isolates discrete critique items, categorizes required changes, and drafts diplomatically calibrated author responses.
           </p>
         </div>
 
         {/* Input Form Card */}
-        <div className="aura-paper-sheet rounded-2xl p-6 sm:p-8 shadow-2xl text-[#111827]">
-          <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-3 mb-4">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#4B5563]">
+        <div className="liquid-glass-card rounded-2xl p-6 sm:p-8 shadow-2xl">
+          <div className="flex items-center justify-between border-b border-black/5 dark:border-white/10 pb-3 mb-4">
+            <span className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
               Reviewer Critiques &amp; Decision Letter
             </span>
             <button
               type="button"
               onClick={handleSample}
-              className="text-xs font-semibold text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1.5 cursor-pointer"
+              className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline flex items-center gap-1.5 cursor-pointer"
             >
               <Sparkles className="w-3.5 h-3.5" />
               <span>Load Sample Decision Letter</span>
@@ -190,12 +190,12 @@ ${rows}
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               placeholder="Paste reviewer comments, referee feedback, or editor decision letters..."
-              className="w-full p-3.5 rounded-xl bg-white border border-[#D1D5DB] text-xs sm:text-sm text-[#111827] focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 font-mono resize-none leading-relaxed"
+              className="w-full p-3.5 rounded-xl liquid-glass-input text-xs sm:text-sm font-mono resize-none leading-relaxed"
             />
 
             {error && (
-              <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+              <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0 text-rose-600 dark:text-rose-400" />
                 <span className="font-medium">{error}</span>
               </div>
             )}
@@ -203,7 +203,7 @@ ${rows}
             <button
               type="submit"
               disabled={loading || !inputText.trim()}
-              className="w-full py-3.5 rounded-xl bg-black hover:bg-neutral-900 disabled:opacity-50 text-white font-semibold text-xs shadow-lg transition flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-3.5 rounded-xl liquid-glass-btn-primary font-semibold text-xs transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
             >
               {loading ? (
                 <>
@@ -223,12 +223,12 @@ ${rows}
         {/* Rebuttal Matrix Items */}
         {items.length > 0 && (
           <div className="space-y-6 animate-in fade-in duration-300">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-white/10">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-black/10 dark:border-white/10">
               <div className="flex items-center gap-2.5">
-                <h2 className="text-base font-bold text-white">
+                <h2 className="text-base font-bold text-neutral-900 dark:text-white">
                   Itemized Rebuttal Points
                 </h2>
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/20 dark:border-blue-500/30">
                   {items.length} {items.length === 1 ? "point" : "points"}
                 </span>
               </div>
@@ -236,17 +236,17 @@ ${rows}
                 <button
                   type="button"
                   onClick={handleCopyAll}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 text-neutral-300 border border-white/10 transition cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold liquid-glass-btn-secondary transition cursor-pointer"
                 >
-                  {copiedAll ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  {copiedAll ? <Check className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                   <span>{copiedAll ? "Copied All" : "Copy All"}</span>
                 </button>
                 <button
                   type="button"
                   onClick={handleExportLatex}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/30 transition cursor-pointer shadow-xs"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-purple-500/10 dark:bg-purple-600/20 hover:bg-purple-500/20 dark:hover:bg-purple-600/30 text-purple-700 dark:text-purple-300 border border-purple-500/20 dark:border-purple-500/30 transition cursor-pointer shadow-xs"
                 >
-                  <FileCode className="w-3.5 h-3.5 text-purple-400" />
+                  <FileCode className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
                   <span>Export LaTeX Table (.tex)</span>
                 </button>
               </div>
@@ -256,16 +256,16 @@ ${rows}
               {items.map((item, idx) => (
                 <div
                   key={idx}
-                  className="p-5 sm:p-6 rounded-2xl bg-[#0F1117] border border-white/10 space-y-4 shadow-xl hover:border-white/20 transition"
+                  className="p-5 sm:p-6 rounded-2xl liquid-glass-card space-y-4 hover:border-black/20 dark:hover:border-white/20 transition"
                 >
                   {/* Item Header */}
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-neutral-800 text-blue-400 border border-neutral-700">
+                      <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-neutral-200 dark:bg-neutral-800 text-blue-700 dark:text-blue-400 border border-neutral-300 dark:border-neutral-700">
                         {item.reviewer} · Point {item.itemNumber}
                       </span>
-                      <span className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-white/5 text-neutral-300 border border-white/10 flex items-center gap-1">
-                        <Tag className="w-3 h-3 text-neutral-400" />
+                      <span className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-black/5 dark:bg-white/5 text-neutral-700 dark:text-neutral-300 border border-black/10 dark:border-white/10 flex items-center gap-1">
+                        <Tag className="w-3 h-3 text-neutral-500 dark:text-neutral-400" />
                         <span>{item.category}</span>
                       </span>
                     </div>
@@ -273,12 +273,12 @@ ${rows}
                     <button
                       type="button"
                       onClick={() => handleCopyItem(item, idx)}
-                      className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium text-neutral-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/5 transition cursor-pointer"
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium liquid-glass-btn-secondary transition cursor-pointer"
                     >
                       {copiedIdx === idx ? (
                         <>
-                          <Check className="w-3.5 h-3.5 text-emerald-400" />
-                          <span className="text-emerald-400">Copied Point</span>
+                          <Check className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
+                          <span className="text-emerald-600 dark:text-emerald-400">Copied Point</span>
                         </>
                       ) : (
                         <>
@@ -290,16 +290,16 @@ ${rows}
                   </div>
 
                   {/* Referee Comment Quote */}
-                  <div className="p-3.5 rounded-xl bg-black/40 border border-white/5 text-xs sm:text-sm text-neutral-300 italic leading-relaxed font-serif">
+                  <div className="p-3.5 rounded-xl bg-neutral-100/80 dark:bg-black/40 border border-neutral-200 dark:border-white/5 text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 italic leading-relaxed font-serif">
                     &ldquo;{item.rawComment}&rdquo;
                   </div>
 
                   {/* Action Required */}
                   <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs space-y-1">
-                    <div className="font-semibold text-amber-400 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                    <div className="font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
                       <span>Action Required:</span>
                     </div>
-                    <div className="text-amber-200/90 leading-relaxed font-sans">
+                    <div className="text-amber-900/90 dark:text-amber-200/90 leading-relaxed font-sans">
                       {item.actionRequired}
                     </div>
                   </div>
@@ -307,19 +307,19 @@ ${rows}
                   {/* Calibrated Author Response */}
                   <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-xs space-y-2">
                     <div className="flex items-center justify-between">
-                      <div className="font-semibold text-blue-400 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-blue-400" />
+                      <div className="font-semibold text-blue-700 dark:text-blue-400 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                         <span>Calibrated Author Response:</span>
                       </div>
                       <button
                         type="button"
                         onClick={() => handleCopyResponseOnly(item.draftResponse, idx)}
-                        className="text-[11px] font-medium text-blue-300 hover:text-white flex items-center gap-1 cursor-pointer transition"
+                        className="text-[11px] font-medium text-blue-700 dark:text-blue-300 hover:text-blue-900 dark:hover:text-white flex items-center gap-1 cursor-pointer transition"
                       >
                         {copiedRebuttalIdx === idx ? (
                           <>
-                            <Check className="w-3 h-3 text-emerald-400" />
-                            <span className="text-emerald-400">Copied</span>
+                            <Check className="w-3 h-3 text-emerald-500 dark:text-emerald-400" />
+                            <span className="text-emerald-600 dark:text-emerald-400">Copied</span>
                           </>
                         ) : (
                           <>
@@ -329,7 +329,7 @@ ${rows}
                         )}
                       </button>
                     </div>
-                    <p className="text-blue-100/95 leading-relaxed font-serif text-xs sm:text-sm">
+                    <p className="text-neutral-800 dark:text-blue-100/95 leading-relaxed font-serif text-xs sm:text-sm">
                       {item.draftResponse}
                     </p>
                   </div>
