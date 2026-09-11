@@ -153,7 +153,7 @@ export default function PrismaPage() {
             <button
               type="button"
               onClick={handleAutoReconcile}
-              className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition cursor-pointer shadow-xs whitespace-nowrap self-start sm:self-auto shrink-0"
+              className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition-all duration-150 cursor-pointer shadow-[0_2px_8px_rgba(245,158,11,0.4),inset_0_1px_0_rgba(255,255,255,0.4)] active:scale-[0.98] whitespace-nowrap self-start sm:self-auto shrink-0"
             >
               Auto-Reconcile Math
             </button>

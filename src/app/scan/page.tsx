@@ -410,211 +410,241 @@ export default function ScanPage() {
           </button>
         </div>
 
-        {/* Workspace Card Container (Elevated White Paper Sheet on Dark Canvas) */}
-        <div className="aura-paper-sheet rounded-2xl p-6 sm:p-10 shadow-[0_35px_90px_-15px_rgba(0,0,0,0.85),0_0_0_1px_rgba(255,255,255,0.08)] print:border-none print:shadow-none print:p-0 print:rounded-none">
-        
+        {/* Workspace Card Container (Elevated Paper Sheet / Liquid Glass on Dark Canvas) */}
+        <div className="aura-paper-sheet rounded-3xl p-6 sm:p-10 shadow-[0_30px_90px_-20px_rgba(0,0,0,0.25),0_0_0_1px_rgba(255,255,255,0.08)] border border-black/5 dark:border-white/10 print:border-none print:shadow-none print:p-0 print:rounded-none">
 
-
-        {/* Notion Page Header */}
+        {/* Modern Studio Header */}
         <div className="mb-8 print:hidden">
-          <div className="text-4xl mb-3 select-none">📄</div>
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#2F3437] mb-2 font-serif">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Diagnostic Suite v2.0</span>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-neutral-500 dark:text-neutral-400 font-mono hidden sm:inline">
+                Crossref &bull; Retraction Watch &bull; 6 Dimensions
+              </span>
+            </div>
+          </div>
+
+          <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-neutral-900 dark:text-white mb-2.5">
             Manuscript Pre-Submission Diagnostic
           </h1>
-          <p className="text-sm text-[#787774] font-light">
-            Calibrated peer-review rubric to surface desk-rejection hazards, causal overclaims, missing controls, and citation integrity bugs.
+          <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-3xl">
+            Calibrated peer-review simulation to surface desk-rejection hazards, causal overclaims, missing controls, and citation integrity bugs before formal submission.
           </p>
         </div>
 
-        {/* Notion Properties Block (Database metadata rows) */}
-        <div className="mb-8 rounded-xl bg-[#F7F7F5] print:hidden border border-[#EBEBEA] p-4 text-xs divide-y divide-[#eaeaea]">
-          {/* Property 1: Target Journal (Mandatory) */}
-          <div className="relative z-20 py-2.5 px-1 space-y-1.5">
-            <div className="flex items-center">
-              <div className="w-40 flex items-center gap-1.5 text-[#787774] flex-shrink-0">
-                <Tag className="w-3.5 h-3.5" />
-                <span className="font-medium">Target Journal</span>
-                <span className="text-[#E03E3E] font-bold text-sm leading-none" title="Required">*</span>
+        {/* Diagnostic Configuration Card */}
+        <div className="mb-6 rounded-2xl liquid-glass-card border border-black/5 dark:border-white/10 p-5 print:hidden space-y-4 shadow-sm">
+          {/* Top Row: Target Journal Selection & AI Status Indicator */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+            {/* Target Journal Field */}
+            <div className="lg:col-span-7 space-y-1.5">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 flex items-center gap-1.5">
+                  <Tag className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                  <span>Target Journal</span>
+                  <span className="text-rose-500 font-bold" title="Required">*</span>
+                </label>
+                <span className="text-[11px] text-neutral-500 dark:text-neutral-400">
+                  Calibrates editorial acceptance rubric
+                </span>
               </div>
-              <div className="flex-1">
+              <div className="relative z-20">
                 <JournalCombobox
                   value={targetJournal}
                   onChange={handleTargetJournalChange}
                   hasError={targetJournalError}
-                  placeholder="Search 1,390+ academic journals or type to add custom title..."
+                  placeholder="Search 1,390+ academic journals or type custom title..."
                 />
               </div>
+              {targetJournalError && (
+                <p className="text-[11px] text-rose-600 dark:text-rose-400 font-medium flex items-center gap-1 mt-1">
+                  <AlertCircle className="w-3.5 h-3.5" />
+                  <span>Target Journal is required for calibrated rubric evaluation.</span>
+                </p>
+              )}
             </div>
-            {targetJournalError && (
-              <div className="ml-40 text-[11px] text-[#7C2D2B] font-medium flex items-center gap-1">
-                <AlertCircle className="w-3 h-3 text-[#7C2D2B]" />
-                <span>Target Journal is required for calibrated rubric evaluation.</span>
-              </div>
-            )}
-          </div>
 
-          {/* Property 2: AI Diagnostic Engine */}
-          <div className="flex items-center py-2 px-1">
-            <div className="w-36 flex items-center gap-2 text-[#787774]">
-              <SlidersHorizontal className="w-3.5 h-3.5" />
-              <span>AI Engine</span>
-            </div>
-            <div className="flex-1 flex flex-wrap items-center gap-2">
-              {/* 1. Connected & Operational -> Green with Interactive Model Switcher */}
-              {apiStatus === 'connected' && (
-                <div className="relative inline-block">
+            {/* AI Engine & Connection Status */}
+            <div className="lg:col-span-5 space-y-1.5">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 flex items-center gap-1.5">
+                  <SlidersHorizontal className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                  <span>AI Engine &amp; Model</span>
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setSettingsOpen(true)}
+                  className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                >
+                  Configure &rarr;
+                </button>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                {/* Connected with Model Switcher Dropdown */}
+                {apiStatus === 'connected' && (
+                  <div className="relative inline-block flex-1 min-w-[180px]">
+                    <button
+                      type="button"
+                      onClick={() => setModelDropdownOpen(!modelDropdownOpen)}
+                      className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-xs font-medium liquid-glass-btn-secondary cursor-pointer shadow-xs"
+                      title="Click to switch between available models"
+                    >
+                      <div className="flex items-center gap-2 truncate">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                        <span className="truncate">
+                          {activeProviderInfo.name}: <span className="font-mono font-semibold">{activeProviderInfo.model}</span>
+                        </span>
+                      </div>
+                      <ChevronDown className={`w-3.5 h-3.5 text-neutral-400 transition-transform ${modelDropdownOpen ? "rotate-180" : ""}`} />
+                    </button>
+
+                    {modelDropdownOpen && (
+                      <div className="absolute left-0 mt-1.5 w-80 rounded-2xl liquid-glass-modal p-2.5 z-40 animate-fade-in text-xs shadow-2xl border border-black/10 dark:border-white/10">
+                        <div className="px-2 py-1.5 text-[11px] font-semibold text-neutral-500 dark:text-neutral-400 border-b border-black/5 dark:border-white/10 uppercase tracking-wider flex items-center justify-between">
+                          <span>Available Models</span>
+                          <span className="text-[10px] text-blue-600 dark:text-blue-400 font-semibold">{availableModels.length} models</span>
+                        </div>
+                        <div className="max-h-56 overflow-y-auto py-1 space-y-1">
+                          {availableModels.map((m) => {
+                            const isCur = activeProviderInfo.model === m.id;
+                            return (
+                              <button
+                                key={m.id}
+                                type="button"
+                                onClick={() => handleSelectModel(m.id)}
+                                className={`w-full text-left px-2.5 py-2 rounded-xl transition flex items-start justify-between gap-2 ${
+                                  isCur
+                                    ? "bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold border border-blue-500/20"
+                                    : "text-neutral-700 dark:text-neutral-300 hover:bg-black/5 dark:hover:bg-white/10"
+                                }`}
+                              >
+                                <div className="min-w-0 flex-1">
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="font-mono text-xs truncate">{m.id}</span>
+                                    {m.tag && (
+                                      <span className="text-[9px] px-1.5 py-0.2 rounded font-medium bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                                        {m.tag}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="text-[10px] text-neutral-500 dark:text-neutral-400 truncate mt-0.5">{m.description}</div>
+                                </div>
+                                {isCur && <Check className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />}
+                              </button>
+                            );
+                          })}
+                        </div>
+                        <div className="pt-2 border-t border-black/5 dark:border-white/10 flex items-center justify-between px-1">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setModelDropdownOpen(false);
+                              setSettingsOpen(true);
+                            }}
+                            className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                          >
+                            AI Settings &amp; Custom Endpoints &rarr;
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Unconfigured state */}
+                {apiStatus === 'unconfigured' && (
                   <button
                     type="button"
-                    onClick={() => setModelDropdownOpen(!modelDropdownOpen)}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#EDF6EE] text-[#1E5A2A] border border-[#CBE7CE] hover:bg-[#E2F0E3] transition shadow-2xs cursor-pointer"
-                    title="Click to switch between available models"
+                    onClick={() => setSettingsOpen(true)}
+                    className="flex-1 flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-xs font-semibold bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/30 hover:bg-amber-500/20 transition cursor-pointer"
                   >
-                    <span className="w-2 h-2 rounded-full bg-[#1E5A2A]" />
-                    <span>{activeProviderInfo.name}: <span className="font-mono">{activeProviderInfo.model}</span></span>
-                    <ChevronDown className="w-3.5 h-3.5 text-[#1E5A2A] ml-0.5" />
-                  </button>
-
-                  {modelDropdownOpen && (
-                    <div className="absolute left-0 mt-1.5 w-72 rounded-2xl bg-white border border-[#EBEBEA] shadow-xl p-2.5 z-40 animate-fade-in text-xs">
-                      <div className="px-2 py-1.5 text-[11px] font-semibold text-[#787774] border-b border-[#EBEBEA] uppercase tracking-wider flex items-center justify-between">
-                        <span>Select Available Model</span>
-                        <span className="text-[10px] text-[#18569C] font-semibold">{availableModels.length} models</span>
-                      </div>
-                      <div className="max-h-56 overflow-y-auto py-1 space-y-1">
-                        {availableModels.map((m) => {
-                          const isCur = activeProviderInfo.model === m.id;
-                          return (
-                            <button
-                              key={m.id}
-                              type="button"
-                              onClick={() => handleSelectModel(m.id)}
-                              className={`w-full text-left px-2.5 py-2 rounded-xl transition flex items-start justify-between gap-2 ${
-                                isCur
-                                  ? "bg-[#F7F7F5] text-[#2F3437] font-semibold border border-[#2F3437]"
-                                  : "text-[#2F3437] hover:bg-[#F7F7F5]"
-                              }`}
-                            >
-                              <div className="min-w-0 flex-1">
-                                <div className="flex items-center gap-1.5">
-                                  <span className="font-mono text-xs truncate">{m.id}</span>
-                                  {m.tag && (
-                                    <span className="text-[9px] px-1.5 py-0.2 rounded font-medium bg-[#EBF3FB] text-[#18569C] border border-[#CDE1F8]">
-                                      {m.tag}
-                                    </span>
-                                  )}
-                                </div>
-                                <div className="text-[10px] text-[#787774] truncate mt-0.5">{m.description}</div>
-                              </div>
-                              {isCur && <Check className="w-3.5 h-3.5 text-[#1E5A2A] flex-shrink-0 mt-0.5" />}
-                            </button>
-                          );
-                        })}
-                      </div>
-                      <div className="pt-2 border-t border-[#EBEBEA] flex items-center justify-between px-1">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setModelDropdownOpen(false);
-                            setSettingsOpen(true);
-                          }}
-                          className="text-[11px] text-[#18569C] hover:underline font-semibold"
-                        >
-                          AI Settings &amp; Custom Keys &rarr;
-                        </button>
-                      </div>
+                    <div className="flex items-center gap-1.5">
+                      <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
+                      <span>API Key Setup Required</span>
                     </div>
-                  )}
-                </div>
-              )}
+                    <span className="text-[10px] underline">Open Settings &rarr;</span>
+                  </button>
+                )}
 
-              {/* 2. Unconfigured / Missing Key -> Orange */}
-              {apiStatus === 'unconfigured' && (
-                <span 
-                  className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-[#FBF3DB] text-[#78510E] border border-[#F4E2B6]"
-                  title="No API key configured in browser settings or .env.local"
+                {/* Connection Error */}
+                {apiStatus === 'error' && (
+                  <button
+                    type="button"
+                    onClick={() => setSettingsOpen(true)}
+                    className="flex-1 flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-xs font-semibold bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-500/30 hover:bg-rose-500/20 transition cursor-pointer"
+                  >
+                    <div className="flex items-center gap-1.5 truncate">
+                      <AlertCircle className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                      <span className="truncate">Connection Offline</span>
+                    </div>
+                    <span className="text-[10px] underline shrink-0">Fix &rarr;</span>
+                  </button>
+                )}
+
+                {/* Testing state */}
+                {apiStatus === 'checking' && (
+                  <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-500/20">
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <span>Testing Connection...</span>
+                  </div>
+                )}
+
+                {/* Ping / Check Connection Action */}
+                <button
+                  type="button"
+                  onClick={checkProviderStatus}
+                  disabled={pinging}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl liquid-glass-btn-secondary text-xs font-semibold text-neutral-700 dark:text-neutral-200 transition shadow-xs disabled:opacity-50 cursor-pointer"
+                  title="Test API latency & verify connection"
                 >
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#78510E]" />
-                  No API Key (Setup Required)
-                </span>
-              )}
+                  <Activity className={`w-3.5 h-3.5 ${pinging ? "animate-spin text-blue-500" : "text-neutral-500 dark:text-neutral-400"}`} />
+                  <span className="hidden sm:inline">{pinging ? "Testing..." : "Test Ping"}</span>
+                </button>
 
-              {/* 3. Invalid Key / Connection Failed -> Red */}
-              {apiStatus === 'error' && (
-                <span 
-                  className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-[#FDF0EF] text-[#7C2D2B] border border-[#F7CECC]"
-                  title={apiErrorMessage || "Connection probe failed"}
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#9B2C2C]" />
-                  {activeProviderInfo.name}: Connection Failed
-                </span>
-              )}
-
-              {/* 4. Probing / Testing -> Blue */}
-              {apiStatus === 'checking' && (
-                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-[#EBF3FB] text-[#18569C] border border-[#CDE1F8]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#0A85EA] animate-pulse" />
-                  Testing {activeProviderInfo.name}...
-                </span>
-              )}
-
-              <button
-                type="button"
-                onClick={() => setSettingsOpen(true)}
-                className="text-[11px] text-[#18569C] hover:underline font-medium"
-              >
-                Configure
-              </button>
-
-              <button
-                type="button"
-                onClick={checkProviderStatus}
-                disabled={pinging}
-                className="inline-flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-lg bg-white hover:bg-[#F7F7F5] border border-[#EBEBEA] text-[#2F3437] shadow-2xs transition disabled:opacity-50"
-                title="Test API connection & ping latency"
-              >
-                <Activity className={`w-3 h-3 ${pinging ? "animate-spin text-emerald-400" : "text-[#787774]"}`} />
-                <span>{pinging ? "Testing Ping..." : "Check Connection"}</span>
-              </button>
-
-              {scanPingResult && (
-                <span
-                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-mono font-medium border ${
-                    scanPingResult.success
-                      ? "bg-[#EDF6EE] text-[#1E5A2A] border-[#CBE7CE]"
-                      : "bg-[#FDF0EF] text-[#7C2D2B] border-[#F7CECC]"
-                  }`}
-                  title={scanPingResult.error || scanPingResult.message}
-                >
-                  <Zap className="w-3 h-3 text-amber-500 fill-amber-500 shrink-0" />
-                  <span>
-                    {scanPingResult.success
-                      ? `${scanPingResult.latencyMs}ms`
-                      : `Failed`}
+                {scanPingResult && (
+                  <span
+                    className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[11px] font-mono font-bold border shadow-2xs ${
+                      scanPingResult.success
+                        ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/25"
+                        : "bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/25"
+                    }`}
+                    title={scanPingResult.error || scanPingResult.message}
+                  >
+                    <Zap className="w-3 h-3 text-amber-500 fill-amber-500 shrink-0" />
+                    <span>{scanPingResult.success ? `${scanPingResult.latencyMs}ms` : "Offline"}</span>
                   </span>
-                </span>
-              )}
+                )}
+              </div>
             </div>
           </div>
 
-          {/* Property 3: Audit Scope */}
-          <div className="flex items-center py-2 px-1">
-            <div className="w-36 flex items-center gap-2 text-[#787774]">
-              <Hash className="w-3.5 h-3.5" />
-              <span>Diagnostic Scope</span>
+          {/* Bottom Row: Feature Capabilities & Privacy Badges */}
+          <div className="pt-3 border-t border-black/5 dark:border-white/10 flex flex-wrap items-center justify-between gap-2 text-[11px] text-neutral-600 dark:text-neutral-400">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+              <span className="flex items-center gap-1 font-medium">
+                <CheckSquare className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                <span>6 Evaluation Dimensions</span>
+              </span>
+              <span className="text-neutral-300 dark:text-neutral-700">&bull;</span>
+              <span className="flex items-center gap-1 font-medium">
+                <Users className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                <span>4 Reviewer Personas</span>
+              </span>
+              <span className="text-neutral-300 dark:text-neutral-700">&bull;</span>
+              <span className="flex items-center gap-1 font-medium">
+                <BookOpen className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                <span>Crossref DOI &amp; Retraction Check</span>
+              </span>
             </div>
-            <div className="flex-1 text-[#787774]">
-              6 Dimensions &bull; 4 Reviewer Personas &bull; Crossref DOI Resolution &bull; Retraction Screening
-            </div>
-          </div>
 
-          {/* Property 4: Privacy & Retention */}
-          <div className="flex items-center py-2 px-1">
-            <div className="w-36 flex items-center gap-2 text-[#787774]">
+            <div className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
               <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Data Retention</span>
-            </div>
-            <div className="flex-1 text-[#1E5A2A] flex items-center gap-1.5">
-              <span>Zero-storage &bull; In-memory only &bull; Never trained on</span>
+              <span>Zero data retention &bull; In-memory only</span>
             </div>
           </div>
         </div>
@@ -622,51 +652,74 @@ export default function ScanPage() {
         {/* Input Form Card */}
         {!report && (
           <div className="space-y-6">
-            {/* Notion Callout Box: Sample Preprint Tip */}
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] text-xs text-[#787774]">
-              <span className="text-base select-none">💡</span>
-              <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <span>
-                  First time testing ManuView? Load our sample preprint to run an instant diagnostic report.
-                </span>
-                <button
-                  type="button"
-                  onClick={handleLoadSample}
-                  className="px-3 py-1.5 rounded-lg bg-white hover:bg-[#F7F7F5] text-[#2F3437] font-medium text-xs border border-[#EBEBEA] shadow-2xs transition flex items-center gap-1 self-start sm:self-auto whitespace-nowrap"
-                >
-                  <RefreshCw className="w-3 h-3" />
-                  Load Sample Preprint
-                </button>
+            {/* Quick Demo Preprint Banner */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl liquid-glass-card border border-amber-500/20 dark:border-amber-500/20 bg-gradient-to-r from-amber-500/5 via-transparent to-blue-500/5 text-xs">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 shrink-0">
+                  <Sparkles className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="font-semibold text-neutral-900 dark:text-neutral-100">
+                    First time evaluating ManuView?
+                  </div>
+                  <div className="text-neutral-600 dark:text-neutral-400 text-[11px] mt-0.5">
+                    Load our peer-reviewed cancer genomics sample preprint to test all 6 diagnostic rubrics instantly.
+                  </div>
+                </div>
               </div>
+
+              <button
+                type="button"
+                onClick={handleLoadSample}
+                className="flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl liquid-glass-btn-secondary text-xs font-semibold text-neutral-800 dark:text-neutral-200 transition shadow-xs shrink-0 self-start sm:self-auto cursor-pointer"
+              >
+                <RefreshCw className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                <span>Load Sample Preprint</span>
+              </button>
             </div>
 
             <form onSubmit={handleRunScan} className="space-y-5">
-              {/* Document Input: Tabs / File or Text */}
-              <div className="rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] p-6 space-y-4">
-                <div className="text-xs font-medium text-[#787774] uppercase tracking-wider">
-                  Manuscript Draft
+              {/* Manuscript Draft Submission Studio */}
+              <div className="rounded-3xl liquid-glass-card border border-black/5 dark:border-white/10 p-5 sm:p-7 space-y-5 shadow-sm">
+                <div className="flex items-center justify-between pb-3 border-b border-black/5 dark:border-white/10">
+                  <div className="flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-neutral-700 dark:text-neutral-300">
+                      Manuscript Draft Submission
+                    </span>
+                  </div>
+                  <span className="text-[11px] text-neutral-500 dark:text-neutral-400">
+                    Upload full document or paste text
+                  </span>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* File Upload Box */}
-                  <div className="flex flex-col">
-                    <div className="flex items-center justify-between mb-1.5">
-                      <label className="text-xs text-[#787774] font-medium">
-                        Upload Full Manuscript (.pdf, .docx, .txt)
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+                  {/* Left Column (5 cols): File Upload Dropzone */}
+                  <div className="lg:col-span-5 flex flex-col">
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="text-xs font-semibold text-neutral-800 dark:text-neutral-200">
+                        Upload Full Manuscript
                       </label>
-                      <span className="text-[10px] text-[#0F6B43] bg-[#EBF8F2] px-2 py-0.2 rounded font-medium border border-[#BDEBD6]">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
                         Full Audit
                       </span>
                     </div>
-                    <label className="flex-1 flex flex-col items-center justify-center border border-dashed border-[#d0d0d0] hover:border-[#0A85EA] rounded-xl p-6 bg-white hover:bg-[#EBF3FB]/20 cursor-pointer transition group min-h-[220px]">
-                      <Upload className="w-7 h-7 text-[#9B9A97] group-hover:text-[#18569C] transition mb-2" />
-                      <span className="text-xs text-[#2F3437] font-semibold text-center truncate max-w-full px-2">
-                        {file ? file.name : "Choose full manuscript file"}
+
+                    <label className={`flex-1 flex flex-col items-center justify-center rounded-2xl p-6 transition-all duration-200 cursor-pointer min-h-[260px] text-center border-2 border-dashed ${
+                      file
+                        ? "bg-blue-500/5 dark:bg-blue-500/10 border-blue-500/40 dark:border-blue-500/40"
+                        : "liquid-glass-card hover:bg-black/[0.02] dark:hover:bg-white/[0.04] border-black/15 dark:border-white/15 hover:border-blue-500/50"
+                    }`}>
+                      <div className="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-3 shadow-2xs">
+                        <Upload className="w-5 h-5" />
+                      </div>
+                      <span className="text-xs font-bold text-neutral-900 dark:text-neutral-100 max-w-full truncate px-3">
+                        {file ? file.name : "Drop manuscript file here, or browse"}
                       </span>
-                      <span className="text-[11px] text-[#787774] mt-1 text-center max-w-xs px-2">
+                      <span className="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1 max-w-xs px-2">
                         {file
-                          ? `${(file.size / 1024).toFixed(1)} KB • Click to change file`
-                          : "Enables 6-dimension rubric, simulated reviewer personas & citation audit"}
+                          ? `${(file.size / 1024).toFixed(1)} KB • Click to replace`
+                          : "Supports PDF, DOCX, TXT. Generates all 5 persona reports & bibliography check."}
                       </span>
                       <input
                         type="file"
@@ -675,31 +728,32 @@ export default function ScanPage() {
                         className="hidden"
                       />
                     </label>
+
                     {file && (
                       <button
                         type="button"
                         onClick={() => setFile(null)}
-                        className="text-[11px] text-[#7C2D2B] hover:underline self-end mt-1 cursor-pointer"
+                        className="text-[11px] text-rose-600 dark:text-rose-400 hover:underline self-end mt-2 cursor-pointer font-medium"
                       >
                         Remove file &amp; use Title / Abstract
                       </button>
                     )}
                   </div>
 
-                  {/* Title, Abstract & Keywords Box */}
-                  <div className="space-y-2.5 bg-white p-4 rounded-xl border border-[#EBEBEA] shadow-2xs">
-                    <div className="flex items-center justify-between">
-                      <label className="text-xs text-[#2F3437] font-semibold">
+                  {/* Right Column (7 cols): Title, Abstract & Keywords */}
+                  <div className="lg:col-span-7 space-y-3.5 liquid-glass-card rounded-2xl p-4 sm:p-5 border border-black/5 dark:border-white/10 shadow-2xs">
+                    <div className="flex items-center justify-between pb-2 border-b border-black/5 dark:border-white/10">
+                      <label className="text-xs font-semibold text-neutral-800 dark:text-neutral-200">
                         Or Provide Title, Abstract &amp; Keywords
                       </label>
-                      <span className="text-[10px] font-medium bg-[#EBF3FB] text-[#18569C] px-2 py-0.2 rounded border border-[#CDE1F8]">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-500/20">
                         Quick Journal Fit
                       </span>
                     </div>
 
                     <div>
-                      <label className="text-[11px] text-[#787774] font-medium mb-1 block">
-                        Manuscript Title <span className="text-[#E03E3E] font-bold">*</span>
+                      <label className="text-[11px] font-semibold text-neutral-700 dark:text-neutral-300 mb-1 flex items-center justify-between">
+                        <span>Manuscript Title <span className="text-rose-500">*</span></span>
                       </label>
                       <input
                         type="text"
@@ -709,14 +763,19 @@ export default function ScanPage() {
                           if (error) setError(null);
                         }}
                         placeholder="e.g. Single-cell transcriptional profiling of DLL3..."
-                        className="w-full px-3 py-1.5 rounded-lg bg-[#F7F7F5] border border-[#EBEBEA] text-xs text-[#2F3437] placeholder-[#888888] focus:outline-none focus:bg-white focus:border-[#0A85EA] focus:ring-1 focus:ring-[#0A85EA] transition"
+                        className="w-full px-3.5 py-2 rounded-xl liquid-glass-input text-xs text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none"
                       />
                     </div>
 
                     <div>
-                      <label className="text-[11px] text-[#787774] font-medium mb-1 block">
-                        Abstract <span className="text-[#E03E3E] font-bold">*</span>
-                      </label>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="text-[11px] font-semibold text-neutral-700 dark:text-neutral-300">
+                          Abstract <span className="text-rose-500">*</span>
+                        </label>
+                        <span className="text-[10px] font-mono text-neutral-400">
+                          {manuscriptAbstract.trim() ? `${manuscriptAbstract.trim().split(/\s+/).length} words` : "0 words"}
+                        </span>
+                      </div>
                       <textarea
                         rows={4}
                         value={manuscriptAbstract}
@@ -725,41 +784,41 @@ export default function ScanPage() {
                           if (error) setError(null);
                         }}
                         placeholder="Paste or summarize background, main findings, methodology, and conclusions..."
-                        className="w-full p-2.5 rounded-lg bg-[#F7F7F5] border border-[#EBEBEA] text-xs text-[#2F3437] placeholder-[#888888] focus:outline-none focus:bg-white focus:border-[#0A85EA] focus:ring-1 focus:ring-[#0A85EA] leading-relaxed transition resize-y"
+                        className="w-full p-3 rounded-xl liquid-glass-input text-xs text-neutral-900 dark:text-white placeholder:text-neutral-400 leading-relaxed focus:outline-none resize-y"
                       />
                     </div>
 
                     <div>
-                      <label className="text-[11px] text-[#787774] font-medium mb-1 block">
-                        Keywords <span className="text-[#9B9A97] font-normal">(comma-separated)</span>
+                      <label className="text-[11px] font-semibold text-neutral-700 dark:text-neutral-300 mb-1 block">
+                        Keywords <span className="text-neutral-400 font-normal">(comma-separated)</span>
                       </label>
                       <input
                         type="text"
                         value={manuscriptKeywords}
                         onChange={(e) => setManuscriptKeywords(e.target.value)}
                         placeholder="e.g. small cell lung cancer, DLL3, CRISPR screen, organoids"
-                        className="w-full px-3 py-1.5 rounded-lg bg-[#F7F7F5] border border-[#EBEBEA] text-xs text-[#2F3437] placeholder-[#888888] focus:outline-none focus:bg-white focus:border-[#0A85EA] focus:ring-1 focus:ring-[#0A85EA] transition"
+                        className="w-full px-3.5 py-2 rounded-xl liquid-glass-input text-xs text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none"
                       />
                     </div>
                   </div>
                 </div>
 
                 {error && (
-                  <div className="p-3 rounded-lg bg-[#FDF0EF] border border-[#F7CECC] text-[#7C2D2B] text-xs flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                    <span>{error}</span>
+                  <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-700 dark:text-rose-300 text-xs flex items-center gap-2.5">
+                    <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
+                    <span className="font-medium">{error}</span>
                   </div>
                 )}
               </div>
 
               {/* Connection Status Callout Banners */}
               {apiStatus === 'unconfigured' && (
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-[#FBF3DB] border border-[#F4E2B6] text-xs text-[#78510E]">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-800 dark:text-amber-300">
                   <div className="flex items-start gap-2.5">
-                    <AlertTriangle className="w-4 h-4 text-[#78510E] flex-shrink-0 mt-0.5" />
+                    <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
                     <div>
-                      <span className="font-semibold text-[#78510E] block">LLM API Connection Required:</span>
-                      <span className="text-[#78510E]/90">
+                      <span className="font-bold text-amber-900 dark:text-amber-200 block">LLM API Connection Required:</span>
+                      <span className="text-amber-800/90 dark:text-amber-300/90">
                         Pre-submission diagnostic scans require an active AI model to generate peer-review simulation and editorial triage. You can upload files or paste text now, but must configure an API key to run the scan.
                       </span>
                     </div>
@@ -767,7 +826,7 @@ export default function ScanPage() {
                   <button
                     type="button"
                     onClick={() => setSettingsOpen(true)}
-                    className="px-3 py-1.5 rounded-lg bg-[#FBF3DB] hover:bg-[#F4E2B6] text-[#78510E] font-medium text-xs border border-[#F4E2B6] transition whitespace-nowrap self-start sm:self-auto"
+                    className="px-3.5 py-2 rounded-xl liquid-glass-btn-secondary text-amber-800 dark:text-amber-200 font-semibold text-xs transition whitespace-nowrap self-start sm:self-auto cursor-pointer"
                   >
                     Configure AI Settings
                   </button>
@@ -775,12 +834,12 @@ export default function ScanPage() {
               )}
 
               {apiStatus === 'error' && (
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-[#FDF0EF] border border-[#F7CECC] text-xs text-[#7C2D2B]">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-xs text-rose-800 dark:text-rose-300">
                   <div className="flex items-start gap-2.5">
-                    <AlertCircle className="w-4 h-4 text-[#7C2D2B] flex-shrink-0 mt-0.5" />
+                    <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
                     <div>
-                      <span className="font-semibold text-[#7C2D2B] block">API Key Not Working / Unreachable:</span>
-                      <span className="font-mono text-[11px] text-[#7C2D2B] block mt-0.5 break-words">
+                      <span className="font-bold text-rose-900 dark:text-rose-200 block">API Key Not Working / Unreachable:</span>
+                      <span className="font-mono text-[11px] text-rose-800/90 dark:text-rose-300/90 block mt-0.5 break-words">
                         {apiErrorMessage || "Unable to communicate with the configured model. Please verify your credentials."}
                       </span>
                     </div>
@@ -789,14 +848,14 @@ export default function ScanPage() {
                     <button
                       type="button"
                       onClick={checkProviderStatus}
-                      className="px-3 py-1.5 rounded-lg bg-white hover:bg-[#F7F7F5] text-[#7C2D2B] font-medium text-xs border border-[#F7CECC] transition whitespace-nowrap"
+                      className="px-3 py-1.5 rounded-xl liquid-glass-btn-secondary text-rose-800 dark:text-rose-200 font-semibold text-xs transition whitespace-nowrap cursor-pointer"
                     >
                       Retry Ping
                     </button>
                     <button
                       type="button"
                       onClick={() => setSettingsOpen(true)}
-                      className="px-3 py-1.5 rounded-lg bg-[#FDF0EF] hover:bg-[#F7CECC] text-[#7C2D2B] font-medium text-xs border border-[#F7CECC] transition whitespace-nowrap"
+                      className="px-3.5 py-1.5 rounded-xl liquid-glass-btn-primary text-white font-semibold text-xs transition whitespace-nowrap cursor-pointer"
                     >
                       Fix in Settings
                     </button>
@@ -805,36 +864,35 @@ export default function ScanPage() {
               )}
 
               {apiStatus === 'checking' && (
-                <div className="p-3.5 rounded-xl bg-[#EBF3FB] border border-[#CDE1F8] text-xs text-[#18569C] flex items-center gap-2">
-                  <RefreshCw className="w-4 h-4 animate-spin text-[#58a6ff] flex-shrink-0" />
+                <div className="p-3.5 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-xs text-blue-700 dark:text-blue-300 flex items-center gap-2">
+                  <RefreshCw className="w-4 h-4 animate-spin text-blue-500 shrink-0" />
                   <span>Verifying LLM API connection status...</span>
                 </div>
               )}
 
+              {/* Flagship Prominent Action Button */}
               <button
                 type="submit"
                 disabled={loading || apiStatus !== 'connected'}
-                className={`w-full py-3 px-4 rounded-lg font-medium text-xs sm:text-sm border transition-colors duration-150 flex items-center justify-center gap-2 shadow-sm isolate relative overflow-hidden select-none ${
+                className={`w-full py-4 px-6 rounded-2xl font-bold text-sm sm:text-base transition-all duration-200 flex flex-col sm:flex-row items-center justify-center gap-2 shadow-lg cursor-pointer ${
                   apiStatus === 'connected' && !loading
-                    ? "bg-[#0A85EA] hover:bg-[#0075EB] text-[#2F3437] border-[#0A85EA] hover:border-[#0066cc] active:scale-[0.99] cursor-pointer shadow-sm"
-                    : "bg-[#eaeaea] text-[#9B9A97] border-[#e0e0e0] cursor-not-allowed"
+                    ? "liquid-glass-btn-cta active:scale-[0.99]"
+                    : "opacity-60 bg-neutral-300 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 border border-neutral-400/20 cursor-not-allowed shadow-none"
                 }`}
                 title={apiStatus !== 'connected' ? "Valid LLM API connection required to run diagnostic scan" : "Run Pre-Submission Diagnostic Scan"}
               >
                 {loading ? (
-                  <span key="btn-loading-state" className="flex items-center justify-center gap-2 truncate max-w-full">
-                    <RefreshCw className="w-4 h-4 animate-spin text-emerald-400 shrink-0" />
-                    <span key={loadingStep || "analyzing-step"} className="truncate">
-                      {loadingStep || "Analyzing Manuscript..."}
-                    </span>
+                  <span className="flex items-center justify-center gap-2.5">
+                    <RefreshCw className="w-5 h-5 animate-spin text-white shrink-0" />
+                    <span>{loadingStep || "Analyzing Manuscript..."}</span>
                   </span>
                 ) : (
-                  <span key="btn-idle-state" className="flex items-center justify-center gap-2 truncate max-w-full">
-                    <Sparkles className={`w-4 h-4 shrink-0 ${apiStatus === 'connected' ? "text-emerald-400" : "text-[#6b6a67]"}`} />
-                    <span className="truncate">
-                      {file ? "Run Pre-Submission Diagnostic Scan" : "Validate Target Journal Scope & Fit"}
+                  <div className="flex items-center justify-center gap-2.5">
+                    <Sparkles className="w-5 h-5 shrink-0 text-white" />
+                    <span>
+                      {file ? "Run Comprehensive Pre-Submission Diagnostic" : "Validate Target Journal Scope & Fit"}
                     </span>
-                  </span>
+                  </div>
                 )}
               </button>
             </form>
@@ -855,38 +913,38 @@ export default function ScanPage() {
 
 
             {/* Top Navigation Bar in Results */}
-            <div className="flex items-center justify-between pb-3 border-b border-[#EBEBEA] print:hidden">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-black/5 dark:border-white/10 print:hidden">
               <button
                 onClick={() => setReport(null)}
-                className="flex items-center gap-1.5 text-xs text-[#787774] hover:text-[#2F3437] hover:bg-[#F7F7F5] px-2.5 py-1 rounded-lg transition cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl liquid-glass-btn-secondary text-xs font-semibold text-neutral-700 dark:text-neutral-200 transition cursor-pointer self-start"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 <span>Back to Input</span>
               </button>
 
               <div className="flex flex-wrap items-center gap-2">
-                <div className="hidden md:flex items-center gap-2 text-xs text-[#787774] mr-1">
+                <div className="hidden md:flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 mr-1">
                   <span>Target:</span>
-                  <span className="text-[#2F3437] font-medium bg-[#F7F7F5] px-2 py-0.5 rounded border border-[#EBEBEA]">{report.targetJournal || "General High Impact"}</span>
+                  <span className="text-neutral-900 dark:text-white font-medium bg-black/5 dark:bg-white/10 px-2 py-0.5 rounded-lg border border-black/5 dark:border-white/10">{report.targetJournal || "General High Impact"}</span>
                 </div>
 
                 <button
                   type="button"
                   onClick={handleExportHTML}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-[#2F3437] hover:bg-[#F7F7F5] border border-[#D0D5DD] transition shadow-2xs cursor-pointer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl liquid-glass-btn-secondary text-xs font-semibold text-neutral-700 dark:text-neutral-200 transition shadow-2xs cursor-pointer"
                   title="Export self-contained Interactive Web Report (.html) for offline viewing and sharing"
                 >
-                  <Globe className="w-3.5 h-3.5 text-blue-600" />
+                  <Globe className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                   <span>Interactive HTML</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={handleExportWord}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-[#2F3437] hover:bg-[#F7F7F5] border border-[#D0D5DD] transition shadow-2xs cursor-pointer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl liquid-glass-btn-secondary text-xs font-semibold text-neutral-700 dark:text-neutral-200 transition shadow-2xs cursor-pointer"
                   title="Export Diagnostic Report as Microsoft Word Document (.doc / .docx)"
                 >
-                  <FileText className="w-3.5 h-3.5 text-[#18569C]" />
+                  <FileText className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
                   <span>Word (.docx)</span>
                 </button>
 
@@ -894,10 +952,10 @@ export default function ScanPage() {
                   <button
                     type="button"
                     onClick={handleExportLatex}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-[#2F3437] hover:bg-[#F7F7F5] border border-[#D0D5DD] transition shadow-2xs cursor-pointer"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl liquid-glass-btn-secondary text-xs font-semibold text-purple-700 dark:text-purple-300 transition shadow-2xs cursor-pointer"
                     title="Export LaTeX Point-by-Point Author Rebuttal Matrix (.tex)"
                   >
-                    <FileCode className="w-3.5 h-3.5 text-purple-600" />
+                    <FileCode className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
                     <span>LaTeX Rebuttal</span>
                   </button>
                 )}
@@ -905,17 +963,17 @@ export default function ScanPage() {
                 <button
                   type="button"
                   onClick={handleExportBibTeX}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-[#2F3437] hover:bg-[#F7F7F5] border border-[#D0D5DD] transition shadow-2xs cursor-pointer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl liquid-glass-btn-secondary text-xs font-semibold text-neutral-700 dark:text-neutral-200 transition shadow-2xs cursor-pointer"
                   title="Export Audited Citations as BibTeX (.bib)"
                 >
-                  <Bookmark className="w-3.5 h-3.5 text-amber-600" />
+                  <Bookmark className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
                   <span>BibTeX (.bib)</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={handleDownloadPDF}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#2F3437] text-white hover:bg-black transition shadow-xs cursor-pointer"
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl liquid-glass-btn-primary text-white text-xs font-semibold transition shadow-xs cursor-pointer"
                   title="Download / Save as PDF Diagnostic Report"
                 >
                   <Download className="w-3.5 h-3.5" />
