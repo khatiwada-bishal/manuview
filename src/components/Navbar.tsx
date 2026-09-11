@@ -15,9 +15,12 @@ import {
   Sliders,
   ExternalLink,
   ChevronRight,
-  Users
+  Users,
+  Zap,
+  RefreshCw
 } from "lucide-react";
 import { ProviderSettingsModal } from "./ProviderSettingsModal";
+import { useApiConnection } from "@/lib/useApiConnection";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -25,6 +28,14 @@ export function Navbar() {
   const [toolsDropdown, setToolsDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Live API Connection state (Feature Parity with Desktop)
+  const {
+    isConnected,
+    isLoading: isApiLoading,
+    modelName,
+    latencyMs,
+  } = useApiConnection();
 
   const handleMouseEnter = () => {
     if (timeoutRef.current) {
@@ -267,15 +278,56 @@ export function Navbar() {
           </div>
 
           {/* Right Action Controls */}
-          <div className="flex items-center gap-3">
-            {/* AI Engine Telemetry Pill */}
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            {/* Live AI Engine Status & Latency Badge (Feature Parity with Desktop) */}
+            {isApiLoading ? (
+              <button
+                type="button"
+                onClick={() => setSettingsOpen(true)}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 text-xs font-medium text-neutral-400 hover:text-neutral-200 transition shadow-xs cursor-pointer"
+                title="Checking AI connection status..."
+              >
+                <RefreshCw className="w-3 h-3 animate-spin text-neutral-400" />
+                <span className="hidden sm:inline text-[11px]">Connecting...</span>
+              </button>
+            ) : !isConnected ? (
+              <button
+                type="button"
+                onClick={() => setSettingsOpen(true)}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-300 hover:text-rose-200 text-xs font-medium transition shadow-xs cursor-pointer"
+                title="No AI connection active. Click to configure API keys or local Ollama."
+              >
+                <span className="inline-block w-2 h-2 rounded-full bg-rose-500" />
+                <span className="font-semibold text-[11px] sm:text-xs">Not Connected</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setSettingsOpen(true)}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 hover:text-emerald-200 text-xs font-medium transition shadow-xs cursor-pointer"
+                title="AI Engine Active. Click to configure models & providers."
+              >
+                <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="font-semibold truncate max-w-[120px] sm:max-w-[170px] text-[11px] sm:text-xs">
+                  {modelName || "AI Connected"}
+                </span>
+                {latencyMs !== undefined && latencyMs !== null && (
+                  <span className="text-emerald-400/80 font-mono text-[11px] hidden sm:flex items-center">
+                    ( <Zap className="w-2.5 h-2.5 text-amber-400 fill-amber-400 inline mr-0.5" />
+                    {latencyMs}ms )
+                  </span>
+                )}
+              </button>
+            )}
+
+            {/* AI Settings Cog */}
             <button
+              type="button"
               onClick={() => setSettingsOpen(true)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 text-xs font-medium text-neutral-300 hover:text-white transition shadow-sm"
-              title="Configure API Keys & Diagnostics"
+              className="p-1.5 rounded-lg text-neutral-400 hover:text-white hover:bg-white/[0.08] transition cursor-pointer"
+              title="Configure API Keys & Models"
             >
-              <Settings className="w-3.5 h-3.5 text-neutral-400" />
-              <span className="hidden sm:inline">AI Settings</span>
+              <Settings className="w-3.5 h-3.5" />
             </button>
 
             {/* GitHub Star */}
