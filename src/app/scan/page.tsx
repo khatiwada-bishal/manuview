@@ -35,7 +35,10 @@ import {
   Printer,
   Globe,
   FileCode,
-  Bookmark
+  Bookmark,
+  Scale,
+  MessageSquare,
+  ShieldAlert
 } from "lucide-react";
 import { FullReviewReport, BriefJournalFitReport, ReviewReport, PriorityIssue, ReviewerPersonaFeedback, ProviderConfig, AvailableModel } from "@/lib/types";
 import { ProviderSettingsModal } from "@/components/ProviderSettingsModal";
@@ -80,6 +83,7 @@ export default function ScanPage() {
   const [report, setReport] = useState<ReviewReport | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedPersona, setSelectedPersona] = useState<number>(0);
+  const [issueFilter, setIssueFilter] = useState<'all' | 'A' | 'B' | 'C'>('all');
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [availableModels, setAvailableModels] = useState<AvailableModel[]>([]);
   const [modelDropdownOpen, setModelDropdownOpen] = useState(false);
@@ -1192,18 +1196,76 @@ export default function ScanPage() {
                   </div>
                 </div>
 
+                {/* Reporting Guideline Compliance Audit Card (STROBE, CONSORT, PRISMA, ARRIVE, etc.) */}
+                {report.reportingGuideline && (
+                  <div className="p-5 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#EBEBEA]">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <Scale className="w-4 h-4 text-[#1E5A2A]" />
+                          <h3 className="text-sm font-semibold text-[#2F3437]">
+                            Reporting Guideline Compliance: {report.reportingGuideline.guidelineName}
+                          </h3>
+                        </div>
+                        <p className="text-xs text-[#787774] mt-0.5">
+                          Standard: {report.reportingGuideline.standardType}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-medium text-[#787774]">Audit Score:</span>
+                        <span className="text-xs font-bold text-[#1E5A2A] bg-[#EDF6EE] px-2.5 py-0.5 rounded-full border border-[#CBE7CE]">
+                          {report.reportingGuideline.scorePercent}%
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div className="p-3.5 rounded-lg bg-white border border-[#CBE7CE] space-y-2 text-xs">
+                        <span className="font-semibold text-[#1E5A2A] uppercase tracking-wider text-[10px] block">
+                          Compliant Checklist Items:
+                        </span>
+                        <ul className="space-y-1.5 text-[#1E5A2A]">
+                          {report.reportingGuideline.compliantItems.map((item, idx) => (
+                            <li key={idx} className="flex items-start gap-1.5">
+                              <CheckCircle2 className="w-3.5 h-3.5 shrink-0 mt-0.5 text-emerald-500" />
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div className="p-3.5 rounded-lg bg-white border border-[#F4E2B6] space-y-2 text-xs">
+                        <span className="font-semibold text-[#78510E] uppercase tracking-wider text-[10px] block">
+                          Missing or Partial Reporting Items:
+                        </span>
+                        <ul className="space-y-1.5 text-[#78510E]">
+                          {report.reportingGuideline.missingOrPartialItems.map((item, idx) => (
+                            <li key={idx} className="flex items-start gap-1.5">
+                              <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-amber-500" />
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* The 6 Evaluation Dimensions */}
                 <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-[#2F3437]">
-                    <BarChart3 className="w-4 h-4 text-[#787774]" />
-                    <span>The 6 Evaluation Dimensions (1–5 Scale)</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-[#2F3437]">
+                      <BarChart3 className="w-4 h-4 text-[#787774]" />
+                      <span>The 6 Evaluation Dimensions (1–5 Scale)</span>
+                    </div>
+                    <span className="text-[11px] text-[#787774]">Calibrated against top-tier standards</span>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     {Object.entries(report.dimensions || {}).map(([key, dim]) => (
-                      <div key={key} className="p-4 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] flex flex-col justify-between hover:border-[#d0d0d0] hover:shadow-2xs transition">
-                        <div>
-                          <div className="flex items-center justify-between mb-2">
+                      <div key={key} className="p-4 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] flex flex-col justify-between hover:border-[#d0d0d0] hover:shadow-2xs transition space-y-3">
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
                             <span className="text-xs font-semibold text-[#2F3437]">{dim.label}</span>
                             <span className={`px-2 py-0.5 rounded font-mono text-xs font-semibold border ${
                               dim.score >= 4 ? "bg-[#EDF6EE] text-[#1E5A2A] border-[#CBE7CE]" :
@@ -1213,17 +1275,40 @@ export default function ScanPage() {
                               {dim.score} / 5
                             </span>
                           </div>
-                          <p className="text-xs text-[#787774] leading-relaxed mb-3 font-light">
+                          <p className="text-xs text-[#787774] leading-relaxed font-light">
                             {dim.verdict}
                           </p>
                         </div>
 
-                        {dim.vulnerabilities.length > 0 && (
-                          <div className="pt-2 border-t border-[#EBEBEA] text-[11px] text-[#7C2D2B] flex items-start gap-1.5">
-                            <AlertTriangle className="w-3 h-3 flex-shrink-0 mt-0.5" />
-                            <span className="truncate">{dim.vulnerabilities[0]}</span>
-                          </div>
-                        )}
+                        <div className="space-y-2 pt-2 border-t border-[#EBEBEA] text-xs">
+                          {dim.strengths && dim.strengths.length > 0 && (
+                            <div className="space-y-1">
+                              <span className="text-[10px] font-semibold text-[#1E5A2A] uppercase tracking-wider block">Strengths:</span>
+                              <ul className="space-y-1 text-[#1E5A2A] text-[11px]">
+                                {dim.strengths.map((s, i) => (
+                                  <li key={i} className="flex items-start gap-1">
+                                    <span className="font-bold">&bull;</span>
+                                    <span>{s}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+
+                          {dim.vulnerabilities && dim.vulnerabilities.length > 0 && (
+                            <div className="space-y-1">
+                              <span className="text-[10px] font-semibold text-[#7C2D2B] uppercase tracking-wider block">Vulnerabilities:</span>
+                              <ul className="space-y-1 text-[#7C2D2B] text-[11px]">
+                                {dim.vulnerabilities.map((v, i) => (
+                                  <li key={i} className="flex items-start gap-1">
+                                    <AlertTriangle className="w-3 h-3 flex-shrink-0 mt-0.5" />
+                                    <span>{v}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -1231,13 +1316,65 @@ export default function ScanPage() {
 
                 {/* Prioritized Action Plan */}
                 <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-[#2F3437]">
-                    <AlertCircle className="w-4 h-4 text-[#7C2D2B]" />
-                    <span>Prioritized Action Plan before Submission</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-[#2F3437]">
+                      <AlertCircle className="w-4 h-4 text-[#7C2D2B]" />
+                      <span>Prioritized Action Plan before Submission</span>
+                    </div>
+
+                    {/* Priority Filter Pills */}
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setIssueFilter("all")}
+                        className={`px-2.5 py-1 rounded-lg text-xs font-medium transition cursor-pointer ${
+                          issueFilter === "all"
+                            ? "bg-white text-[#2F3437] font-semibold border border-[#d0d0d0] shadow-2xs"
+                            : "text-[#787774] hover:text-[#2F3437] hover:bg-[#F7F7F5]"
+                        }`}
+                      >
+                        All ({(report.priorityIssues || []).length})
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setIssueFilter("A")}
+                        className={`px-2.5 py-1 rounded-lg text-xs font-medium transition cursor-pointer ${
+                          issueFilter === "A"
+                            ? "bg-[#FDF0EF] text-[#7C2D2B] font-semibold border border-[#F7CECC] shadow-2xs"
+                            : "text-[#7C2D2B] hover:bg-[#FDF0EF]"
+                        }`}
+                      >
+                        🚨 Priority A
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setIssueFilter("B")}
+                        className={`px-2.5 py-1 rounded-lg text-xs font-medium transition cursor-pointer ${
+                          issueFilter === "B"
+                            ? "bg-[#FBF3DB] text-[#78510E] font-semibold border border-[#F4E2B6] shadow-2xs"
+                            : "text-[#78510E] hover:bg-[#FBF3DB]"
+                        }`}
+                      >
+                        ⚠️ Priority B
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setIssueFilter("C")}
+                        className={`px-2.5 py-1 rounded-lg text-xs font-medium transition cursor-pointer ${
+                          issueFilter === "C"
+                            ? "bg-[#EDF6EE] text-[#1E5A2A] font-semibold border border-[#CBE7CE] shadow-2xs"
+                            : "text-[#1E5A2A] hover:bg-[#EDF6EE]"
+                        }`}
+                      >
+                        💡 Priority C
+                      </button>
+                    </div>
                   </div>
 
                   <div className="space-y-3">
-                    {(report.priorityIssues || []).map((issue: PriorityIssue) => (
+                    {(report.priorityIssues || [])
+                      .filter((iss: PriorityIssue) => issueFilter === "all" || iss.priority === issueFilter)
+                      .map((issue: PriorityIssue) => (
                       <div
                         key={issue.id}
                         className="p-5 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] space-y-3"
@@ -1254,39 +1391,70 @@ export default function ScanPage() {
                             <span className="text-[11px] font-medium text-[#787774] uppercase tracking-wide">
                               {issue.category}
                             </span>
+                            <span className="font-mono text-[10px] text-[#787774]">{issue.id}</span>
                           </div>
                           <span className="text-[11px] text-[#787774]">
-                            {issue.priority === "A" ? "Desk-Reject Vulnerability" : "Major Reviewer Challenge"}
+                            {issue.priority === "A" ? "Desk-Reject Hazard" : "Reviewer Objection"}
                           </span>
                         </div>
 
                         <h4 className="text-sm font-semibold text-[#2F3437]">{issue.title}</h4>
                         <p className="text-xs text-[#787774] leading-relaxed">{issue.description}</p>
 
-                        {/* Notion Quote Block */}
-                        <div className="border-l-2 border-[#d0d0d0] pl-3 py-0.5 text-xs italic text-[#2F3437] font-serif">
-                          &ldquo;{issue.reviewerQuote}&rdquo;
-                        </div>
-
-                        {/* Notion Action Box */}
-                        <div className="p-3 rounded-xl bg-white border border-[#CBE7CE] text-xs text-[#1E5A2A] flex items-start gap-2">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0 mt-0.5" />
-                          <div>
-                            <span className="font-semibold text-[#2F3437] block mb-0.5">Required Pre-Submission Fix:</span>
-                            {issue.actionableFix}
+                        {/* Typed Evidence Anchor */}
+                        {issue.evidenceAnchor && (
+                          <div className="p-2.5 rounded-lg bg-white border border-[#CBD5E1] text-[11px] font-mono text-[#2F3437] flex items-center gap-2">
+                            <FileCode className="w-3.5 h-3.5 text-[#0A85EA] shrink-0" />
+                            <span className="font-bold text-[#787774] uppercase tracking-wider text-[9px] px-1.5 py-0.5 rounded bg-[#F7F7F5] border border-[#EBEBEA]">
+                              Anchor
+                            </span>
+                            <span className="truncate">{issue.evidenceAnchor}</span>
                           </div>
-                        </div>
+                        )}
+
+                        {/* Reviewer Anticipated Reaction */}
+                        {issue.reviewerQuote && (
+                          <div className="border-l-2 border-[#d0d0d0] pl-3 py-0.5 text-xs italic text-[#2F3437] font-serif">
+                            &ldquo;{issue.reviewerQuote}&rdquo;
+                          </div>
+                        )}
+
+                        {/* Required Pre-Submission Fix */}
+                        {issue.actionableFix && (
+                          <div className="p-3 rounded-xl bg-white border border-[#CBE7CE] text-xs text-[#1E5A2A] flex items-start gap-2">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0 mt-0.5" />
+                            <div>
+                              <span className="font-semibold text-[#2F3437] block mb-0.5">Required Pre-Submission Fix:</span>
+                              {issue.actionableFix}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Point-by-Point Author Rebuttal Strategy */}
+                        {issue.rebuttalStrategy && (
+                          <div className="p-3 rounded-xl bg-white border border-[#BFDBFE] text-xs text-[#18569C] flex items-start gap-2">
+                            <MessageSquare className="w-3.5 h-3.5 text-[#0A85EA] flex-shrink-0 mt-0.5" />
+                            <div>
+                              <span className="font-semibold text-[#18569C] block mb-0.5">
+                                Point-by-Point Author Rebuttal Framing (for Journal Response Letter):
+                              </span>
+                              <p className="leading-relaxed font-light whitespace-pre-line text-[#18569C]">
+                                {issue.rebuttalStrategy}
+                              </p>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* 4-Persona Peer-Review Simulation */}
+                {/* 5-Persona Peer-Review Simulation (Adversarial Panel) */}
                 <div className="space-y-3">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                     <div className="flex items-center gap-2 text-sm font-semibold text-[#2F3437]">
                       <Users className="w-4 h-4 text-[#787774]" />
-                      <span>4-Persona Peer-Review Simulation</span>
+                      <span>5-Persona Peer-Review Simulation (Adversarial Panel)</span>
                     </div>
                     <span className="text-[11px] text-[#787774]">
                       Independent domain evaluations
@@ -1297,25 +1465,42 @@ export default function ScanPage() {
                   <div className="flex items-center gap-1 border-b border-[#EBEBEA] pb-1 overflow-x-auto">
                     {(report.reviewerPersonas || []).map((p: ReviewerPersonaFeedback, idx: number) => {
                       const isActive = selectedPersona === idx;
+                      const isDevilsAdvocate = p.persona === "devils_advocate" || idx === 4;
                       return (
                         <button
-                          key={p.persona}
+                          key={p.persona || idx}
                           onClick={() => setSelectedPersona(idx)}
-                          className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap transition ${
+                          className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap transition cursor-pointer ${
                             isActive
-                              ? "bg-white text-[#2F3437] font-semibold border border-[#d0d0d0] shadow-2xs"
+                              ? isDevilsAdvocate
+                                ? "bg-[#7F1D1D] text-white font-semibold border border-[#7F1D1D] shadow-2xs"
+                                : "bg-white text-[#2F3437] font-semibold border border-[#d0d0d0] shadow-2xs"
+                              : isDevilsAdvocate
+                              ? "text-[#7C2D2B] bg-[#FDF0EF] hover:bg-[#FCE6E5] border border-[#F7CECC]"
                               : "text-[#787774] hover:text-[#2F3437] hover:bg-[#F7F7F5]"
                           }`}
                         >
                           <span>
                             {p.persona === "methods_reviewer" ? "🔬" :
                              p.persona === "domain_expert" ? "🧬" :
-                             p.persona === "journal_editor" ? "📑" : "📊"}
+                             p.persona === "journal_editor" ? "📑" :
+                             p.persona === "statistician" ? "📊" :
+                             p.persona === "devils_advocate" ? "⚡" :
+                             (idx === 0 ? "🔬" : idx === 1 ? "🧬" : idx === 2 ? "📑" : idx === 3 ? "📊" : "⚡")}
                           </span>
-                          <span>{p.name.split(" ")[0]} {p.name.split(" ")[1]}</span>
+                          <span>{p.name.split(" ")[0]} {p.name.split(" ")[1] || ""}</span>
+                          {isDevilsAdvocate && (
+                            <span className={`text-[9px] uppercase px-1 py-0.2 rounded font-bold ${
+                              isActive ? "bg-white/20 text-white" : "bg-[#FDF0EF] text-[#7C2D2B] border border-[#F7CECC]"
+                            }`}>
+                              Stress-Test
+                            </span>
+                          )}
                           {p.decisionRecommendation && (
                             <span className={`text-[9px] px-1 py-0.2 rounded border ${
-                              p.decisionRecommendation.includes("Reject")
+                              isActive
+                                ? "bg-black/10 text-inherit border-transparent"
+                                : p.decisionRecommendation.includes("Reject")
                                 ? "text-[#7C2D2B] border-[#F7CECC] bg-[#FDF0EF]"
                                 : "text-[#78510E] border-[#F4E2B6] bg-[#FBF3DB]"
                             }`}>
@@ -1331,8 +1516,11 @@ export default function ScanPage() {
                   {report.reviewerPersonas && report.reviewerPersonas[selectedPersona] && (() => {
                     const active = report.reviewerPersonas[selectedPersona];
                     const isReject = active.decisionRecommendation?.includes("Reject");
+                    const isDevilsAdvocate = active.persona === "devils_advocate" || selectedPersona === 4;
                     return (
-                      <div className="p-6 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] space-y-5 animate-fade-in">
+                      <div className={`p-6 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] space-y-5 animate-fade-in ${
+                        isDevilsAdvocate ? "border-rose-300 ring-1 ring-rose-200" : ""
+                      }`}>
                         {/* Header with Title and Affiliation */}
                         <div className="flex flex-col md:flex-row md:items-start justify-between gap-3 pb-4 border-b border-[#EBEBEA]">
                           <div className="space-y-1">
@@ -1347,6 +1535,11 @@ export default function ScanPage() {
                                     : "bg-[#FBF3DB] text-[#78510E] border-[#F4E2B6]"
                                 }`}>
                                   Decision: {active.decisionRecommendation}
+                                </span>
+                              )}
+                              {isDevilsAdvocate && (
+                                <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-red-100 text-red-800 border border-red-200">
+                                  ⚡ Hostile Stress-Test / Adversarial Referee
                                 </span>
                               )}
                             </div>
@@ -1369,16 +1562,38 @@ export default function ScanPage() {
                           )}
                         </div>
 
-                        {/* Fatal Reviewer Objection Callout */}
-                        <div className="p-3.5 rounded-xl bg-[#FDF0EF] border border-[#F7CECC] text-xs text-[#7C2D2B] flex items-start gap-2.5">
-                          <span className="text-base select-none">⚠️</span>
-                          <div>
-                            <span className="font-semibold text-[#2F3437] block mb-0.5 uppercase tracking-wider text-[10px]">
-                              Fatal Reviewer Objection:
-                            </span>
-                            {active.keyChallenge}
+                        {/* Evidence Anchors (Grounding) */}
+                        {active.evidenceAnchors && active.evidenceAnchors.length > 0 && (
+                          <div className="space-y-1.5">
+                            <div className="text-xs font-semibold text-[#787774] uppercase tracking-wider flex items-center gap-1.5">
+                              <FileCode className="w-3.5 h-3.5 text-[#0A85EA]" />
+                              <span>Manuscript Evidence Anchors (Grounding):</span>
+                            </div>
+                            <div className="flex flex-wrap gap-1.5">
+                              {active.evidenceAnchors.map((anchor: string, aIdx: number) => (
+                                <span
+                                  key={aIdx}
+                                  className="font-mono text-[11px] px-2.5 py-1 rounded bg-white border border-[#CBD5E1] text-[#2F3437]"
+                                >
+                                  {anchor}
+                                </span>
+                              ))}
+                            </div>
                           </div>
-                        </div>
+                        )}
+
+                        {/* Fatal Reviewer Objection Callout */}
+                        {active.keyChallenge && (
+                          <div className="p-3.5 rounded-xl bg-[#FDF0EF] border border-[#F7CECC] text-xs text-[#7C2D2B] flex items-start gap-2.5">
+                            <span className="text-base select-none">⚠️</span>
+                            <div>
+                              <span className="font-semibold text-[#2F3437] block mb-0.5 uppercase tracking-wider text-[10px]">
+                                Fatal Reviewer Objection:
+                              </span>
+                              {active.keyChallenge}
+                            </div>
+                          </div>
+                        )}
 
                         {/* Detailed Peer-Review Assessment */}
                         <div className="space-y-2">
@@ -1389,6 +1604,24 @@ export default function ScanPage() {
                             {active.assessment}
                           </div>
                         </div>
+
+                        {/* Adversarial Defenses & Pre-emptive Arguments to Prepare */}
+                        {active.counterArguments && active.counterArguments.length > 0 && (
+                          <div className="space-y-2">
+                            <div className="text-xs font-semibold text-[#5B21B6] uppercase tracking-wider flex items-center gap-1.5">
+                              <ShieldAlert className="w-3.5 h-3.5 text-[#7C3AED]" />
+                              <span>Adversarial Defenses &amp; Pre-emptive Arguments to Prepare:</span>
+                            </div>
+                            <div className="space-y-1.5">
+                              {active.counterArguments.map((arg: string, cIdx: number) => (
+                                <div key={cIdx} className="p-2.5 rounded-lg bg-white border border-[#DDD6FE] text-xs text-[#5B21B6] flex items-start gap-2">
+                                  <span className="font-mono text-[#7C3AED] font-bold text-[11px] mt-0.5">[{cIdx + 1}]</span>
+                                  <span className="leading-relaxed">{arg}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
 
                         {/* Major Vulnerabilities */}
                         {active.majorCritiques && active.majorCritiques.length > 0 && (
