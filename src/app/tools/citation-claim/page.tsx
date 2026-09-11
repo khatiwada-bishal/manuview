@@ -1,31 +1,43 @@
 "use client";
 
 import React, { useState } from "react";
-import { Sparkles, RefreshCw, AlertCircle, CheckCircle2, AlertTriangle, ArrowRight, ExternalLink } from "lucide-react";
+import {
+  ShieldCheck,
+  RefreshCw,
+  AlertTriangle,
+  CheckCircle2,
+  AlertCircle,
+  ExternalLink,
+  Sparkles,
+  BookOpen,
+  ArrowRight,
+  Info,
+} from "lucide-react";
 
 export default function CitationClaimPage() {
   const [sentence, setSentence] = useState("");
   const [doi, setDoi] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{
-    paperTitle?: string;
-    publicationYear?: number;
-    verdict: 'supported' | 'partially_supported' | 'not_supported' | 'unable_to_verify';
-    explanation?: string;
+    verdict: "supported" | "partially_supported" | "not_supported" | "unable_to_verify";
+    paperTitle: string;
+    explanation: string;
     suggestedRewrite?: string;
     details?: string;
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleSample = () => {
-    setSentence("Targeting POU2F1 has been demonstrated in clinical trials to completely cure drug-resistant small cell lung cancer.");
+    setSentence(
+      "POU2F1 is the master regulator that definitively proves DLL3 expression drives universal chemoresistance across all clinical SCLC isolates."
+    );
     setDoi("10.1126/scitranslmed.aac9459");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!sentence || !doi) {
-      setError("Please provide both the manuscript sentence and the cited DOI.");
+    if (!sentence.trim() || !doi.trim()) {
+      setError("Both the manuscript assertion and cited DOI are required.");
       return;
     }
 
@@ -49,7 +61,7 @@ export default function CitationClaimPage() {
       if (!res.ok) throw new Error(data.error);
       setResult(data);
     } catch (err: any) {
-      setError(err.message || "Failed to verify citation claim.");
+      setError(err.message || "Failed to validate citation claim.");
     } finally {
       setLoading(false);
     }
@@ -57,117 +69,150 @@ export default function CitationClaimPage() {
 
   return (
     <div className="min-h-screen bg-[#08090D] text-white py-12 aura-bg-gradient aura-grid-pattern">
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-10 text-center max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-white/[0.06] text-neutral-300 border border-white/10 shadow-sm mb-3">
-            <Sparkles className="w-3.5 h-3.5" />
-            Citation Claim Alignment
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 space-y-8">
+        {/* Header */}
+        <div className="mb-8 text-center max-w-2xl mx-auto space-y-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-white/[0.06] text-amber-400 border border-amber-500/30 shadow-xs">
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>Claim-to-Evidence Alignment</span>
           </div>
-          <h1 className="text-3xl font-serif font-bold text-white mb-2">
-            Citation Claim Validator
+          <h1 className="text-3xl sm:text-4xl font-serif font-bold text-white tracking-tight">
+            Citation Claim &amp; Overclaim Validator
           </h1>
           <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed">
-            Does the paper you cited actually support your assertion? We fetch the paper&apos;s abstract via OpenAlex and audit the claim against the real evidence.
+            Audit whether a stated sentence or factual claim in your manuscript is authentically substantiated by the cited publication, preventing causal overclaims during peer review.
           </p>
         </div>
 
-        <div className="aura-paper-sheet rounded-2xl p-6 sm:p-8 shadow-2xl mb-10 text-[#111827]">
+        {/* Input Form Card */}
+        <div className="aura-paper-sheet rounded-2xl p-6 sm:p-8 shadow-2xl text-[#111827]">
           <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-3 mb-4">
-            <span className="text-xs font-semibold text-[#111827]">Test Claim vs. Citation</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-[#4B5563]">
+              Claim &amp; Citation Input
+            </span>
             <button
               type="button"
               onClick={handleSample}
-              className="text-xs text-amber-400 hover:underline flex items-center gap-1"
+              className="text-xs font-semibold text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1.5 cursor-pointer"
             >
-              <RefreshCw className="w-3 h-3" /> Load Overclaim Sample
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Load Sample Claim</span>
             </button>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-[#374151] mb-1">
-                Manuscript Sentence
+                Manuscript Assertion / Claim Sentence
               </label>
               <textarea
                 rows={3}
                 value={sentence}
                 onChange={(e) => setSentence(e.target.value)}
-                placeholder="e.g. Factor X has been proven to trigger phenotype Y in patients..."
-                className="w-full p-3 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-amber-500 font-serif"
+                placeholder="e.g. Prior studies have established that POU2F1 proves DLL3 expression without rescue..."
+                className="w-full p-3.5 rounded-xl bg-white border border-[#D1D5DB] text-xs sm:text-sm text-[#111827] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-serif resize-none"
               />
             </div>
 
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-[#374151] mb-1">
-                Cited DOI
+                Cited Paper DOI
               </label>
               <input
                 type="text"
                 value={doi}
                 onChange={(e) => setDoi(e.target.value)}
                 placeholder="e.g. 10.1126/scitranslmed.aac9459"
-                className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#D1D5DB] text-xs text-[#111827] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-amber-500 font-mono"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D1D5DB] text-xs sm:text-sm text-[#111827] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-mono"
               />
             </div>
 
             {error && (
-              <div className="p-3 rounded-xl bg-rose-950/40 border border-rose-800/60 text-rose-300 text-xs flex items-center gap-2">
+              <div className="p-3 rounded-xl bg-red-50 text-red-700 border border-red-200 text-xs flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 <span>{error}</span>
               </div>
             )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 rounded-xl bg-black hover:bg-neutral-800 disabled:opacity-50 text-slate-950 font-bold text-xs shadow-lg transition flex items-center justify-center gap-2"
-            >
-              {loading ? (
-                <>
-                  <RefreshCw className="w-4 h-4 animate-spin text-slate-950" />
-                  <span>Auditing Abstract &amp; Claim...</span>
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-4 h-4" />
-                  <span>Check Citation Support</span>
-                </>
-              )}
-            </button>
+            <div className="flex justify-end pt-1">
+              <button
+                type="submit"
+                disabled={loading || !sentence.trim() || !doi.trim()}
+                className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-black hover:bg-neutral-800 disabled:opacity-50 text-white font-semibold text-xs shadow-lg transition flex items-center justify-center gap-2 cursor-pointer"
+              >
+                {loading ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin text-white" />
+                    <span>Evaluating Cited Evidence...</span>
+                  </>
+                ) : (
+                  <>
+                    <ShieldCheck className="w-4 h-4" />
+                    <span>Validate Citation Claim</span>
+                  </>
+                )}
+              </button>
+            </div>
           </form>
         </div>
 
+        {/* Validation Results */}
         {result && (
-          <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4">
-            <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-3">
-              <div>
-                <span className="text-xs text-[#6B7280]">Cited Paper:</span>
-                <h4 className="text-sm font-semibold text-white">{result.paperTitle || doi}</h4>
-              </div>
-              <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                result.verdict === 'supported' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' :
-                result.verdict === 'partially_supported' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' :
-                'bg-rose-500/20 text-rose-300 border border-rose-500/30'
-              }`}>
-                {result.verdict === 'supported' ? 'Fully Supported' :
-                 result.verdict === 'partially_supported' ? 'Partially Supported' :
-                 'Overclaim / Not Supported'}
+          <div className="space-y-4 p-6 sm:p-7 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-xl animate-fade-in">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                Audit Verdict
               </span>
+              {result.verdict === "supported" ? (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  SUBSTANTIATED BY EVIDENCE
+                </span>
+              ) : result.verdict === "partially_supported" ? (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                  <AlertTriangle className="w-3.5 h-3.5" />
+                  PARTIAL SUPPORT (OVERCLAIM RISK)
+                </span>
+              ) : result.verdict === "not_supported" ? (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40">
+                  <AlertCircle className="w-3.5 h-3.5" />
+                  UNSUBSTANTIATED / MISATTRIBUTED
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700">
+                  <Info className="w-3.5 h-3.5" />
+                  UNABLE TO VERIFY
+                </span>
+              )}
             </div>
 
+            <div>
+              <div className="text-xs text-slate-400 font-medium">Cited Target Publication:</div>
+              <div className="text-base font-bold text-white mt-0.5">{result.paperTitle || doi}</div>
+            </div>
+
+            {result.details && (
+              <div className="p-3.5 rounded-xl bg-amber-950/20 border border-amber-800/40 text-xs text-amber-300 flex items-start gap-2">
+                <Info className="w-4 h-4 shrink-0 mt-0.5 text-amber-400" />
+                <span>{result.details}</span>
+              </div>
+            )}
+
             {result.explanation && (
-              <p className="text-xs text-slate-300 leading-relaxed">
-                {result.explanation}
-              </p>
+              <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 space-y-1.5">
+                <div className="text-xs font-bold text-slate-300">Scientific Rationale:</div>
+                <p className="text-xs text-slate-400 leading-relaxed font-light">{result.explanation}</p>
+              </div>
             )}
 
             {result.suggestedRewrite && (
-              <div className="p-4 rounded-xl bg-emerald-950/30 border border-emerald-900/60">
-                <span className="text-[11px] font-semibold text-emerald-400 block mb-1">
-                  Evidence-Calibrated Rewrite Suggestion:
-                </span>
-                <p className="text-xs text-emerald-200 font-serif italic">
-                  &quot;{result.suggestedRewrite}&quot;
+              <div className="p-4 rounded-xl bg-emerald-950/30 border border-emerald-800/60 space-y-2">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-300">
+                  <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Calibrated Academic Rephrasing:</span>
+                </div>
+                <p className="text-xs text-emerald-200 font-medium leading-relaxed italic font-serif">
+                  &ldquo;{result.suggestedRewrite}&rdquo;
                 </p>
               </div>
             )}
