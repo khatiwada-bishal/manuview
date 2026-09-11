@@ -39,7 +39,7 @@ import {
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'personas' | 'dimensions' | 'issues' | 'journals'>('overview');
-  const [heroViewMode, setHeroViewMode] = useState<'interactive' | 'native'>('interactive');
+  const [heroViewMode, setHeroViewMode] = useState<'interactive' | 'native'>('native');
   return (
     <div className="flex flex-col min-h-screen text-neutral-900 dark:text-white">
       {/* ------------------------------------------------------------- */}
@@ -169,6 +169,32 @@ export default function HomePage() {
                 <p className="text-[11px] text-neutral-500 dark:text-neutral-400 mt-0.5">Journal fit &amp; zero retractions</p>
               </div>
             </button>
+
+            {/* Pillar 4: Native Desktop App */}
+            <button
+              type="button"
+              onClick={() => setHeroViewMode('native')}
+              className={`group relative flex items-center gap-3 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-2xl transition-all duration-300 text-left border cursor-pointer ${
+                heroViewMode === 'native'
+                  ? "liquid-glass-card bg-white/95 dark:bg-white/10 border-indigo-500/50 dark:border-indigo-400/50 shadow-md ring-2 ring-indigo-500/20"
+                  : "liquid-glass-card hover:bg-white/70 dark:hover:bg-white/[0.07] border-black/5 dark:border-white/10"
+              }`}
+            >
+              <div className="w-11 h-11 rounded-xl bg-indigo-500/10 flex items-center justify-center overflow-hidden shrink-0 border border-indigo-500/20 p-1">
+                <img
+                  src="/illustrations/desktop-app-preview.png"
+                  alt="Desktop App Preview"
+                  className="w-full h-full object-cover rounded-lg transition-transform duration-300 group-hover:scale-110 shadow-2xs"
+                />
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-bold text-neutral-900 dark:text-white">4. Native Desktop App</span>
+                  <span className="text-[9px] px-1.5 py-0.2 rounded-md font-semibold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">HiDPI Mac</span>
+                </div>
+                <p className="text-[11px] text-neutral-500 dark:text-neutral-400 mt-0.5">macOS liquid glass window</p>
+              </div>
+            </button>
           </div>
 
           {/* --------------------------------------------------------- */}
@@ -266,10 +292,10 @@ export default function HomePage() {
                   <div className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29]" />
                 </div>
 
-                {/* Center / Navigation Tabs */}
-                <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 flex-1 min-w-0">
+                {/* Center / Navigation Tabs (Clean, zero-scrollbar macOS tab row) */}
+                <div className="flex items-center gap-1.5 overflow-hidden no-scrollbar py-0.5 flex-1 min-w-0 select-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                   {/* AI Review Tab */}
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-neutral-500 dark:text-neutral-400 text-xs font-medium shrink-0 cursor-default">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-neutral-500 dark:text-neutral-400 text-xs font-medium shrink-0 cursor-default">
                     <Sparkles className="w-3.5 h-3.5 text-blue-500" />
                     <span>AI Review</span>
                   </div>
@@ -277,7 +303,7 @@ export default function HomePage() {
                   {/* Active Document Tab (Single-cell transcripti...) */}
                   <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white dark:bg-[#1E2536] text-neutral-900 dark:text-white font-semibold shadow-xs border border-black/5 dark:border-white/10 text-xs shrink-0">
                     <FileText className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-                    <span className="truncate max-w-[130px] sm:max-w-[180px]">Single-cell transcripti...</span>
+                    <span className="truncate max-w-[120px] sm:max-w-[160px]">Single-cell transcripti...</span>
                     <button type="button" className="p-0.5 rounded-md hover:bg-black/5 dark:hover:bg-white/10 text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 cursor-pointer">
                       <X className="w-3 h-3" />
                     </button>
@@ -294,19 +320,9 @@ export default function HomePage() {
                     <span>Reference Audit</span>
                   </div>
 
-                  <div className="hidden lg:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200 text-xs font-medium shrink-0 transition">
+                  <div className="hidden 2xl:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200 text-xs font-medium shrink-0 transition">
                     <Layers className="w-3.5 h-3.5 text-purple-500" />
                     <span>PRISMA 2020</span>
-                  </div>
-
-                  <div className="hidden xl:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200 text-xs font-medium shrink-0 transition">
-                    <FileText className="w-3.5 h-3.5 text-indigo-500" />
-                    <span>Cover Letter</span>
-                  </div>
-
-                  <div className="hidden xl:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200 text-xs font-medium shrink-0 transition">
-                    <MessageSquare className="w-3.5 h-3.5 text-rose-500" />
-                    <span>Response Matrix</span>
                   </div>
                 </div>
 
@@ -521,6 +537,24 @@ export default function HomePage() {
                       <span className="text-[10px] opacity-70">ⓘ</span>
                     </div>
 
+                    {/* Native Desktop App Mini Showcase */}
+                    <button
+                      type="button"
+                      onClick={() => setHeroViewMode('native')}
+                      className="w-full p-2 rounded-xl border border-black/5 dark:border-white/10 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-left transition group flex items-center gap-2.5 cursor-pointer"
+                    >
+                      <img
+                        src="/illustrations/desktop-app-preview.png"
+                        alt="Native App"
+                        className="w-8 h-8 rounded-lg object-cover border border-black/10 dark:border-white/10 shrink-0 group-hover:scale-105 transition shadow-2xs"
+                      />
+                      <div className="min-w-0 flex-1">
+                        <div className="font-semibold text-[11px] text-neutral-900 dark:text-white truncate">macOS Desktop Window</div>
+                        <div className="text-[9px] text-neutral-500 dark:text-neutral-400">Switch to Native Preview</div>
+                      </div>
+                      <ChevronRight className="w-3 h-3 text-neutral-400 group-hover:text-neutral-700 dark:group-hover:text-white shrink-0" />
+                    </button>
+
                     <div className="flex items-center justify-between text-[11px] text-neutral-500 dark:text-neutral-400 px-1 pt-1">
                       <span className="font-mono text-[10px]">v1.0.0</span>
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-mono text-[10px] font-semibold border border-emerald-500/20">
@@ -533,7 +567,7 @@ export default function HomePage() {
                 </div>
 
                 {/* Main Content Area */}
-                <div className="lg:col-span-8 xl:col-span-9 p-4 sm:p-6 lg:p-7 space-y-4 overflow-y-auto max-h-[640px]">
+                <div className="lg:col-span-8 xl:col-span-9 p-4 sm:p-6 lg:p-7 space-y-4 overflow-y-auto no-scrollbar max-h-[640px]">
                   
                   {activeTab === 'overview' && (
                     <div className="space-y-4 animate-fade-in">
@@ -836,12 +870,20 @@ export default function HomePage() {
                       alt="ManuView Native Desktop App Experience"
                       className="w-full h-auto object-cover"
                     />
-                    <div className="absolute inset-x-0 bottom-0 py-3 px-5 bg-gradient-to-t from-black/85 via-black/40 to-transparent flex items-center justify-between text-white text-xs backdrop-blur-xs">
+                    <div className="absolute inset-x-0 bottom-0 py-3 px-5 bg-gradient-to-t from-black/90 via-black/50 to-transparent flex flex-wrap items-center justify-between gap-2 text-white text-xs backdrop-blur-xs">
                       <div className="flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                        <span className="font-semibold tracking-tight">Native macOS Liquid Glass Application Preview</span>
+                        <span className="font-semibold tracking-tight">Native macOS Liquid Glass Application</span>
+                        <span className="opacity-75 font-mono text-[11px]">· 1024 × 769 HiDPI</span>
                       </div>
-                      <span className="opacity-80 font-mono text-[11px]">1024 × 769 HiDPI · Native Desktop Window</span>
+                      <button
+                        type="button"
+                        onClick={() => setHeroViewMode('interactive')}
+                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/20 hover:bg-white/30 text-white font-semibold text-xs backdrop-blur-md transition cursor-pointer shadow-xs border border-white/20"
+                      >
+                        <Sparkles className="w-3.5 h-3.5 text-blue-300" />
+                        <span>Try Live Interactive Suite &rarr;</span>
+                      </button>
                     </div>
                   </div>
                 </div>
