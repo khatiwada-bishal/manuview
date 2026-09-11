@@ -172,12 +172,12 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 overflow-y-auto">
-      <div className="relative w-full max-w-xl rounded-2xl bg-white border border-[#EBEBEA] shadow-xl p-6 sm:p-7 text-[#2F3437] my-6 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 overflow-y-auto">
+      <div className="relative w-full max-w-xl rounded-2xl bg-white dark:bg-[#111624] border border-[#EBEBEA] dark:border-[#1F2937] shadow-xl p-6 sm:p-7 text-[#2F3437] dark:text-neutral-100 my-6 max-h-[90vh] overflow-y-auto">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-1.5 text-[#787774] hover:text-[#2F3437] hover:bg-[#F7F7F5] rounded-md transition"
+          className="absolute top-5 right-5 p-1.5 text-[#787774] dark:text-neutral-400 hover:text-[#2F3437] dark:hover:text-white hover:bg-[#F7F7F5] dark:hover:bg-white/10 rounded-md transition cursor-pointer"
           aria-label="Close"
         >
           <X className="w-4 h-4" />
@@ -187,10 +187,10 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
         <div className="flex items-center gap-3 mb-5">
           <div className="text-2xl select-none">⚙️</div>
           <div>
-            <h3 className="text-lg font-bold tracking-tight text-[#2F3437]">
+            <h3 className="text-lg font-bold tracking-tight text-[#2F3437] dark:text-white">
               AI Diagnostic Engine &amp; Models
             </h3>
-            <p className="text-xs text-[#787774] mt-0.5">
+            <p className="text-xs text-[#787774] dark:text-neutral-400 mt-0.5">
               Select your LLM provider, verify the connection, and pick verified diagnostic models.
             </p>
           </div>
@@ -198,20 +198,20 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
 
         {/* Server Status Banner (High Contrast Pastel) */}
         {serverStatus?.hasServerKey ? (
-          <div className="p-3 mb-5 rounded-xl bg-[#EDF6EE] border border-[#CBE7CE] flex items-start gap-2.5 text-xs text-[#1E5A2A]">
-            <CheckCircle2 className="w-4 h-4 text-[#1E5A2A] flex-shrink-0 mt-0.5" />
+          <div className="p-3 mb-5 rounded-xl bg-[#EDF6EE] dark:bg-emerald-950/40 border border-[#CBE7CE] dark:border-emerald-800 flex items-start gap-2.5 text-xs text-[#1E5A2A] dark:text-emerald-300">
+            <CheckCircle2 className="w-4 h-4 text-[#1E5A2A] dark:text-emerald-400 flex-shrink-0 mt-0.5" />
             <div>
-              <span className="font-semibold text-[#1E5A2A]">Server Key Active:</span> Using{" "}
-              <code className="text-[#1E5A2A] uppercase font-bold tracking-wide">{serverStatus.activeProvider}</code> from{" "}
-              <code className="font-mono font-medium text-[#1E5A2A]">.env.local</code>. Client keys below will take precedence if provided.
+              <span className="font-semibold text-[#1E5A2A] dark:text-emerald-300">Server Key Active:</span> Using{" "}
+              <code className="text-[#1E5A2A] dark:text-emerald-200 uppercase font-bold tracking-wide">{serverStatus.activeProvider}</code> from{" "}
+              <code className="font-mono font-medium text-[#1E5A2A] dark:text-emerald-200">.env.local</code>. Client keys below will take precedence if provided.
             </div>
           </div>
         ) : (
-          <div className="p-3 mb-5 rounded-xl bg-[#FBF3DB] border border-[#F4E2B6] flex items-start gap-2.5 text-xs text-[#78510E]">
-            <FileCode className="w-4 h-4 text-[#78510E] flex-shrink-0 mt-0.5" />
+          <div className="p-3 mb-5 rounded-xl bg-[#FBF3DB] dark:bg-amber-950/40 border border-[#F4E2B6] dark:border-amber-800 flex items-start gap-2.5 text-xs text-[#78510E] dark:text-amber-300">
+            <FileCode className="w-4 h-4 text-[#78510E] dark:text-amber-400 flex-shrink-0 mt-0.5" />
             <div>
-              <span className="font-semibold text-[#78510E]">Client Storage Mode:</span> Store your API key in browser local memory, or place it in{" "}
-              <code className="font-mono font-medium text-[#78510E]">.env.local</code> for automatic server detection.
+              <span className="font-semibold text-[#78510E] dark:text-amber-300">Client Storage Mode:</span> Store your API key in browser local memory, or place it in{" "}
+              <code className="font-mono font-medium text-[#78510E] dark:text-amber-200">.env.local</code> for automatic server detection.
             </div>
           </div>
         )}
@@ -219,7 +219,7 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
         <div className="space-y-5">
           {/* 1. Provider Selection Grid */}
           <div>
-            <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#787774] mb-2">
+            <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#787774] dark:text-neutral-400 mb-2">
               1. Select AI Engine
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -227,16 +227,16 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
               <button
                 type="button"
                 onClick={() => handleProviderChange("gemini")}
-                className={`flex items-center gap-2.5 p-3 rounded-xl border text-xs transition text-left ${
+                className={`flex items-center gap-2.5 p-3 rounded-xl border text-xs transition text-left cursor-pointer ${
                   config.provider === "gemini"
-                    ? "bg-[#F7F7F5] border-[#2F3437] ring-1 ring-[#2F3437] shadow-2xs"
-                    : "bg-white border-[#EBEBEA] hover:bg-[#F7F7F5] text-[#787774] hover:text-[#2F3437]"
+                    ? "bg-[#F7F7F5] dark:bg-white/10 border-[#2F3437] dark:border-white/40 ring-1 ring-[#2F3437] dark:ring-white/40 shadow-2xs"
+                    : "bg-white dark:bg-[#161F30] border-[#EBEBEA] dark:border-[#334155] hover:bg-[#F7F7F5] dark:hover:bg-[#1E293B] text-[#787774] dark:text-neutral-400 hover:text-[#2F3437] dark:hover:text-white"
                 }`}
               >
                 <GeminiLogo className="w-4 h-4 flex-shrink-0" />
                 <div>
-                  <div className="font-semibold text-[#2F3437] leading-tight">Gemini</div>
-                  <div className="text-[10px] text-[#0A85EA] font-medium">Google AI</div>
+                  <div className="font-semibold text-[#2F3437] dark:text-white leading-tight">Gemini</div>
+                  <div className="text-[10px] text-[#0A85EA] dark:text-blue-400 font-medium">Google AI</div>
                 </div>
               </button>
 
@@ -244,10 +244,10 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
               <button
                 type="button"
                 onClick={() => handleProviderChange("openai")}
-                className={`flex items-center gap-2.5 p-3 rounded-xl border text-xs transition text-left ${
+                className={`flex items-center gap-2.5 p-3 rounded-xl border text-xs transition text-left cursor-pointer ${
                   config.provider === "openai"
-                    ? "bg-[#F7F7F5] border-[#2F3437] ring-1 ring-[#2F3437] shadow-2xs"
-                    : "bg-white border-[#EBEBEA] hover:bg-[#F7F7F5] text-[#787774] hover:text-[#2F3437]"
+                    ? "bg-[#F7F7F5] dark:bg-white/10 border-[#2F3437] dark:border-white/40 ring-1 ring-[#2F3437] dark:ring-white/40 shadow-2xs"
+                    : "bg-white dark:bg-[#161F30] border-[#EBEBEA] dark:border-[#334155] hover:bg-[#F7F7F5] dark:hover:bg-[#1E293B] text-[#787774] dark:text-neutral-400 hover:text-[#2F3437] dark:hover:text-white"
                 }`}
               >
                 <div className="p-0.5 rounded bg-[#000000] text-white flex items-center justify-center flex-shrink-0">
@@ -263,16 +263,16 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
               <button
                 type="button"
                 onClick={() => handleProviderChange("anthropic")}
-                className={`flex items-center gap-2.5 p-3 rounded-xl border text-xs transition text-left ${
+                className={`flex items-center gap-2.5 p-3 rounded-xl border text-xs transition text-left cursor-pointer ${
                   config.provider === "anthropic"
-                    ? "bg-[#F7F7F5] border-[#2F3437] ring-1 ring-[#2F3437] shadow-2xs"
-                    : "bg-white border-[#EBEBEA] hover:bg-[#F7F7F5] text-[#787774] hover:text-[#2F3437]"
+                    ? "bg-[#F7F7F5] dark:bg-white/10 border-[#2F3437] dark:border-white/40 ring-1 ring-[#2F3437] dark:ring-white/40 shadow-2xs"
+                    : "bg-white dark:bg-[#161F30] border-[#EBEBEA] dark:border-[#334155] hover:bg-[#F7F7F5] dark:hover:bg-[#1E293B] text-[#787774] dark:text-neutral-400 hover:text-[#2F3437] dark:hover:text-white"
                 }`}
               >
                 <AnthropicLogo className="w-4 h-4 flex-shrink-0" />
                 <div>
-                  <div className="font-semibold text-[#2F3437] leading-tight">Claude</div>
-                  <div className="text-[10px] text-[#78510E] font-medium">Anthropic</div>
+                  <div className="font-semibold text-[#2F3437] dark:text-white leading-tight">Claude</div>
+                  <div className="text-[10px] text-[#78510E] dark:text-amber-400 font-medium">Anthropic</div>
                 </div>
               </button>
 
@@ -280,16 +280,16 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
               <button
                 type="button"
                 onClick={() => handleProviderChange("groq")}
-                className={`flex items-center gap-2.5 p-3 rounded-xl border text-xs transition text-left ${
+                className={`flex items-center gap-2.5 p-3 rounded-xl border text-xs transition text-left cursor-pointer ${
                   config.provider === "groq"
-                    ? "bg-[#F7F7F5] border-[#2F3437] ring-1 ring-[#2F3437] shadow-2xs"
-                    : "bg-white border-[#EBEBEA] hover:bg-[#F7F7F5] text-[#787774] hover:text-[#2F3437]"
+                    ? "bg-[#F7F7F5] dark:bg-white/10 border-[#2F3437] dark:border-white/40 ring-1 ring-[#2F3437] dark:ring-white/40 shadow-2xs"
+                    : "bg-white dark:bg-[#161F30] border-[#EBEBEA] dark:border-[#334155] hover:bg-[#F7F7F5] dark:hover:bg-[#1E293B] text-[#787774] dark:text-neutral-400 hover:text-[#2F3437] dark:hover:text-white"
                 }`}
               >
                 <GroqLogo className="w-4 h-4 flex-shrink-0" />
                 <div>
-                  <div className="font-semibold text-[#2F3437] leading-tight">Groq</div>
-                  <div className="text-[10px] text-[#C43834] font-medium">LPU Fast</div>
+                  <div className="font-semibold text-[#2F3437] dark:text-white leading-tight">Groq</div>
+                  <div className="text-[10px] text-[#C43834] dark:text-rose-400 font-medium">LPU Fast</div>
                 </div>
               </button>
 
@@ -297,16 +297,16 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
               <button
                 type="button"
                 onClick={() => handleProviderChange("ollama")}
-                className={`flex items-center gap-2.5 p-3 rounded-xl border text-xs transition text-left ${
+                className={`flex items-center gap-2.5 p-3 rounded-xl border text-xs transition text-left cursor-pointer ${
                   config.provider === "ollama"
-                    ? "bg-[#F7F7F5] border-[#2F3437] ring-1 ring-[#2F3437] shadow-2xs"
-                    : "bg-white border-[#EBEBEA] hover:bg-[#F7F7F5] text-[#787774] hover:text-[#2F3437]"
+                    ? "bg-[#F7F7F5] dark:bg-white/10 border-[#2F3437] dark:border-white/40 ring-1 ring-[#2F3437] dark:ring-white/40 shadow-2xs"
+                    : "bg-white dark:bg-[#161F30] border-[#EBEBEA] dark:border-[#334155] hover:bg-[#F7F7F5] dark:hover:bg-[#1E293B] text-[#787774] dark:text-neutral-400 hover:text-[#2F3437] dark:hover:text-white"
                 }`}
               >
-                <OllamaLogo className="w-4 h-4 text-[#1E5A2A] flex-shrink-0" />
+                <OllamaLogo className="w-4 h-4 text-[#1E5A2A] dark:text-emerald-400 flex-shrink-0" />
                 <div>
-                  <div className="font-semibold text-[#2F3437] leading-tight">Ollama</div>
-                  <div className="text-[10px] text-[#1E5A2A] font-medium">100% Offline</div>
+                  <div className="font-semibold text-[#2F3437] dark:text-white leading-tight">Ollama</div>
+                  <div className="text-[10px] text-[#1E5A2A] dark:text-emerald-400 font-medium">100% Offline</div>
                 </div>
               </button>
             </div>
@@ -334,7 +334,7 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
                     href="https://console.groq.com/keys"
                     target="_blank"
                     rel="noreferrer"
-                    className="text-[11px] text-[#78510E] hover:underline font-medium"
+                    className="text-[11px] text-[#78510E] dark:text-amber-300 hover:underline font-medium"
                   >
                     Get free Groq key &rarr;
                   </a>
@@ -344,7 +344,7 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
                     href="https://console.anthropic.com/"
                     target="_blank"
                     rel="noreferrer"
-                    className="text-[11px] text-[#78510E] hover:underline font-medium"
+                    className="text-[11px] text-[#78510E] dark:text-amber-300 hover:underline font-medium"
                   >
                     Get Anthropic key &rarr;
                   </a>
@@ -361,15 +361,15 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
                     ? "sk-ant-..."
                     : "sk-..."
                 }
-                className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#EBEBEA] focus:border-[#2F3437] focus:outline-none text-xs text-[#2F3437] font-mono transition shadow-2xs placeholder:text-[#9B9A97]"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-[#161F30] border border-[#EBEBEA] dark:border-[#334155] focus:border-[#2F3437] dark:focus:border-blue-400 focus:outline-none text-xs text-[#2F3437] dark:text-white font-mono transition shadow-2xs placeholder:text-[#9B9A97] dark:placeholder:text-[#64748B]"
               />
-              <p className="text-[11px] text-[#787774] mt-1">
+              <p className="text-[11px] text-[#787774] dark:text-[#94A3B8] mt-1">
                 Client keys are stored strictly in your local browser sandbox and never shared.
               </p>
 
               {config.provider === "openai" && (
                 <div className="mt-3">
-                  <label className="block text-xs font-semibold text-[#2F3437] mb-1">
+                  <label className="block text-xs font-semibold text-[#2F3437] dark:text-[#E2E8F0] mb-1">
                     API Base URL (Optional for Proxies / Custom Endpoints)
                   </label>
                   <input
@@ -377,24 +377,24 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
                     value={config.baseUrl || ""}
                     onChange={(e) => setConfig({ ...config, baseUrl: e.target.value })}
                     placeholder="https://api.openai.com/v1 (or your custom proxy URL)"
-                    className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#EBEBEA] focus:border-[#2F3437] focus:outline-none text-xs text-[#2F3437] font-mono transition shadow-2xs placeholder:text-[#9B9A97]"
+                    className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-[#161F30] border border-[#EBEBEA] dark:border-[#334155] focus:border-[#2F3437] dark:focus:border-blue-400 focus:outline-none text-xs text-[#2F3437] dark:text-white font-mono transition shadow-2xs placeholder:text-[#9B9A97] dark:placeholder:text-[#64748B]"
                   />
                 </div>
               )}
             </div>
           ) : (
             <div>
-              <label className="block text-xs font-semibold text-[#2F3437] mb-1.5">
+              <label className="block text-xs font-semibold text-[#2F3437] dark:text-[#E2E8F0] mb-1.5">
                 2. Local Ollama Server URL
               </label>
               <input
                 type="text"
                 value={config.baseUrl || "http://localhost:11434"}
                 onChange={(e) => setConfig({ ...config, baseUrl: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#EBEBEA] focus:border-[#2F3437] focus:outline-none text-xs text-[#2F3437] font-mono transition shadow-2xs"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-[#161F30] border border-[#EBEBEA] dark:border-[#334155] focus:border-[#2F3437] dark:focus:border-blue-400 focus:outline-none text-xs text-[#2F3437] dark:text-white font-mono transition shadow-2xs"
               />
-              <p className="text-[11px] text-[#787774] mt-1">
-                Ensure <code className="text-[#1E5A2A] font-semibold">ollama serve</code> is running on your machine.
+              <p className="text-[11px] text-[#787774] dark:text-[#94A3B8] mt-1">
+                Ensure <code className="text-[#1E5A2A] dark:text-emerald-400 font-semibold">ollama serve</code> is running on your machine.
               </p>
             </div>
           )}
@@ -403,14 +403,14 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
           <div ref={dropdownRef} className="relative z-20">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-1.5">
-                <label className="text-xs font-semibold text-[#2F3437]">
+                <label className="text-xs font-semibold text-[#2F3437] dark:text-[#E2E8F0]">
                   3. Select Model
                 </label>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#F7F7F5] border border-[#EBEBEA] text-[#787774] font-medium">
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#F7F7F5] dark:bg-[#161F30] border border-[#EBEBEA] dark:border-[#334155] text-[#787774] dark:text-[#94A3B8] font-medium">
                   {availableModels.length} available
                 </span>
                 {loadingModels && (
-                  <RefreshCw className="w-3 h-3 text-[#787774] animate-spin ml-1" />
+                  <RefreshCw className="w-3 h-3 text-[#787774] dark:text-[#94A3B8] animate-spin ml-1" />
                 )}
               </div>
               <button
@@ -419,7 +419,7 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
                   setShowCustomInput(!showCustomInput);
                   setModelDropdownOpen(false);
                 }}
-                className="text-[11px] text-[#0A85EA] hover:underline font-medium"
+                className="text-[11px] text-[#0A85EA] dark:text-[#38BDF8] hover:underline font-medium"
               >
                 {showCustomInput ? "Show Preset Models" : "Custom Model ID"}
               </button>
@@ -433,9 +433,9 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
                   value={config.model}
                   onChange={(e) => setConfig({ ...config, model: e.target.value })}
                   placeholder="e.g. gemini-2.5-flash or custom-model-id"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#EBEBEA] focus:border-[#2F3437] focus:outline-none text-xs text-[#2F3437] font-mono transition shadow-2xs"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-[#161F30] border border-[#EBEBEA] dark:border-[#334155] focus:border-[#2F3437] dark:focus:border-blue-400 focus:outline-none text-xs text-[#2F3437] dark:text-white font-mono transition shadow-2xs"
                 />
-                <p className="text-[11px] text-[#787774]">
+                <p className="text-[11px] text-[#787774] dark:text-[#94A3B8]">
                   Enter any model ID supported by your endpoint.
                 </p>
               </div>
@@ -446,11 +446,11 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
                 <button
                   type="button"
                   onClick={() => setModelDropdownOpen(!modelDropdownOpen)}
-                  className="w-full text-left p-3 rounded-xl bg-white hover:bg-[#F7F7F5] border border-[#EBEBEA] hover:border-[#D0D0CE] transition flex items-center justify-between gap-2 shadow-2xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#0075eb]/20"
+                  className="w-full text-left p-3 rounded-xl bg-white dark:bg-[#161F30] hover:bg-[#F7F7F5] dark:hover:bg-[#1E293B] border border-[#EBEBEA] dark:border-[#334155] hover:border-[#D0D0CE] dark:hover:border-[#475569] transition flex items-center justify-between gap-2 shadow-2xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#0075eb]/20"
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-semibold text-[#2F3437]">
+                      <span className="font-mono text-xs font-semibold text-[#2F3437] dark:text-white">
                         {config.model || "Select a model..."}
                       </span>
                       {(() => {
@@ -460,12 +460,12 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
                             <span
                               className={`text-[10px] font-semibold px-2 py-0.2 rounded-md border ${
                                 cur.recommended
-                                  ? "bg-[#EBF3FB] text-[#18569C] border-[#CDE1F8]"
+                                  ? "bg-[#EBF3FB] text-[#18569C] border-[#CDE1F8] dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800"
                                   : cur.tag.includes("Fast") || cur.tag.includes("Instant")
-                                  ? "bg-[#EDF6EE] text-[#1E5A2A] border-[#CBE7CE]"
+                                  ? "bg-[#EDF6EE] text-[#1E5A2A] border-[#CBE7CE] dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800"
                                   : cur.tag.includes("Reasoning") || cur.tag.includes("Frontier")
-                                  ? "bg-[#F6F3F9] text-[#57338C] border-[#DFD5F5]"
-                                  : "bg-[#FBF3DB] text-[#78510E] border-[#F4E2B6]"
+                                  ? "bg-[#F6F3F9] text-[#57338C] border-[#DFD5F5] dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800"
+                                  : "bg-[#FBF3DB] text-[#78510E] border-[#F4E2B6] dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800"
                               }`}
                             >
                               {cur.tag}
@@ -475,13 +475,13 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
                         return null;
                       })()}
                     </div>
-                    <p className="text-[11px] text-[#787774] truncate mt-0.5">
+                    <p className="text-[11px] text-[#787774] dark:text-[#94A3B8] truncate mt-0.5">
                       {availableModels.find((m) => m.id === config.model)?.description ||
                         "Click to view and choose from available models"}
                     </p>
                   </div>
                   <ChevronDown
-                    className={`w-4 h-4 text-[#787774] flex-shrink-0 transition-transform ${
+                    className={`w-4 h-4 text-[#787774] dark:text-[#94A3B8] flex-shrink-0 transition-transform ${
                       modelDropdownOpen ? "rotate-180" : ""
                     }`}
                   />
@@ -489,7 +489,7 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
 
                 {/* Populated Dropdown Menu */}
                 {modelDropdownOpen && (
-                  <div className="absolute left-0 top-full mt-1.5 w-full rounded-2xl bg-white border border-[#EBEBEA] shadow-2xl p-2 z-50 text-xs animate-fadeIn">
+                  <div className="absolute left-0 top-full mt-1.5 w-full rounded-2xl bg-white dark:bg-[#0E131F] border border-[#EBEBEA] dark:border-[#334155] shadow-2xl p-2 z-50 text-xs animate-fadeIn backdrop-blur-xl">
                     {/* Search inside dropdown */}
                     <div className="relative mb-2 px-1">
                       <input
@@ -497,14 +497,14 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
                         value={modelSearchQuery}
                         onChange={(e) => setModelSearchQuery(e.target.value)}
                         placeholder={`Search ${availableModels.length} models...`}
-                        className="w-full pl-8 pr-3 py-1.5 rounded-lg bg-[#F7F7F5] border border-[#EBEBEA] text-xs text-[#2F3437] placeholder-[#9B9A97] focus:outline-none focus:bg-white focus:ring-1 focus:ring-[#0075eb]"
+                        className="w-full pl-8 pr-3 py-1.5 rounded-lg bg-[#F7F7F5] dark:bg-[#161F30] border border-[#EBEBEA] dark:border-[#334155] text-xs text-[#2F3437] dark:text-white placeholder-[#9B9A97] dark:placeholder-[#64748B] focus:outline-none focus:bg-white dark:focus:bg-[#1E293B] focus:ring-1 focus:ring-[#0075eb]"
                         autoFocus
                       />
-                      <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-[#9B9A97] pointer-events-none" />
+                      <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-[#9B9A97] dark:text-[#64748B] pointer-events-none" />
                     </div>
 
                     {/* Populated Models List */}
-                    <div className="max-h-60 overflow-y-auto divide-y divide-[#F7F7F5] overscroll-contain">
+                    <div className="max-h-60 overflow-y-auto divide-y divide-[#F7F7F5] dark:divide-[#1E293B] overscroll-contain">
                       {(() => {
                         const filtered = availableModels.filter(
                           (m) =>
@@ -515,7 +515,7 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
 
                         if (filtered.length === 0) {
                           return (
-                            <div className="p-4 text-center text-xs text-[#787774]">
+                            <div className="p-4 text-center text-xs text-[#787774] dark:text-[#94A3B8]">
                               No models matching "{modelSearchQuery}"
                             </div>
                           );
@@ -534,37 +534,37 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
                               }}
                               className={`w-full text-left p-2.5 rounded-xl transition flex items-start justify-between gap-2.5 ${
                                 isSelected
-                                  ? "bg-[#F7F7F5] text-[#2F3437] font-semibold"
-                                  : "text-[#2F3437] hover:bg-[#FAF9F7]"
+                                  ? "bg-[#F7F7F5] dark:bg-[#1E293B] text-[#2F3437] dark:text-white font-semibold"
+                                  : "text-[#2F3437] dark:text-[#CBD5E1] hover:bg-[#FAF9F7] dark:hover:bg-[#161F30]"
                               }`}
                             >
                               <div className="min-w-0 flex-1">
                                 <div className="flex flex-wrap items-center gap-1.5">
-                                  <span className="font-mono text-xs font-semibold text-[#2F3437]">
+                                  <span className="font-mono text-xs font-semibold text-[#2F3437] dark:text-white">
                                     {m.id}
                                   </span>
                                   {m.tag && (
                                     <span
                                       className={`text-[9px] font-semibold px-1.5 py-0.2 rounded-md border ${
                                         m.recommended
-                                          ? "bg-[#EBF3FB] text-[#18569C] border-[#CDE1F8]"
+                                          ? "bg-[#EBF3FB] text-[#18569C] border-[#CDE1F8] dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800"
                                           : m.tag.includes("Fast") || m.tag.includes("Instant")
-                                          ? "bg-[#EDF6EE] text-[#1E5A2A] border-[#CBE7CE]"
+                                          ? "bg-[#EDF6EE] text-[#1E5A2A] border-[#CBE7CE] dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800"
                                           : m.tag.includes("Reasoning") || m.tag.includes("Frontier")
-                                          ? "bg-[#F6F3F9] text-[#57338C] border-[#DFD5F5]"
-                                          : "bg-[#FBF3DB] text-[#78510E] border-[#F4E2B6]"
+                                          ? "bg-[#F6F3F9] text-[#57338C] border-[#DFD5F5] dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800"
+                                          : "bg-[#FBF3DB] text-[#78510E] border-[#F4E2B6] dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800"
                                       }`}
                                     >
                                       {m.tag}
                                     </span>
                                   )}
                                 </div>
-                                <p className="text-[11px] text-[#787774] truncate mt-0.5">
+                                <p className="text-[11px] text-[#787774] dark:text-[#94A3B8] truncate mt-0.5">
                                   {m.description || m.name}
                                 </p>
                               </div>
                               {isSelected && (
-                                <Check className="w-4 h-4 text-[#0A85EA] flex-shrink-0 mt-1" />
+                                <Check className="w-4 h-4 text-[#0A85EA] dark:text-[#38BDF8] flex-shrink-0 mt-1" />
                               )}
                             </button>
                           );
@@ -582,16 +582,16 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
             <div
               className={`p-3.5 rounded-xl border text-xs animate-fade-in ${
                 testResult.success
-                  ? "bg-[#EDF6EE] border-[#CBE7CE] text-[#1E5A2A]"
-                  : "bg-[#FDF0EF] border-[#F7CECC] text-[#7C2D2B]"
+                  ? "bg-[#EDF6EE] dark:bg-emerald-950/40 border-[#CBE7CE] dark:border-emerald-800 text-[#1E5A2A] dark:text-emerald-300"
+                  : "bg-[#FDF0EF] dark:bg-rose-950/40 border-[#F7CECC] dark:border-rose-800 text-[#7C2D2B] dark:text-rose-300"
               }`}
             >
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2.5 min-w-0">
                   {testResult.success ? (
-                    <CheckCircle2 className="w-4 h-4 text-[#1E5A2A] flex-shrink-0" />
+                    <CheckCircle2 className="w-4 h-4 text-[#1E5A2A] dark:text-emerald-400 flex-shrink-0" />
                   ) : (
-                    <AlertCircle className="w-4 h-4 text-[#9B2C2C] flex-shrink-0" />
+                    <AlertCircle className="w-4 h-4 text-[#9B2C2C] dark:text-rose-400 flex-shrink-0" />
                   )}
                   <div className="min-w-0">
                     <span className="font-bold block sm:inline">
@@ -605,10 +605,10 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
 
                 <div className="flex-shrink-0">
                   <span
-                    className={`font-mono text-[11px] px-2 py-0.5 rounded-md border font-bold flex items-center gap-1 bg-white ${
+                    className={`font-mono text-[11px] px-2 py-0.5 rounded-md border font-bold flex items-center gap-1 bg-white dark:bg-[#161F30] ${
                       testResult.success
-                        ? "text-[#1E5A2A] border-[#CBE7CE]"
-                        : "text-[#7C2D2B] border-[#F7CECC]"
+                        ? "text-[#1E5A2A] dark:text-emerald-300 border-[#CBE7CE] dark:border-emerald-800"
+                        : "text-[#7C2D2B] dark:text-rose-300 border-[#F7CECC] dark:border-rose-800"
                     }`}
                   >
                     <Zap className="w-3 h-3" />
@@ -618,7 +618,7 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
               </div>
 
               {!testResult.success && testResult.error && (
-                <div className="mt-2.5 pt-2 border-t border-[#F7CECC] text-[11px] font-mono leading-relaxed break-words text-[#7C2D2B]">
+                <div className="mt-2.5 pt-2 border-t border-[#F7CECC] dark:border-rose-800 text-[11px] font-mono leading-relaxed break-words text-[#7C2D2B] dark:text-rose-300">
                   {testResult.error}
                 </div>
               )}
@@ -626,28 +626,28 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
           )}
 
           {/* Privacy Footnote */}
-          <div className="p-2.5 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] flex items-center gap-2 text-[11px] text-[#787774]">
-            <ShieldCheck className="w-3.5 h-3.5 text-[#1E5A2A] flex-shrink-0" />
+          <div className="p-2.5 rounded-xl bg-[#F7F7F5] dark:bg-[#161F30]/60 border border-[#EBEBEA] dark:border-[#334155] flex items-center gap-2 text-[11px] text-[#787774] dark:text-[#94A3B8]">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#1E5A2A] dark:text-emerald-400 flex-shrink-0" />
             <span>Zero data retention &bull; Processed strictly in memory &bull; Never trained on.</span>
           </div>
 
           {/* Bottom Action Footer */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4 border-t border-[#EBEBEA]">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4 border-t border-[#EBEBEA] dark:border-[#334155]">
             {/* Check Connection Button */}
             <button
               type="button"
               onClick={handleCheckConnection}
               disabled={testing}
-              className="flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg bg-white hover:bg-[#F7F7F5] disabled:opacity-50 text-[#2F3437] font-medium text-xs border border-[#EBEBEA] shadow-2xs transition"
+              className="flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg bg-white dark:bg-[#161F30] hover:bg-[#F7F7F5] dark:hover:bg-[#1E293B] disabled:opacity-50 text-[#2F3437] dark:text-white font-medium text-xs border border-[#EBEBEA] dark:border-[#334155] shadow-2xs transition"
             >
               {testing ? (
                 <>
-                  <RefreshCw className="w-3.5 h-3.5 animate-spin text-[#0A85EA]" />
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin text-[#0A85EA] dark:text-[#38BDF8]" />
                   <span>Pinging API &amp; Fetching Models...</span>
                 </>
               ) : (
                 <>
-                  <Activity className="w-3.5 h-3.5 text-[#0A85EA]" />
+                  <Activity className="w-3.5 h-3.5 text-[#0A85EA] dark:text-[#38BDF8]" />
                   <span>Check Connection &amp; Refresh Models</span>
                 </>
               )}
@@ -658,14 +658,14 @@ export function ProviderSettingsModal({ isOpen, onClose, onSave }: Props) {
               <button
                 type="button"
                 onClick={onClose}
-                className="px-3.5 py-2 text-xs text-[#787774] hover:text-[#2F3437] rounded-lg hover:bg-[#F7F7F5] transition font-medium"
+                className="px-3.5 py-2 text-xs text-[#787774] dark:text-[#94A3B8] hover:text-[#2F3437] dark:hover:text-white rounded-lg hover:bg-[#F7F7F5] dark:hover:bg-[#161F30] transition font-medium"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleSave}
-                className="px-4 py-2 rounded-lg bg-[#000000] hover:bg-[#2F3437] text-white font-medium text-xs transition shadow-xs"
+                className="px-4 py-2 rounded-lg bg-[#000000] dark:bg-white hover:bg-[#2F3437] dark:hover:bg-slate-200 text-white dark:text-black font-medium text-xs transition shadow-xs"
               >
                 {savedSuccess ? "Saved!" : "Save & Activate"}
               </button>

@@ -280,8 +280,8 @@ export default function JournalCombobox({
           aria-expanded={isOpen}
           className={`w-full text-xs pl-8 pr-16 py-2 rounded-lg transition font-normal ${
             hasError
-              ? "bg-[#FDF0EF] border border-[#F7CECC] text-[#7C2D2B] placeholder-[#A05E5C] focus:outline-none ring-1 ring-[#F7CECC]"
-              : "bg-white border border-[#EBEBEA] text-[#2F3437] placeholder-[#888888] hover:border-[#CCCCCC] focus:border-[#0075eb] focus:outline-none focus:ring-2 focus:ring-[#0075eb]/20 shadow-sm"
+              ? "bg-[#FDF0EF] dark:bg-rose-950/30 border border-[#F7CECC] dark:border-rose-900 text-[#7C2D2B] dark:text-rose-300 placeholder-[#A05E5C] focus:outline-none ring-1 ring-[#F7CECC]"
+              : "bg-white dark:bg-[#161F30] border border-[#EBEBEA] dark:border-[#334155] text-[#2F3437] dark:text-neutral-100 placeholder-[#888888] dark:placeholder-neutral-500 hover:border-[#CCCCCC] dark:hover:border-neutral-500 focus:border-[#0075eb] focus:outline-none focus:ring-2 focus:ring-[#0075eb]/20 shadow-sm"
           }`}
         />
         
@@ -294,7 +294,7 @@ export default function JournalCombobox({
             <button
               type="button"
               onClick={handleClear}
-              className="p-1 rounded hover:bg-[#F0F0EF] text-[#9B9A97] hover:text-[#2F3437] transition"
+              className="p-1 rounded hover:bg-[#F0F0EF] dark:hover:bg-white/10 text-[#9B9A97] hover:text-[#2F3437] dark:hover:text-white transition"
               title="Clear selection"
             >
               <X className="w-3 h-3" />
@@ -306,7 +306,7 @@ export default function JournalCombobox({
               setIsOpen(!isOpen);
               if (!isOpen) inputRef.current?.focus();
             }}
-            className="p-1 rounded hover:bg-[#F0F0EF] text-[#9B9A97] hover:text-[#2F3437] transition"
+            className="p-1 rounded hover:bg-[#F0F0EF] dark:hover:bg-white/10 text-[#9B9A97] hover:text-[#2F3437] dark:hover:text-white transition"
             title={isOpen ? "Close dropdown" : "Show journal list"}
           >
             <ChevronDown className={`w-3 h-3 transition-transform ${isOpen ? "rotate-180" : ""}`} />
@@ -316,17 +316,17 @@ export default function JournalCombobox({
 
       {/* Success Notification for newly added journal */}
       {addedToast && (
-        <div className="absolute top-full left-0 mt-1.5 z-40 bg-[#EBF8F2] border border-[#BDEBD6] text-[#0F6B43] text-[11px] px-2.5 py-1 rounded-md shadow-sm flex items-center gap-1.5 animate-fadeIn">
-          <Check className="w-3 h-3 text-[#0F6B43]" />
+        <div className="absolute top-full left-0 mt-1.5 z-40 bg-[#EBF8F2] dark:bg-emerald-950/40 border border-[#BDEBD6] dark:border-emerald-800 text-[#0F6B43] dark:text-emerald-300 text-[11px] px-2.5 py-1 rounded-md shadow-sm flex items-center gap-1.5 animate-fadeIn">
+          <Check className="w-3 h-3 text-[#0F6B43] dark:text-emerald-400" />
           <span>Added <strong>"{addedToast}"</strong> to your journal list!</span>
         </div>
       )}
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1.5 w-full bg-white border border-[#EBEBEA] rounded-xl shadow-xl z-50 overflow-hidden text-xs divide-y divide-[#F7F7F5] animate-fadeIn">
+        <div className="absolute top-full left-0 mt-1.5 w-full bg-white dark:bg-[#161F30] border border-[#EBEBEA] dark:border-[#334155] rounded-xl shadow-xl z-50 overflow-hidden text-xs divide-y divide-[#F7F7F5] dark:divide-[#1F2937] animate-fadeIn">
           {/* Header Info Bar */}
-          <div className="px-3 py-1.5 bg-[#FAF9F7] text-[10px] text-[#787774] flex items-center justify-between font-mono">
+          <div className="px-3 py-1.5 bg-[#FAF9F7] dark:bg-[#0F141F] text-[10px] text-[#787774] dark:text-neutral-400 flex items-center justify-between font-mono">
             <span className="flex items-center gap-1">
               <Search className="w-2.5 h-2.5 text-[#9B9A97]" />
               <span>{allJournals.length.toLocaleString()} catalogued journals</span>
@@ -400,10 +400,10 @@ export default function JournalCombobox({
                     onClick={() => handleSelectJournal(journal)}
                     className={`px-3 py-2 cursor-pointer flex items-center justify-between transition ${
                       isSelected
-                        ? "bg-[#F7F7F5] text-[#2F3437] font-semibold"
+                        ? "bg-[#F7F7F5] dark:bg-[#1E293B] text-[#2F3437] dark:text-white font-semibold"
                         : isItemActive
-                        ? "bg-[#FAFAFA] text-[#2F3437]"
-                        : "hover:bg-[#F9F9F8] text-[#37352F]"
+                        ? "bg-[#FAFAFA] dark:bg-[#1E293B]/60 text-[#2F3437] dark:text-white"
+                        : "hover:bg-[#F9F9F8] dark:hover:bg-[#1E293B]/40 text-[#37352F] dark:text-neutral-200"
                     }`}
                   >
                     <div className="flex items-center gap-2 min-w-0 pr-2">

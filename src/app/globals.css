@@ -331,12 +331,70 @@ body {
   box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.12), 0 8px 24px -4px rgba(0, 0, 0, 0.4);
 }
 
-/* High-Contrast Alabaster Paper Sheets */
+/* High-Contrast Alabaster Paper Sheets / Adaptive Glass Sheets */
 .aura-paper-sheet {
   background-color: #FFFFFF;
   color: #111827;
   border: 1px solid #E5E7EB;
   box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.dark .aura-paper-sheet {
+  background-color: rgba(14, 19, 31, 0.85);
+  color: #F8FAFC;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+}
+
+.dark .aura-paper-sheet .bg-\[\#F7F7F5\] {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+.dark .aura-paper-sheet .bg-white {
+  background-color: rgba(22, 30, 48, 0.7) !important;
+}
+
+.dark .aura-paper-sheet .border-\[\#EBEBEA\],
+.dark .aura-paper-sheet .border-\[\#E5E5E5\],
+.dark .aura-paper-sheet .border-\[\#DDDDDD\],
+.dark .aura-paper-sheet .border-\[\#D0D5DD\],
+.dark .aura-paper-sheet .border-\[\#d0d0d0\],
+.dark .aura-paper-sheet .border-\[\#eaeaea\] {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.dark .aura-paper-sheet .divide-\[\#eaeaea\],
+.dark .aura-paper-sheet .divide-\[\#EBEBEA\],
+.dark .aura-paper-sheet .divide-\[\#F7F7F5\] > * + * {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.dark .aura-paper-sheet .text-\[\#2F3437\],
+.dark .aura-paper-sheet .text-\[\#0F172A\],
+.dark .aura-paper-sheet .text-\[\#37352F\],
+.dark .aura-paper-sheet .text-\[\#111827\] {
+  color: #F8FAFC !important;
+}
+
+.dark .aura-paper-sheet .text-\[\#787774\],
+.dark .aura-paper-sheet .text-\[\#64748B\],
+.dark .aura-paper-sheet .text-\[\#9B9A97\],
+.dark .aura-paper-sheet .text-\[\#888888\] {
+  color: #94A3B8 !important;
+}
+
+.dark .aura-paper-sheet input,
+.dark .aura-paper-sheet textarea {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  color: #F8FAFC !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark .aura-paper-sheet input:focus,
+.dark .aura-paper-sheet textarea:focus {
+  background-color: rgba(22, 30, 48, 0.9) !important;
 }
 
 /* ==========================================================================
