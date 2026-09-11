@@ -164,7 +164,20 @@ CRITICAL ANTI-HALLUCINATION & STRICT GROUNDING MANDATE:
 7. TARGET JOURNALS: Recommend 3 genuine, authentic peer-reviewed journals strictly in the manuscript's specific domain (Reach, Realistic, Fallback). Provide realistic impact factors and authentic scope rationales based on this paper's findings.
 8. Return your output ONLY as valid JSON matching the requested schema. CRITICAL: Do NOT include unescaped double quotes inside string values (always escape internal quotes as \"). Do NOT include trailing commas before } or ].`;
 
-  // Deep Document Payload (Injects up to 60,000+ characters of rich context)
+  // Dynamically budget manuscript body context based on provider context limits
+  const provider = activeConfig?.provider || "gemini";
+  let maxBodyChars = 45000;
+  if (provider === "gemini") {
+    maxBodyChars = 65000; // Gemini 1.5/2.0 handles 1M+ tokens
+  } else if (provider === "anthropic" || provider === "openai") {
+    maxBodyChars = 55000; // Claude 3.5 & GPT-4o handle 128k-200k tokens
+  } else if (provider === "groq") {
+    maxBodyChars = 32000; // Groq TPM limits
+  } else if (provider === "ollama") {
+    maxBodyChars = 22000; // Ollama local 8k-16k standard context windows
+  }
+
+  // Deep Document Payload (Injects rich context tailored to model capacity)
   const userPrompt = `Perform a comprehensive pre-submission diagnostic on the following submission:
 
 [METADATA & DOCUMENT CLASSIFICATION]
@@ -198,7 +211,7 @@ ${manuscript.sections.discussion || "(Refer to manuscript body excerpt below)"}
 ${manuscript.sections.conclusion || ""}
 
 [COMPREHENSIVE MANUSCRIPT BODY EXCERPT]
-${manuscript.rawText.slice(0, 45000)}
+${manuscript.rawText.slice(0, maxBodyChars)}
 
 [SAMPLE BIBLIOGRAPHY REFERENCES (${manuscript.references.length} total)]
 ${manuscript.references.slice(0, 25).join("\n")}

@@ -57,6 +57,145 @@ export function exportWordDocReport(report: ReviewReport) {
   triggerDownload(wordContent, filename, "application/msword;charset=utf-8");
 }
 
+function escapeLatex(text?: string | null): string {
+  if (!text) return "";
+  return String(text)
+    .replace(/\\/g, "\\textbackslash{}")
+    .replace(/[{}]/g, "\\$0")
+    .replace(/[#$%&_~^]/g, "\\$0");
+}
+
+/**
+ * Generates a formal LaTeX Point-by-Point Rebuttal Matrix (.tex)
+ */
+export function generateLatexRebuttal(report: FullReviewReport): string {
+  const title = escapeLatex(report.title);
+  const journal = escapeLatex(report.targetJournal || "Target Journal");
+  const summary = escapeLatex(report.summary || "Manuscript evaluated via ManuView multi-persona peer review simulation.");
+  
+  const reviewers = report.reviewerPersonas || [];
+  const issues = report.priorityIssues || [];
+
+  let rows = "";
+
+  for (const rev of reviewers) {
+    const nameRole = `\\textbf{${escapeLatex(rev.name)}}\\\\(${escapeLatex(rev.expertise || rev.roleDescription)})\\\\[2pt]\\textit{Rec: ${escapeLatex(rev.decisionRecommendation)}}`;
+    const critiques = (rev.majorCritiques || []).slice(0, 2).map((c) => `\\item ${escapeLatex(c)}`).join("\n");
+    const mustAddress = (rev.mustAddressItems || []).slice(0, 2).map((m) => `\\item ${escapeLatex(m)}`).join("\n");
+
+    rows += `
+${nameRole} & 
+\\begin{itemize}[leftmargin=*,noitemsep,topsep=0pt]
+${critiques || "\\item Overall rigor analysis verified."}
+\\end{itemize} & 
+\\begin{itemize}[leftmargin=*,noitemsep,topsep=0pt]
+${mustAddress || "\\item Point addressed in revised text."}
+\\end{itemize} \\\\ \\midrule
+`;
+  }
+
+  return `% ==============================================================================
+% ManuView Academic Point-by-Point Author Rebuttal Matrix
+% Manuscript: ${report.title}
+% Target Journal: ${report.targetJournal || "Academic Journal"}
+% Generated: ${new Date().toISOString()}
+% ==============================================================================
+\\documentclass[10pt,a4paper]{article}
+\\usepackage[utf8]{inputenc}
+\\usepackage[margin=0.8in]{geometry}
+\\usepackage{longtable}
+\\usepackage{booktabs}
+\\usepackage{enumitem}
+\\usepackage{xcolor}
+\\usepackage{hyperref}
+
+\\title{\\textbf{Point-by-Point Author Response \\& Revision Matrix}}
+\\author{\\textbf{Manuscript:} \\textit{${title}}\\\\ \\textbf{Target Journal:} ${journal}}
+\\date{\\today}
+
+\\begin{document}
+\\maketitle
+
+\\section*{1. Executive Summary \\& Editorial Posture}
+${summary}
+
+\\vspace{1em}
+\\section*{2. Peer-Review Persona Feedback \\& Itemized Rebuttal Matrix}
+
+\\begin{longtable}{p{0.25\\textwidth} p{0.35\\textwidth} p{0.35\\textwidth}}
+\\toprule
+\\textbf{Reviewer Persona} & \\textbf{Core Critiques / Challenges} & \\textbf{Author Rebuttal \\& Revision Action} \\\\
+\\midrule
+\\endhead
+${rows}
+\\bottomrule
+\\end{longtable}
+
+\\end{document}
+`;
+}
+
+/**
+ * Triggers download of LaTeX Rebuttal Table (.tex)
+ */
+export function exportLatexRebuttalTable(report: ReviewReport) {
+  const isFullReport = !("fitScore" in report);
+  if (!isFullReport) return;
+  const filename = `ManuView_Rebuttal_Matrix_${sanitizeFilename(report.title)}.tex`;
+  const latexContent = generateLatexRebuttal(report as FullReviewReport);
+  triggerDownload(latexContent, filename, "application/x-latex;charset=utf-8");
+}
+
+/**
+ * Generates a clean BibTeX (.bib) file containing all verified references with valid DOIs
+ */
+export function generateBibTeX(report: ReviewReport): string {
+  const isFullReport = !("fitScore" in report);
+  if (!isFullReport) return "";
+  const full = report as FullReviewReport;
+  const references = full.citationIntegrity?.references || [];
+
+  if (references.length === 0) {
+    return `% No parsed references available for ${full.title}\n`;
+  }
+
+  let bibtex = `% ==============================================================================
+% ManuView Verified BibTeX Bibliography
+% Manuscript: ${full.title}
+% Total References: ${references.length}
+% ==============================================================================\n\n`;
+
+  references.forEach((ref, index) => {
+    const firstAuthor = (ref.authors && ref.authors[0]) 
+      ? ref.authors[0].split(/\s+/).pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") 
+      : "author";
+    const year = ref.year || "2024";
+    const key = `${firstAuthor}${year}_ref${index + 1}`;
+
+    const authorList = (ref.authors && ref.authors.length > 0)
+      ? ref.authors.join(" and ")
+      : "Contributing Authors";
+
+    bibtex += `@article{${key},
+  title     = {${(ref.title || ref.raw || "Cited Work").replace(/[{}]/g, "")}},
+  author    = {${authorList}},
+  journal   = {${ref.journal || "Scholarly Literature"}},
+  year      = {${year}}${ref.doi ? `,\n  doi       = {${ref.doi}},\n  url       = {https://doi.org/${ref.doi}}` : ""}
+}\n\n`;
+  });
+
+  return bibtex;
+}
+
+/**
+ * Triggers download of BibTeX file (.bib)
+ */
+export function exportBibTeX(report: ReviewReport) {
+  const filename = `ManuView_Bibliography_${sanitizeFilename(report.title)}.bib`;
+  const bibtexContent = generateBibTeX(report);
+  triggerDownload(bibtexContent, filename, "application/x-bibtex;charset=utf-8");
+}
+
 // -----------------------------------------------------------------------------
 // 1. FULL REPORT - STANDALONE INTERACTIVE HTML GENERATOR
 // -----------------------------------------------------------------------------

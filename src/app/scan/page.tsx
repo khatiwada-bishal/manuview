@@ -33,13 +33,15 @@ import {
   ChevronDown,
   Download,
   Printer,
-  Globe
+  Globe,
+  FileCode,
+  Bookmark
 } from "lucide-react";
 import { FullReviewReport, BriefJournalFitReport, ReviewReport, PriorityIssue, ReviewerPersonaFeedback, ProviderConfig, AvailableModel } from "@/lib/types";
 import { ProviderSettingsModal } from "@/components/ProviderSettingsModal";
 import JournalCombobox from "@/components/JournalCombobox";
 import { BriefJournalFitView, BriefJournalFitPrintView } from "@/components/BriefJournalFitView";
-import { exportInteractiveHtmlReport, exportWordDocReport } from "@/lib/export-generator";
+import { exportInteractiveHtmlReport, exportWordDocReport, exportLatexRebuttalTable, exportBibTeX } from "@/lib/export-generator";
 
 // Sample preprint for instant one-click testing
 const SAMPLE_PREPRINT_TITLE = "Single-cell transcriptional profiling of DLL3 activation in neuroendocrine lung carcinoma";
@@ -249,6 +251,16 @@ export default function ScanPage() {
   const handleExportWord = () => {
     if (!report) return;
     exportWordDocReport(report);
+  };
+
+  const handleExportLatex = () => {
+    if (!report) return;
+    exportLatexRebuttalTable(report);
+  };
+
+  const handleExportBibTeX = () => {
+    if (!report) return;
+    exportBibTeX(report);
   };
 
   const handleSelectModel = (newModel: string) => {
@@ -872,6 +884,28 @@ export default function ScanPage() {
                 >
                   <FileText className="w-3.5 h-3.5 text-[#18569C]" />
                   <span>Word (.docx)</span>
+                </button>
+
+                {report.isEligibleForReview !== false && (
+                  <button
+                    type="button"
+                    onClick={handleExportLatex}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-[#2F3437] hover:bg-[#F7F7F5] border border-[#D0D5DD] transition shadow-2xs cursor-pointer"
+                    title="Export LaTeX Point-by-Point Author Rebuttal Matrix (.tex)"
+                  >
+                    <FileCode className="w-3.5 h-3.5 text-purple-600" />
+                    <span>LaTeX Rebuttal</span>
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={handleExportBibTeX}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-[#2F3437] hover:bg-[#F7F7F5] border border-[#D0D5DD] transition shadow-2xs cursor-pointer"
+                  title="Export Audited Citations as BibTeX (.bib)"
+                >
+                  <Bookmark className="w-3.5 h-3.5 text-amber-600" />
+                  <span>BibTeX (.bib)</span>
                 </button>
 
                 <button
