@@ -562,18 +562,18 @@ export default function ScanPage() {
 
               {scanPingResult && (
                 <span
-                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-mono border ${
+                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-mono font-medium border ${
                     scanPingResult.success
                       ? "bg-[#EDF6EE] text-[#1E5A2A] border-[#CBE7CE]"
                       : "bg-[#FDF0EF] text-[#7C2D2B] border-[#F7CECC]"
                   }`}
                   title={scanPingResult.error || scanPingResult.message}
                 >
-                  <Zap className="w-3 h-3" />
+                  <Zap className="w-3 h-3 text-amber-500 fill-amber-500 shrink-0" />
                   <span>
                     {scanPingResult.success
-                      ? `⚡ ${scanPingResult.latencyMs}ms (${scanPingResult.message})`
-                      : `Failed: ${scanPingResult.error || scanPingResult.message}`}
+                      ? `${scanPingResult.latencyMs}ms`
+                      : `Failed`}
                   </span>
                 </span>
               )}
