@@ -39,6 +39,7 @@ import {
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'personas' | 'dimensions' | 'issues' | 'journals'>('overview');
+  const [heroViewMode, setHeroViewMode] = useState<'interactive' | 'native'>('interactive');
   return (
     <div className="flex flex-col min-h-screen text-neutral-900 dark:text-white">
       {/* ------------------------------------------------------------- */}
@@ -88,9 +89,171 @@ export default function HomePage() {
           </div>
 
           {/* --------------------------------------------------------- */}
+          {/* Scientific Review Trio Interactive Ribbon                 */}
+          {/* --------------------------------------------------------- */}
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mb-12 select-none">
+            {/* Character 1: The Author Drafter */}
+            <button
+              type="button"
+              onClick={() => { setActiveTab('overview'); setHeroViewMode('interactive'); }}
+              className={`group relative flex items-center gap-3 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-2xl transition-all duration-300 text-left border cursor-pointer ${
+                activeTab === 'overview' && heroViewMode === 'interactive'
+                  ? "liquid-glass-card bg-white/95 dark:bg-white/10 border-blue-500/50 dark:border-blue-400/50 shadow-md ring-2 ring-blue-500/20"
+                  : "liquid-glass-card hover:bg-white/70 dark:hover:bg-white/[0.07] border-black/5 dark:border-white/10"
+              }`}
+            >
+              <div className="w-11 h-11 rounded-xl bg-blue-500/10 flex items-center justify-center overflow-hidden shrink-0 border border-blue-500/20">
+                <img
+                  src="/illustrations/researcher-typing-laptop.png"
+                  alt="Author Drafter"
+                  className="w-9 h-9 object-contain dark:invert dark:brightness-150 transition-transform duration-300 group-hover:scale-110"
+                />
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-bold text-neutral-900 dark:text-white">1. Author Drafter</span>
+                  <span className="text-[9px] px-1.5 py-0.2 rounded-md font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">Self-Audit</span>
+                </div>
+                <p className="text-[11px] text-neutral-500 dark:text-neutral-400 mt-0.5">Pre-submission diagnostics</p>
+              </div>
+            </button>
+
+            {/* Character 2: The Co-Authors / Referees */}
+            <button
+              type="button"
+              onClick={() => { setActiveTab('personas'); setHeroViewMode('interactive'); }}
+              className={`group relative flex items-center gap-3 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-2xl transition-all duration-300 text-left border cursor-pointer ${
+                activeTab === 'personas' && heroViewMode === 'interactive'
+                  ? "liquid-glass-card bg-white/95 dark:bg-white/10 border-purple-500/50 dark:border-purple-400/50 shadow-md ring-2 ring-purple-500/20"
+                  : "liquid-glass-card hover:bg-white/70 dark:hover:bg-white/[0.07] border-black/5 dark:border-white/10"
+              }`}
+            >
+              <div className="w-11 h-11 rounded-xl bg-purple-500/10 flex items-center justify-center overflow-hidden shrink-0 border border-purple-500/20">
+                <img
+                  src="/illustrations/researchers-collaborating.png"
+                  alt="Simulated Referees"
+                  className="w-9 h-9 object-contain dark:invert dark:brightness-150 transition-transform duration-300 group-hover:scale-110"
+                />
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-bold text-neutral-900 dark:text-white">2. Referee Simulation</span>
+                  <span className="text-[9px] px-1.5 py-0.2 rounded-md font-semibold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">5 Personas</span>
+                </div>
+                <p className="text-[11px] text-neutral-500 dark:text-neutral-400 mt-0.5">Stress-test controls &amp; claims</p>
+              </div>
+            </button>
+
+            {/* Character 3: The Journal Editor */}
+            <button
+              type="button"
+              onClick={() => { setActiveTab('journals'); setHeroViewMode('interactive'); }}
+              className={`group relative flex items-center gap-3 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-2xl transition-all duration-300 text-left border cursor-pointer ${
+                activeTab === 'journals' && heroViewMode === 'interactive'
+                  ? "liquid-glass-card bg-white/95 dark:bg-white/10 border-emerald-500/50 dark:border-emerald-400/50 shadow-md ring-2 ring-emerald-500/20"
+                  : "liquid-glass-card hover:bg-white/70 dark:hover:bg-white/[0.07] border-black/5 dark:border-white/10"
+              }`}
+            >
+              <div className="w-11 h-11 rounded-xl bg-emerald-500/10 flex items-center justify-center overflow-hidden shrink-0 border border-emerald-500/20">
+                <img
+                  src="/illustrations/researcher-reading-journal.png"
+                  alt="Editorial Decision"
+                  className="w-9 h-9 object-contain dark:invert dark:brightness-150 transition-transform duration-300 group-hover:scale-110"
+                />
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-bold text-neutral-900 dark:text-white">3. Editorial Decision</span>
+                  <span className="text-[9px] px-1.5 py-0.2 rounded-md font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">Acceptance</span>
+                </div>
+                <p className="text-[11px] text-neutral-500 dark:text-neutral-400 mt-0.5">Journal fit &amp; zero retractions</p>
+              </div>
+            </button>
+          </div>
+
+          {/* --------------------------------------------------------- */}
           {/* Hero macOS Desktop App Mockup (100% Parity with Desktop)  */}
           {/* --------------------------------------------------------- */}
           <div className="relative mx-auto max-w-5xl text-left">
+
+            {/* Left Flanking Character: Drafter with floating thought bubble */}
+            <div className="hidden xl:block absolute -left-44 top-32 w-40 z-30 pointer-events-auto">
+              <div 
+                className="relative group cursor-pointer" 
+                onClick={() => { setActiveTab('overview'); setHeroViewMode('interactive'); }}
+                title="Click to view manuscript self-audit report"
+              >
+                {/* Speech Bubble */}
+                <div className="mb-2 p-3 rounded-2xl liquid-glass-card border border-black/10 dark:border-white/15 text-[11px] text-neutral-800 dark:text-neutral-200 shadow-xl transition-all duration-300 group-hover:translate-y-[-2px]">
+                  <div className="flex items-center gap-1 font-bold text-blue-600 dark:text-blue-400 text-[10px] uppercase tracking-wider mb-0.5">
+                    <Sparkles className="w-3 h-3" />
+                    <span>Author Drafter</span>
+                  </div>
+                  &ldquo;Auditing sample power &amp; controls before our referees see it.&rdquo;
+                </div>
+                {/* Character Image */}
+                <div className="relative p-2 rounded-2xl liquid-glass-card/60 backdrop-blur-sm">
+                  <img
+                    src="/illustrations/researcher-typing-laptop.png"
+                    alt="Author Drafter"
+                    className="w-full h-auto drop-shadow-md dark:invert dark:brightness-150 transition-transform duration-300 group-hover:scale-105"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Top-Right Flanking Character: Collaborators / Referee Reviewers */}
+            <div className="hidden xl:block absolute -right-44 -top-8 w-44 z-30 pointer-events-auto">
+              <div 
+                className="relative group cursor-pointer" 
+                onClick={() => { setActiveTab('personas'); setHeroViewMode('interactive'); }}
+                title="Click to view 5-persona simulated reviews"
+              >
+                {/* Speech Bubble */}
+                <div className="mb-2 p-3 rounded-2xl liquid-glass-card border border-black/10 dark:border-white/15 text-[11px] text-neutral-800 dark:text-neutral-200 shadow-xl transition-all duration-300 group-hover:translate-y-[-2px]">
+                  <div className="flex items-center gap-1 font-bold text-purple-600 dark:text-purple-400 text-[10px] uppercase tracking-wider mb-0.5">
+                    <Users className="w-3 h-3" />
+                    <span>Referees Simulated</span>
+                  </div>
+                  &ldquo;Devil&apos;s advocate caught a missing control in Fig 3B!&rdquo;
+                </div>
+                {/* Character Image */}
+                <div className="relative p-2 rounded-2xl liquid-glass-card/60 backdrop-blur-sm">
+                  <img
+                    src="/illustrations/researchers-collaborating.png"
+                    alt="Peer Reviewers"
+                    className="w-full h-auto drop-shadow-md dark:invert dark:brightness-150 transition-transform duration-300 group-hover:scale-105"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom-Right Flanking Character: Journal Reader / Editor with Paper */}
+            <div className="hidden xl:block absolute -right-44 bottom-14 w-40 z-30 pointer-events-auto">
+              <div 
+                className="relative group cursor-pointer" 
+                onClick={() => { setActiveTab('journals'); setHeroViewMode('interactive'); }}
+                title="Click to view target journal fit recommendations"
+              >
+                {/* Character Image */}
+                <div className="relative p-2 rounded-2xl liquid-glass-card/60 backdrop-blur-sm mb-2">
+                  <img
+                    src="/illustrations/researcher-reading-journal.png"
+                    alt="Journal Editor"
+                    className="w-full h-auto drop-shadow-md dark:invert dark:brightness-150 transition-transform duration-300 group-hover:scale-105"
+                  />
+                </div>
+                {/* Speech Bubble */}
+                <div className="p-3 rounded-2xl liquid-glass-card border border-black/10 dark:border-white/15 text-[11px] text-neutral-800 dark:text-neutral-200 shadow-xl transition-all duration-300 group-hover:translate-y-[-2px]">
+                  <div className="flex items-center gap-1 font-bold text-emerald-600 dark:text-emerald-400 text-[10px] uppercase tracking-wider mb-0.5">
+                    <BookOpen className="w-3 h-3" />
+                    <span>Accepted Article</span>
+                  </div>
+                  &ldquo;Immediate acceptance. Cleanest bibliography in months.&rdquo;
+                </div>
+              </div>
+            </div>
+
             {/* Main Window Frame */}
             <div className="rounded-2xl sm:rounded-3xl border border-black/10 dark:border-white/10 liquid-glass-canvas shadow-[0_30px_90px_-15px_rgba(0,0,0,0.35),0_0_0_1px_rgba(255,255,255,0.4)] dark:shadow-[0_30px_90px_-15px_rgba(0,0,0,0.85),0_0_0_1px_rgba(255,255,255,0.08)] overflow-hidden">
               
@@ -147,14 +310,34 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                {/* Right Top Bar Controls */}
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <div className="p-1 rounded-md text-neutral-400 dark:text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 transition cursor-pointer">
-                    <ShieldCheck className="w-3.5 h-3.5" />
+                {/* Right Top Bar Controls: View Mode Switcher + Theme Toggle */}
+                <div className="flex items-center gap-2 shrink-0">
+                  {/* View Mode Toggle: Interactive vs Native macOS Screenshot */}
+                  <div className="flex items-center p-0.5 rounded-lg bg-black/5 dark:bg-white/10 border border-black/5 dark:border-white/10 text-[10px] font-semibold">
+                    <button
+                      type="button"
+                      onClick={() => setHeroViewMode('interactive')}
+                      className={`px-2 py-0.5 rounded-md transition cursor-pointer ${
+                        heroViewMode === 'interactive'
+                          ? "bg-white dark:bg-[#1E2536] text-neutral-900 dark:text-white shadow-2xs"
+                          : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
+                      }`}
+                    >
+                      Interactive
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setHeroViewMode('native')}
+                      className={`px-2 py-0.5 rounded-md transition cursor-pointer ${
+                        heroViewMode === 'native'
+                          ? "bg-white dark:bg-[#1E2536] text-neutral-900 dark:text-white shadow-2xs"
+                          : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
+                      }`}
+                    >
+                      Native App
+                    </button>
                   </div>
-                  <div className="p-1 rounded-md text-neutral-400 dark:text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 transition cursor-pointer">
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </div>
+
                   <div className="w-7 h-7 rounded-lg liquid-glass-btn-secondary flex items-center justify-center text-neutral-600 dark:text-amber-400 cursor-pointer">
                     <Moon className="w-3.5 h-3.5 block dark:hidden" />
                     <Sun className="w-3.5 h-3.5 hidden dark:block" />
@@ -162,8 +345,9 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* 2. Window Body: Sidebar + Main Content Dashboard */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[580px]">
+              {/* 2. Window Body: Sidebar + Main Content Dashboard OR Native App Preview */}
+              {heroViewMode === 'interactive' ? (
+                <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[580px]">
                 
                 {/* Left Desktop Sidebar */}
                 <div className="hidden lg:flex lg:col-span-4 xl:col-span-3 border-r border-black/5 dark:border-white/10 liquid-glass-sidebar p-3.5 text-xs flex-col justify-between space-y-4">
@@ -643,6 +827,25 @@ export default function HomePage() {
 
                 </div>
               </div>
+              ) : (
+                /* Native Desktop App Preview */
+                <div className="p-4 sm:p-7 bg-slate-950/5 dark:bg-black/40 flex flex-col items-center justify-center min-h-[580px] animate-fade-in">
+                  <div className="relative w-full rounded-2xl overflow-hidden shadow-2xl border border-black/10 dark:border-white/10 group">
+                    <img
+                      src="/illustrations/desktop-app-preview.png"
+                      alt="ManuView Native Desktop App Experience"
+                      className="w-full h-auto object-cover"
+                    />
+                    <div className="absolute inset-x-0 bottom-0 py-3 px-5 bg-gradient-to-t from-black/85 via-black/40 to-transparent flex items-center justify-between text-white text-xs backdrop-blur-xs">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                        <span className="font-semibold tracking-tight">Native macOS Liquid Glass Application Preview</span>
+                      </div>
+                      <span className="opacity-80 font-mono text-[11px]">1024 × 769 HiDPI · Native Desktop Window</span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
