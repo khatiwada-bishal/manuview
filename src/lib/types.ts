@@ -56,6 +56,8 @@ export interface ReferenceVerification {
   doi?: string;
   title?: string;
   authors?: string[];
+  familyNames?: string[];
+  matchConfidence?: number;
   year?: number;
   journal?: string;
   status: ReferenceStatus;
@@ -67,13 +69,16 @@ export interface ReferenceVerification {
 
 export interface CitationIntegritySummary {
   totalReferences: number;
+  sampledCount: number;
+  checkedCount: number;
+  coverageNote: string;
   verifiedCount: number;
   unresolvableCount: number; // Potential AI hallucination (confirmed 404)
   uncheckedCount: number; // References without DOI or lookup offline/rate-limited
   retractedCount: number;
   expressionOfConcernCount?: number;
   retractionCheckAvailable: boolean; // false if Crossref/network failed or offline
-  selfCitationRatio?: number; // Omitted if authors cannot be matched
+  selfCitationRatio?: number; // Omitted if authors cannot be matched or checkedCount < 10
   recencyProfile?: {
     last5YearsPercent: number;
     olderThan5YearsPercent: number;
@@ -173,6 +178,7 @@ export interface ReportingGuidelineCheck {
   items?: ReportingGuidelineItem[];
   compliantItems: string[];
   missingOrPartialItems: string[];
+  additionalReviewerObservations?: string[];
 }
 
 export interface PublishedArticleDetails {

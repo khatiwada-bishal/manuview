@@ -8,26 +8,63 @@ const POLITE_MAILTO = "research@manuview.org";
 /**
  * Searches Crossref using bibliographic metadata for references lacking explicit DOIs (A7)
  */
-export async function searchReferenceBibliographic(rawRef: string): Promise<Partial<ReferenceVerification> | null> {
-  const cleanRef = rawRef.replace(/^(?:\[\d+\]|\d+\.|\d+\))\s*/, "").trim();
-  if (cleanRef.length < 15) return null;
+async function fetchCrossrefWithRetry(
+  url: string,
+  maxRetries = 2,
+  maxTotalMs = 8000
+): Promise<Response | null> {
+  const startTime = Date.now();
+  let attempt = 0;
+
+  while (attempt <= maxRetries) {
+    const elapsed = Date.now() - startTime;
+    const remainingMs = Math.max(1000, maxTotalMs - elapsed);
+    if (elapsed >= maxTotalMs) break;
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), Math.min(6000, remainingMs));
+
+    try {
+      const res = await fetch(url, {
+        headers: {
+          "User-Agent": POLITE_USER_AGENT,
+          "Accept": "application/json",
+        },
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if (res.status === 429 && attempt < maxRetries) {
+        attempt++;
+        const retryHeader = res.headers.get("Retry-After");
+        let delayMs = retryHeader ? parseInt(retryHeader, 10) * 1000 : Math.pow(2, attempt) * 1000;
+        if (isNaN(delayMs) || delayMs <= 0) delayMs = 1000;
+        delayMs = Math.min(delayMs, maxTotalMs - (Date.now() - startTime));
+        if (delayMs > 0) {
+          await new Promise((r) => setTimeout(r, delayMs));
+          continue;
+        }
+      }
+      return res;
+    } catch {
+      clearTimeout(timeoutId);
+      if (attempt >= maxRetries) return null;
+      attempt++;
+      await new Promise((r) => setTimeout(r, 500 * attempt));
+    }
+  }
+  return null;
+}
+
+export async function searchReferenceBibliographic(referenceText: string): Promise<ReferenceVerification | null> {
+  const cleanRef = referenceText.trim();
+  if (!cleanRef || cleanRef.length < 15) return null;
 
   const url = `https://api.crossref.org/works?query.bibliographic=${encodeURIComponent(cleanRef)}&rows=1&mailto=${encodeURIComponent(POLITE_MAILTO)}`;
 
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-    const res = await fetch(url, {
-      headers: {
-        "User-Agent": POLITE_USER_AGENT,
-        "Accept": "application/json",
-      },
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
-
-    if (!res.ok) return null;
+    const res = await fetchCrossrefWithRetry(url);
+    if (!res || !res.ok) return null;
 
     const data = await res.json();
     const item = data.message?.items?.[0];
@@ -56,6 +93,10 @@ export async function searchReferenceBibliographic(rawRef: string): Promise<Part
     const authors = item.author
       ?.map((a: { given?: string; family?: string }) => [a.given, a.family].filter(Boolean).join(" "))
       .filter(Boolean);
+    const familyNames = item.author
+      ?.map((a: { family?: string }) => a.family?.trim())
+      .filter((f: string | undefined): f is string => Boolean(f));
+    const matchConfidence = Math.round(Math.max(sim, containmentRatio) * 100) / 100;
 
     let isRetracted = false;
     let isExpressionOfConcern = false;
@@ -110,11 +151,14 @@ export async function searchReferenceBibliographic(rawRef: string): Promise<Part
       : "valid";
 
     return {
+      raw: referenceText,
       doi,
       title: matchedTitle,
       journal,
       year,
       authors,
+      familyNames,
+      matchConfidence,
       status,
       isRetracted,
       retractionDetails,
@@ -132,17 +176,16 @@ export async function verifyDOIWithCrossref(doi: string): Promise<Partial<Refere
   const url = `https://api.crossref.org/works/${cleanDoi}?mailto=${encodeURIComponent(POLITE_MAILTO)}`;
 
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 6000);
-
-    const res = await fetch(url, {
-      headers: {
-        "User-Agent": POLITE_USER_AGENT,
-        "Accept": "application/json",
-      },
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
+    const res = await fetchCrossrefWithRetry(url);
+    if (!res) {
+      return {
+        doi,
+        status: "unchecked",
+        isRetracted: false,
+        retractionDetails: "Crossref lookup timed out or rate-limited. Status unconfirmed.",
+        resolutionMethod: "doi",
+      };
+    }
 
     // Only genuine 404 indicates an unresolvable / nonexistent DOI
     if (res.status === 404) {
@@ -155,7 +198,7 @@ export async function verifyDOIWithCrossref(doi: string): Promise<Partial<Refere
       };
     }
 
-    // Rate limit or server error - do NOT accuse user of AI hallucination
+    // Rate limit after retries exhausted - do NOT accuse user of AI hallucination
     if (res.status === 429) {
       return {
         doi,
@@ -194,6 +237,9 @@ export async function verifyDOIWithCrossref(doi: string): Promise<Partial<Refere
     const authors = message.author
       ?.map((a: { given?: string; family?: string }) => [a.given, a.family].filter(Boolean).join(" "))
       .filter(Boolean);
+    const familyNames = message.author
+      ?.map((a: { family?: string }) => a.family?.trim())
+      .filter((f: string | undefined): f is string => Boolean(f));
 
     let isRetracted = false;
     let isExpressionOfConcern = false;
@@ -262,6 +308,8 @@ export async function verifyDOIWithCrossref(doi: string): Promise<Partial<Refere
       journal,
       year,
       authors,
+      familyNames,
+      matchConfidence: 1.0,
       status: finalStatus,
       isRetracted,
       retractionDetails,
@@ -303,6 +351,8 @@ export async function batchVerifyReferences(rawReferences: string[]): Promise<Re
           journal: crossrefData.journal,
           year: crossrefData.year,
           authors: crossrefData.authors,
+          familyNames: crossrefData.familyNames,
+          matchConfidence: crossrefData.matchConfidence,
           status: crossrefData.status || "unchecked",
           isRetracted: crossrefData.isRetracted || false,
           retractionDetails: crossrefData.retractionDetails,
@@ -333,6 +383,8 @@ export async function batchVerifyReferences(rawReferences: string[]): Promise<Re
             journal: resolvedBibliographic.journal,
             year: resolvedBibliographic.year,
             authors: resolvedBibliographic.authors,
+            familyNames: resolvedBibliographic.familyNames,
+            matchConfidence: resolvedBibliographic.matchConfidence,
             status: resolvedBibliographic.status || "valid",
             isRetracted: resolvedBibliographic.isRetracted || false,
             retractionDetails: resolvedBibliographic.retractionDetails,

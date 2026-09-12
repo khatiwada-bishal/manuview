@@ -1836,20 +1836,31 @@ export default function ScanPage() {
 
                 {/* Citation & Reference Integrity Audit */}
                 <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-[#2F3437]">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <span>Citation &amp; Reference Integrity Audit</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-[#2F3437]">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                      <span>Citation &amp; Reference Integrity Audit</span>
+                    </div>
+                    {report.citationIntegrity.coverageNote && (
+                      <span className="text-xs text-[#787774]">
+                        {report.citationIntegrity.coverageNote}
+                      </span>
+                    )}
                   </div>
 
                   {/* Stat tiles */}
-                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                  <div className={`grid grid-cols-2 ${report.citationIntegrity.selfCitationRatio !== undefined ? "sm:grid-cols-6" : "sm:grid-cols-5"} gap-3`}>
                     <div className="p-3.5 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] text-center">
                       <div className="text-xl font-bold font-serif text-[#2F3437]">{report.citationIntegrity.totalReferences}</div>
                       <div className="text-[11px] text-[#787774]">Total References</div>
                     </div>
                     <div className="p-3.5 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] text-center">
                       <div className="text-xl font-bold font-serif text-[#1E5A2A]">{report.citationIntegrity.verifiedCount}</div>
-                      <div className="text-[11px] text-[#787774]">Crossref Verified</div>
+                      <div className="text-[11px] text-[#787774]">
+                        {report.citationIntegrity.sampledCount < report.citationIntegrity.totalReferences
+                          ? `Verified (in ${report.citationIntegrity.sampledCount})`
+                          : "Crossref Verified"}
+                      </div>
                     </div>
                     <div className="p-3.5 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] text-center">
                       <div className="text-xl font-bold font-serif text-[#555555]">{report.citationIntegrity.uncheckedCount || 0}</div>
@@ -1862,11 +1873,19 @@ export default function ScanPage() {
                       <div className="text-[11px] text-[#787774]">Unresolvable DOIs</div>
                     </div>
                     <div className="p-3.5 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] text-center">
-                      <div className={`text-xl font-bold font-serif ${report.citationIntegrity.retractedCount > 0 ? "text-[#7C2D2B]" : "text-[#1E5A2A]"}`}>
-                        {report.citationIntegrity.retractedCount}
+                      <div className={`text-xl font-bold font-serif ${!report.citationIntegrity.retractionCheckAvailable ? "text-[#787774] text-sm pt-1" : report.citationIntegrity.retractedCount > 0 ? "text-[#7C2D2B]" : "text-[#1E5A2A]"}`}>
+                        {report.citationIntegrity.retractionCheckAvailable ? report.citationIntegrity.retractedCount : "Not screened"}
                       </div>
                       <div className="text-[11px] text-[#787774]">Retracted Flagged</div>
                     </div>
+                    {report.citationIntegrity.selfCitationRatio !== undefined && (
+                      <div className="p-3.5 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] text-center">
+                        <div className="text-xl font-bold font-serif text-[#2F3437]">
+                          {report.citationIntegrity.selfCitationRatio}%
+                        </div>
+                        <div className="text-[11px] text-[#787774]">Self-Citation Rate</div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Notion Table View for References */}
@@ -2180,16 +2199,27 @@ export default function ScanPage() {
 
             {/* 6. Citation & Reference Integrity Audit */}
             <div className="avoid-break space-y-2">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-[#111111] border-b border-[#E5E5E5] pb-1">
-                4. Citation &amp; Reference Integrity Audit
-              </h2>
+              <div className="flex items-center justify-between border-b border-[#E5E5E5] pb-1">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-[#111111]">
+                  4. Citation &amp; Reference Integrity Audit
+                </h2>
+                {report.citationIntegrity?.coverageNote && (
+                  <span className="text-[10px] text-[#666666] italic">
+                    {report.citationIntegrity.coverageNote}
+                  </span>
+                )}
+              </div>
               <div className="grid grid-cols-4 gap-2 p-2.5 rounded-lg bg-[#F7F7F5] border border-[#E5E5E5] text-center text-xs">
                 <div>
                   <span className="text-[10px] text-[#666666] block">Total References</span>
                   <span className="font-mono font-bold text-sm text-[#111111]">{report.citationIntegrity?.totalReferences || 0}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-[#666666] block">Crossref Verified</span>
+                  <span className="text-[10px] text-[#666666] block">
+                    {report.citationIntegrity && report.citationIntegrity.sampledCount < report.citationIntegrity.totalReferences
+                      ? `Verified (${report.citationIntegrity.sampledCount} sampled)`
+                      : "Crossref Verified"}
+                  </span>
                   <span className="font-mono font-bold text-sm text-[#1E5A2A]">{report.citationIntegrity?.verifiedCount || 0}</span>
                 </div>
                 <div>
@@ -2200,8 +2230,10 @@ export default function ScanPage() {
                 </div>
                 <div>
                   <span className="text-[10px] text-[#666666] block">Retracted Flagged</span>
-                  <span className={`font-mono font-bold text-sm ${report.citationIntegrity?.retractedCount ? "text-[#7C2D2B]" : "text-[#1E5A2A]"}`}>
-                    {report.citationIntegrity?.retractedCount || 0}
+                  <span className={`font-mono font-bold text-sm ${!report.citationIntegrity?.retractionCheckAvailable ? "text-[#787774]" : report.citationIntegrity?.retractedCount ? "text-[#7C2D2B]" : "text-[#1E5A2A]"}`}>
+                    {report.citationIntegrity?.retractionCheckAvailable
+                      ? (report.citationIntegrity?.retractedCount || 0)
+                      : "Not Screened"}
                   </span>
                 </div>
               </div>
