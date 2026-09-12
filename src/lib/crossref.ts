@@ -1,8 +1,130 @@
 import { ReferenceVerification, ReferenceStatus } from "./types";
 import { checkRetractionStatus } from "./retractions";
+import { normalizeTitle, titleSimilarity } from "./utils";
 
 const POLITE_USER_AGENT = "ManuView-OpenPreSubmission/1.0 (mailto:research@manuview.org; https://github.com/khatiwada-bishal/manuview)";
 const POLITE_MAILTO = "research@manuview.org";
+
+/**
+ * Searches Crossref using bibliographic metadata for references lacking explicit DOIs (A7)
+ */
+export async function searchReferenceBibliographic(rawRef: string): Promise<Partial<ReferenceVerification> | null> {
+  const cleanRef = rawRef.replace(/^(?:\[\d+\]|\d+\.|\d+\))\s*/, "").trim();
+  if (cleanRef.length < 15) return null;
+
+  const url = `https://api.crossref.org/works?query.bibliographic=${encodeURIComponent(cleanRef)}&rows=1&mailto=${encodeURIComponent(POLITE_MAILTO)}`;
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+    const res = await fetch(url, {
+      headers: {
+        "User-Agent": POLITE_USER_AGENT,
+        "Accept": "application/json",
+      },
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+
+    if (!res.ok) return null;
+
+    const data = await res.json();
+    const item = data.message?.items?.[0];
+    if (!item || !item.DOI) return null;
+
+    const matchedTitle = item.title?.[0] || "";
+    if (!matchedTitle) return null;
+
+    // Check title similarity and word containment
+    const sim = titleSimilarity(matchedTitle, cleanRef);
+    const titleWords = normalizeTitle(matchedTitle).split(" ").filter((w: string) => w.length > 3);
+    const refNormalized = normalizeTitle(cleanRef);
+    const containedCount = titleWords.filter((w: string) => refNormalized.includes(w)).length;
+    const containmentRatio = titleWords.length > 0 ? containedCount / titleWords.length : 0;
+
+    // Confident match requires either significant Jaccard similarity or >=70% key title words present in citation
+    if (sim < 0.45 && (containmentRatio < 0.70 || titleWords.length < 2)) {
+      return null;
+    }
+
+    const doi = item.DOI;
+    const journal = item["container-title"]?.[0];
+    const year =
+      item.published?.["date-parts"]?.[0]?.[0] ||
+      item["created"]?.["date-parts"]?.[0]?.[0];
+    const authors = item.author
+      ?.map((a: { given?: string; family?: string }) => [a.given, a.family].filter(Boolean).join(" "))
+      .filter(Boolean);
+
+    let isRetracted = false;
+    let isExpressionOfConcern = false;
+    let retractionDetails: string | undefined = undefined;
+
+    // Inspect update records
+    const updates = item["updated-by"] || [];
+    for (const update of updates) {
+      const uType = String(update.type || "").toLowerCase();
+      const uLabel = String(update.label || "").toLowerCase();
+      if (uType === "retraction" || uLabel.includes("retraction")) {
+        isRetracted = true;
+        retractionDetails = update.doi
+          ? `Crossref metadata indicates retraction (Notice DOI: ${update.doi})`
+          : "Crossref metadata indicates article has been retracted";
+        break;
+      } else if (uType === "expression_of_concern" || uLabel.includes("expression of concern")) {
+        isExpressionOfConcern = true;
+        retractionDetails = update.doi
+          ? `Crossref metadata indicates Expression of Concern (Notice DOI: ${update.doi})`
+          : "Subject to an editorial Expression of Concern";
+      }
+    }
+
+    if (item.type === "retraction") {
+      isRetracted = true;
+      retractionDetails = retractionDetails || "Crossref work type is classified as retraction";
+    }
+
+    const titleStr = typeof matchedTitle === "string" ? matchedTitle : "";
+    if (/^retracted\b/i.test(titleStr) || /[\[(]retracted[\])]/i.test(titleStr)) {
+      isRetracted = true;
+      retractionDetails = retractionDetails || "Article title explicitly marked as RETRACTED";
+    } else if (/[\[(]expression of concern[\])]/i.test(titleStr)) {
+      isExpressionOfConcern = true;
+      retractionDetails = retractionDetails || "Article title explicitly marked with Expression of Concern";
+    }
+
+    const knownStatus = checkRetractionStatus(doi, matchedTitle);
+    if (knownStatus.isRetracted) {
+      isRetracted = true;
+      retractionDetails = knownStatus.reason || retractionDetails;
+    } else if (knownStatus.isExpressionOfConcern && !isRetracted) {
+      isExpressionOfConcern = true;
+      retractionDetails = knownStatus.reason || retractionDetails;
+    }
+
+    const status: ReferenceStatus = isRetracted
+      ? "retracted"
+      : isExpressionOfConcern
+      ? "expression_of_concern"
+      : "valid";
+
+    return {
+      doi,
+      title: matchedTitle,
+      journal,
+      year,
+      authors,
+      status,
+      isRetracted,
+      retractionDetails,
+      crossrefUrl: item.URL || `https://doi.org/${doi}`,
+      resolutionMethod: "bibliographic_search",
+    };
+  } catch {
+    return null;
+  }
+}
 
 export async function verifyDOIWithCrossref(doi: string): Promise<Partial<ReferenceVerification>> {
   const cleanDoi = encodeURIComponent(doi.trim());
@@ -29,6 +151,7 @@ export async function verifyDOIWithCrossref(doi: string): Promise<Partial<Refere
         status: "unresolvable",
         isRetracted: false,
         retractionDetails: "DOI not found in Crossref registry (HTTP 404)",
+        resolutionMethod: "doi",
       };
     }
 
@@ -38,7 +161,8 @@ export async function verifyDOIWithCrossref(doi: string): Promise<Partial<Refere
         doi,
         status: "unchecked",
         isRetracted: false,
-        retractionDetails: "Crossref rate limit reached (HTTP 429). Status unconfirmed.",
+        retractionDetails: "Crossref rate limit reached (HTTP 429). Reference remains unconfirmed.",
+        resolutionMethod: "doi",
       };
     }
 
@@ -47,19 +171,29 @@ export async function verifyDOIWithCrossref(doi: string): Promise<Partial<Refere
         doi,
         status: "unchecked",
         isRetracted: false,
-        retractionDetails: `Crossref query unavailable (HTTP ${res.status}). Status unconfirmed.`,
+        retractionDetails: `Crossref registry lookup encountered HTTP ${res.status}. Status unconfirmed.`,
+        resolutionMethod: "doi",
       };
     }
 
     const data = await res.json();
-    const message = data.message || {};
+    const message = data.message;
+    if (!message) {
+      return {
+        doi,
+        status: "unchecked",
+        isRetracted: false,
+        retractionDetails: "Crossref returned empty payload. Status unconfirmed.",
+        resolutionMethod: "doi",
+      };
+    }
 
-    const title = Array.isArray(message.title) ? message.title[0] : message.title;
-    const journal = Array.isArray(message['container-title']) ? message['container-title'][0] : undefined;
-    const year = message.created?.['date-parts']?.[0]?.[0] || message.issued?.['date-parts']?.[0]?.[0];
-    const authors = Array.isArray(message.author) 
-      ? message.author.map((a: { given?: string; family?: string }) => `${a.given || ''} ${a.family || ''}`.trim()).filter(Boolean)
-      : [];
+    const title = message.title?.[0];
+    const journal = message["container-title"]?.[0];
+    const year = message.published?.["date-parts"]?.[0]?.[0] || message["created"]?.["date-parts"]?.[0]?.[0];
+    const authors = message.author
+      ?.map((a: { given?: string; family?: string }) => [a.given, a.family].filter(Boolean).join(" "))
+      .filter(Boolean);
 
     let isRetracted = false;
     let isExpressionOfConcern = false;
@@ -132,6 +266,7 @@ export async function verifyDOIWithCrossref(doi: string): Promise<Partial<Refere
       isRetracted,
       retractionDetails,
       crossrefUrl: message.URL || `https://doi.org/${doi}`,
+      resolutionMethod: "doi",
     };
   } catch {
     // If request timed out or network error, mark as unchecked, NOT unresolvable
@@ -140,6 +275,7 @@ export async function verifyDOIWithCrossref(doi: string): Promise<Partial<Refere
       status: "unchecked",
       isRetracted: false,
       retractionDetails: "Crossref lookup timed out or network unavailable. Status unconfirmed.",
+      resolutionMethod: "doi",
     };
   }
 }
@@ -171,25 +307,48 @@ export async function batchVerifyReferences(rawReferences: string[]): Promise<Re
           isRetracted: crossrefData.isRetracted || false,
           retractionDetails: crossrefData.retractionDetails,
           crossrefUrl: crossrefData.crossrefUrl,
+          resolutionMethod: crossrefData.resolutionMethod || "doi",
         };
       } else {
-        // Check for textual retraction or expression of concern markers
+        // 1. Check for explicit textual retraction or expression of concern markers
         const retractionCheck = checkRetractionStatus(undefined, raw);
-        const isRetracted = retractionCheck.isRetracted;
-        const isExpressionOfConcern = retractionCheck.isExpressionOfConcern;
-        
-        const status: ReferenceStatus = isRetracted
-          ? "retracted"
-          : isExpressionOfConcern
-          ? "expression_of_concern"
-          : "unchecked"; // Without a DOI or online match, references are UNCHECKED, never falsely claimed 'valid'
+        if (retractionCheck.isRetracted || retractionCheck.isExpressionOfConcern) {
+          results[idx] = {
+            raw,
+            status: retractionCheck.isRetracted ? "retracted" : "expression_of_concern",
+            isRetracted: retractionCheck.isRetracted,
+            retractionDetails: retractionCheck.reason,
+            resolutionMethod: "unresolved",
+          };
+          continue;
+        }
 
-        results[idx] = {
-          raw,
-          status,
-          isRetracted,
-          retractionDetails: retractionCheck.reason,
-        };
+        // 2. A7: Attempt Crossref bibliographic query resolution for DOI-less citations
+        const resolvedBibliographic = await searchReferenceBibliographic(raw);
+        if (resolvedBibliographic && resolvedBibliographic.doi) {
+          results[idx] = {
+            raw,
+            doi: resolvedBibliographic.doi,
+            title: resolvedBibliographic.title,
+            journal: resolvedBibliographic.journal,
+            year: resolvedBibliographic.year,
+            authors: resolvedBibliographic.authors,
+            status: resolvedBibliographic.status || "valid",
+            isRetracted: resolvedBibliographic.isRetracted || false,
+            retractionDetails: resolvedBibliographic.retractionDetails,
+            crossrefUrl: resolvedBibliographic.crossrefUrl,
+            resolutionMethod: "bibliographic_search",
+          };
+        } else {
+          // Without a confident DOI or bibliographic match, references are UNCHECKED
+          results[idx] = {
+            raw,
+            status: "unchecked",
+            isRetracted: false,
+            retractionDetails: "No explicit DOI identified and bibliographic match unconfirmed. Status unverified.",
+            resolutionMethod: "unresolved",
+          };
+        }
       }
     }
   }

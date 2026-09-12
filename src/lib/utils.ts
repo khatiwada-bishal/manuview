@@ -5,12 +5,42 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export const DOI_REGEX = /\b(10\.\d{4,9}\/[-._;()/:A-Za-z0-9]+)\b/gi;
+
+/**
+ * Normalizes title string for robust academic title comparison
+ */
+export function normalizeTitle(t: string): string {
+  return t
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/**
+ * Computes word overlap Jaccard similarity between two titles/strings
+ */
+export function titleSimilarity(t1: string, t2: string): number {
+  const words1 = new Set(normalizeTitle(t1).split(" ").filter((w) => w.length > 2));
+  const words2 = new Set(normalizeTitle(t2).split(" ").filter((w) => w.length > 2));
+  if (words1.size === 0 || words2.size === 0) return 0;
+  let intersection = 0;
+  words1.forEach((w) => {
+    if (words2.has(w)) intersection++;
+  });
+  const allWords = new Set<string>();
+  words1.forEach((w) => allWords.add(w));
+  words2.forEach((w) => allWords.add(w));
+  const union = allWords.size;
+  return union > 0 ? intersection / union : 0;
+}
+
 export function extractDOIs(text: string): string[] {
   // Matches typical DOIs like 10.1038/s41586-020-2649-2 or 10.1126/science.123456
-  const doiRegex = /\b(10\.\d{4,9}\/[-._;()/:A-Za-z0-9]+)\b/gi;
-  const matches = text.match(doiRegex) || [];
+  const matches = text.match(DOI_REGEX) || [];
   // Clean trailing punctuation
-  return Array.from(new Set(matches.map(d => d.replace(/[.,;)]$/, ''))));
+  return Array.from(new Set(matches.map(d => d.replace(/[.,;)\]]+$/, ''))));
 }
 
 export function extractReferencesFromText(text: string): string[] {

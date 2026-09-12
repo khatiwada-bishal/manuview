@@ -5,6 +5,8 @@ import { findMatchingJournals, JOURNAL_CATALOG } from "./journals";
 import { classifyDocument } from "./parser";
 import { cleanAndRepairJson } from "./json-repair";
 import { detectPublishedArticle } from "./publication-detector";
+import { auditReportingGuidelines } from "./guidelines";
+import { searchJournalInOpenAlex, evaluateOpenAlexScopeFit, OpenAlexSource } from "./openalex";
 
 function generateReportId(prefix = "rev_"): string {
   try {
@@ -516,7 +518,27 @@ Please return your analysis as a JSON object matching this schema:
     reviewerPersonas: finalPersonas,
     journalRecommendations: finalRecommendations,
     citationIntegrity,
-    reportingGuideline: parsedLLM?.reportingGuideline || domainSynthesis.reportingGuideline,
+    reportingGuideline: domainSynthesis.reportingGuideline
+      ? {
+          ...domainSynthesis.reportingGuideline,
+          compliantItems: parsedLLM?.reportingGuideline?.compliantItems?.length
+            ? [
+                ...domainSynthesis.reportingGuideline.compliantItems,
+                ...parsedLLM.reportingGuideline.compliantItems.filter(
+                  (i: string) => !domainSynthesis.reportingGuideline!.compliantItems.includes(i)
+                ),
+              ]
+            : domainSynthesis.reportingGuideline.compliantItems,
+          missingOrPartialItems: parsedLLM?.reportingGuideline?.missingOrPartialItems?.length
+            ? [
+                ...domainSynthesis.reportingGuideline.missingOrPartialItems,
+                ...parsedLLM.reportingGuideline.missingOrPartialItems.filter(
+                  (i: string) => !domainSynthesis.reportingGuideline!.missingOrPartialItems.includes(i)
+                ),
+              ]
+            : domainSynthesis.reportingGuideline.missingOrPartialItems,
+        }
+      : undefined,
     executionMode,
     llmCallError: llmCallError || undefined,
   };
@@ -550,15 +572,38 @@ export async function runBriefJournalFitAnalysis(input: {
   );
   const matches = findMatchingJournals(title, abstract, targetJournal);
 
+  // A5: Live OpenAlex scope profiling for journals outside the curated catalog
+  let openAlexProfile: OpenAlexSource | null = null;
+  let openAlexScopeFit: ReturnType<typeof evaluateOpenAlexScopeFit> | null = null;
+
+  if (!catalogEntry) {
+    try {
+      openAlexProfile = await searchJournalInOpenAlex(targetJournal);
+      if (openAlexProfile) {
+        openAlexScopeFit = evaluateOpenAlexScopeFit(
+          openAlexProfile,
+          `${title} ${abstract}`,
+          keywords
+        );
+      }
+    } catch {}
+  }
+
   // Default heuristic values:
-  // If the journal is not in the curated catalog, do NOT assume a domain match or award 84%!
-  const isCatalogKnown = Boolean(catalogEntry);
+  // If the journal is not in the curated catalog, leverage OpenAlex concepts or fallback to 48% unconfirmed baseline
+  const isCatalogKnown = Boolean(catalogEntry || openAlexProfile);
   const isDomainMatch = catalogEntry
     ? catalogEntry.discipline === matches.detectedDiscipline ||
       catalogEntry.discipline === "Multidisciplinary"
+    : openAlexScopeFit
+    ? openAlexScopeFit.isScopeMatch
     : false;
 
-  let heuristicScore = isCatalogKnown ? (isDomainMatch ? 82 : 46) : 48;
+  let heuristicScore = catalogEntry
+    ? (isDomainMatch ? 82 : 46)
+    : openAlexScopeFit
+    ? openAlexScopeFit.scopeConfidence
+    : 48;
   if (catalogEntry?.impactFactor && catalogEntry.impactFactor > 30) {
     heuristicScore = Math.max(68, heuristicScore - 8);
   }
@@ -592,6 +637,12 @@ ${targetJournal}
 ${
   catalogEntry
     ? `Discipline: ${catalogEntry.discipline}\nAims & Scope: ${catalogEntry.aimsAndScope}\nDesk Reject Hazards: ${catalogEntry.deskRejectHazards.join("; ")}`
+    : openAlexProfile
+    ? `OpenAlex Indexed Venue Profile:
+Host Publisher: ${openAlexProfile.hostOrganization || "Academic Publisher"}
+2-Year Mean Citedness: ${openAlexProfile.twoYearMeanCitedness !== undefined ? openAlexProfile.twoYearMeanCitedness.toFixed(1) : "N/A"}
+Core Subject Concepts: ${openAlexProfile.concepts.slice(0, 5).map((c) => c.displayName).join(", ")}
+Primary Topics: ${openAlexProfile.topics.slice(0, 3).map((t) => t.displayName).join(", ")}`
     : "Note: This journal is not in the indexed curated database; evaluate based on domain conventions and publication standards."
 }
 
@@ -656,10 +707,12 @@ Respond with ONLY a valid JSON object matching this schema:
   const verdictColor: "green" | "amber" | "red" =
     verdict === "Strong Editorial Fit" ? "green" : verdict === "Moderate Scope Match" ? "amber" : "red";
 
-  const defaultSummary = isCatalogKnown
+  const defaultSummary = catalogEntry
     ? isDomainMatch
       ? `The manuscript demonstrates good thematic alignment with ${targetJournal}'s core scientific remit in ${matches.detectedDiscipline}. The title and abstract articulate a defined research question suitable for the journal's specialist readership.`
       : `The manuscript's primary focus in ${matches.detectedDiscipline} may not directly align with ${targetJournal}'s standard scope, creating a potential desk-rejection risk unless contextualized with broader cross-disciplinary implications.`
+    : openAlexProfile
+    ? openAlexScopeFit?.summary || `Evaluated against OpenAlex subject indexing for ${openAlexProfile.displayName}.`
     : `"${targetJournal}" was not found in the curated catalog of 1,391 verified scholarly journals. Scope fit is unconfirmed; authors should consult the official journal aims and author guidelines directly prior to submission.`;
 
   const defaultHighlights = [
@@ -761,6 +814,14 @@ Respond with ONLY a valid JSON object matching this schema:
         ? parsedLLM.framingSuggestions
         : defaultFraming,
     alternativeJournals: alternatives,
+    openAlexMetrics: openAlexProfile
+      ? {
+          twoYearMeanCitedness: openAlexProfile.twoYearMeanCitedness,
+          hIndex: openAlexProfile.hIndex,
+          matchedConcepts: openAlexScopeFit?.matchedConcepts,
+          sourceId: openAlexProfile.id,
+        }
+      : undefined,
   };
 }
 
@@ -1541,65 +1602,8 @@ function synthesizeGroundedAcademicReview(
     return true;
   });
 
-  // 10. Dynamic Reporting Guideline Audit
-  let guidelineName = "Empirical Quantitative Reporting Standard";
-  let standardType = `Observational & Empirical Quantitative Research in ${discipline}`;
-
-  if (discipline === "Clinical") {
-    guidelineName = "STROBE / CONSORT Clinical Reporting Standards";
-    standardType = "Clinical Cohort & Observational Health Research";
-  } else if (discipline === "Operations Research & Management") {
-    guidelineName = "INFORMS Analytical & Optimization Reporting Standards";
-    standardType = "Mathematical Programming, Supply Chain & Operations Management";
-  } else if (discipline === "Computer Science") {
-    guidelineName = "NeurIPS / ACM Machine Learning Reproducibility Checklist";
-    standardType = "Empirical Computational & Algorithmic Benchmarks";
-  } else if (discipline === "Oncology") {
-    guidelineName = "ARRIVE / MIQE Laboratory Reporting Guidelines";
-    standardType = "Preclinical Molecular Oncology & Functional Assays";
-  }
-
-  const compliantItems: string[] = [];
-  const missingOrPartialItems: string[] = [];
-
-  // Check section structure
-  if (!isMethodsMissing && !manuscript.sectionProvenance?.resultsMissing) {
-    compliantItems.push("Structured academic section partitioning (IMRaD)");
-  } else {
-    missingOrPartialItems.push("Explicit academic section partitioning (Methods or Results section missing)");
-  }
-
-  // Check bibliography verification
-  if (citationIntegrity.verifiedCount > 0) {
-    compliantItems.push(`Bibliographic references verified against Crossref registry (${citationIntegrity.verifiedCount} verified)`);
-  } else if (citationIntegrity.totalReferences > 0) {
-    missingOrPartialItems.push("Bibliographic reference registry verification (0 citations confirmed in Crossref)");
-  }
-
-  if (sampleCount > 0) compliantItems.push(`Sample size and cohort observations documented (${sampleSizes[0]})`);
-  if (eqCount > 0) compliantItems.push("Mathematical specifications formally derived");
-  if (repoCount > 0) compliantItems.push(`Open-science repository referenced (${dataRepos[0]})`);
-
-  missingOrPartialItems.push("Explicit post-hoc statistical power calculations (1 - beta >= 0.80)");
-  if (repoCount === 0) {
-    missingOrPartialItems.push("Persistent DOI link for data and code replication archive (Zenodo, OSF, GitHub)");
-  }
-  if (limitCount === 0) {
-    missingOrPartialItems.push("Dedicated limitations paragraph detailing observational boundaries and rival hypotheses");
-  }
-
-  const totalGuidelineItems = compliantItems.length + missingOrPartialItems.length;
-  const scorePercent = totalGuidelineItems > 0
-    ? Math.round((compliantItems.length / totalGuidelineItems) * 100)
-    : 0;
-
-  const reportingGuideline: ReportingGuidelineCheck = {
-    guidelineName,
-    standardType,
-    scorePercent,
-    compliantItems,
-    missingOrPartialItems,
-  };
+  // 10. Dynamic Reporting Guideline Audit (A4 - Itemized Checklist with Evidence Extraction)
+  const reportingGuideline: ReportingGuidelineCheck = auditReportingGuidelines(manuscript, discipline);
 
   return {
     overallScore: dynamicScore,

@@ -1,36 +1,8 @@
 import { PublishedArticleDetails } from "./types";
+import { normalizeTitle, titleSimilarity } from "./utils";
 
 const POLITE_USER_AGENT =
   "ManuView-OpenPreSubmission/1.0 (mailto:research@manuview.org; https://github.com/khatiwada-bishal/manuview)";
-
-/**
- * Normalizes title string for robust comparison
- */
-function normalizeTitle(t: string): string {
-  return t
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-/**
- * Computes word overlap Jaccard similarity between two titles
- */
-function titleSimilarity(t1: string, t2: string): number {
-  const words1 = new Set(normalizeTitle(t1).split(" ").filter((w) => w.length > 2));
-  const words2 = new Set(normalizeTitle(t2).split(" ").filter((w) => w.length > 2));
-  if (words1.size === 0 || words2.size === 0) return 0;
-  let intersection = 0;
-  words1.forEach((w) => {
-    if (words2.has(w)) intersection++;
-  });
-  const allWords = new Set<string>();
-  words1.forEach((w) => allWords.add(w));
-  words2.forEach((w) => allWords.add(w));
-  const union = allWords.size;
-  return union > 0 ? intersection / union : 0;
-}
 
 /**
  * Scans text header for publication indicators and article DOI

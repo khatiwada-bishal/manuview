@@ -1314,7 +1314,9 @@ export default function ScanPage() {
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-medium text-[#787774]">Audit Score:</span>
                         <span className="text-xs font-bold text-[#1E5A2A] bg-[#EDF6EE] px-2.5 py-0.5 rounded-full border border-[#CBE7CE]">
-                          {report.reportingGuideline.scorePercent}%
+                          {report.reportingGuideline.evidencedCount !== undefined && report.reportingGuideline.totalItems !== undefined
+                            ? `${report.reportingGuideline.evidencedCount}/${report.reportingGuideline.totalItems} Evidenced (${report.reportingGuideline.scorePercent}%)`
+                            : `${report.reportingGuideline.scorePercent}%`}
                         </span>
                       </div>
                     </div>
@@ -1324,13 +1326,24 @@ export default function ScanPage() {
                         <span className="font-semibold text-[#1E5A2A] uppercase tracking-wider text-[10px] block">
                           Compliant Checklist Items:
                         </span>
-                        <ul className="space-y-1.5 text-[#1E5A2A]">
-                          {report.reportingGuideline.compliantItems.map((item, idx) => (
-                            <li key={idx} className="flex items-start gap-1.5">
-                              <CheckCircle2 className="w-3.5 h-3.5 shrink-0 mt-0.5 text-emerald-500" />
-                              <span>{item}</span>
-                            </li>
-                          ))}
+                        <ul className="space-y-2 text-[#1E5A2A]">
+                          {report.reportingGuideline.compliantItems.map((item, idx) => {
+                            const [heading, ...rest] = item.split(" — ");
+                            const excerpt = rest.join(" — ");
+                            return (
+                              <li key={idx} className="flex items-start gap-1.5">
+                                <CheckCircle2 className="w-3.5 h-3.5 shrink-0 mt-0.5 text-emerald-500" />
+                                <div className="space-y-0.5">
+                                  <span className="font-medium">{heading}</span>
+                                  {excerpt && (
+                                    <p className="text-[11px] text-[#37683D] italic pl-2 border-l-2 border-[#CBE7CE]">
+                                      {excerpt}
+                                    </p>
+                                  )}
+                                </div>
+                              </li>
+                            );
+                          })}
                         </ul>
                       </div>
 
@@ -1338,13 +1351,24 @@ export default function ScanPage() {
                         <span className="font-semibold text-[#78510E] uppercase tracking-wider text-[10px] block">
                           Missing or Partial Reporting Items:
                         </span>
-                        <ul className="space-y-1.5 text-[#78510E]">
-                          {report.reportingGuideline.missingOrPartialItems.map((item, idx) => (
-                            <li key={idx} className="flex items-start gap-1.5">
-                              <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-amber-500" />
-                              <span>{item}</span>
-                            </li>
-                          ))}
+                        <ul className="space-y-2 text-[#78510E]">
+                          {report.reportingGuideline.missingOrPartialItems.map((item, idx) => {
+                            const [heading, ...rest] = item.split(" — ");
+                            const recommendation = rest.join(" — ");
+                            return (
+                              <li key={idx} className="flex items-start gap-1.5">
+                                <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-amber-500" />
+                                <div className="space-y-0.5">
+                                  <span className="font-medium">{heading}</span>
+                                  {recommendation && (
+                                    <p className="text-[11px] text-[#926011] pl-2 border-l-2 border-[#F4E2B6]">
+                                      {recommendation}
+                                    </p>
+                                  )}
+                                </div>
+                              </li>
+                            );
+                          })}
                         </ul>
                       </div>
                     </div>

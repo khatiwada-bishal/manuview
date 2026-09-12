@@ -62,6 +62,7 @@ export interface ReferenceVerification {
   isRetracted: boolean;
   retractionDetails?: string;
   crossrefUrl?: string;
+  resolutionMethod?: 'doi' | 'bibliographic_search' | 'unresolved';
 }
 
 export interface CitationIntegritySummary {
@@ -153,10 +154,23 @@ export interface ParsedManuscript {
   };
 }
 
+export interface ReportingGuidelineItem {
+  itemNumber: number;
+  name: string;
+  section: string;
+  description?: string;
+  status: 'evidenced' | 'partial' | 'absent';
+  evidenceExcerpt?: string;
+  recommendation?: string;
+}
+
 export interface ReportingGuidelineCheck {
   guidelineName: string; // e.g. STROBE, CONSORT, PRISMA, ARRIVE, Econometric Rigor
   standardType: string; // e.g. "Observational / Customs Microdata", "Randomized Controlled Trial", "Nonlinear Model"
   scorePercent: number; // 0 - 100
+  totalItems?: number;
+  evidencedCount?: number;
+  items?: ReportingGuidelineItem[];
   compliantItems: string[];
   missingOrPartialItems: string[];
 }
@@ -225,6 +239,12 @@ export interface BriefJournalFitReport {
     tier: 'Reach' | 'Realistic' | 'Safe Fallback';
     matchReason: string;
   }[];
+  openAlexMetrics?: {
+    twoYearMeanCitedness?: number;
+    hIndex?: number;
+    matchedConcepts?: string[];
+    sourceId?: string;
+  };
 }
 
 export type ReviewReport = FullReviewReport | BriefJournalFitReport;

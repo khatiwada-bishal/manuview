@@ -221,6 +221,7 @@ function generateFullReportHtml(r: FullReviewReport): string {
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline';">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ManuView Report: ${title}</title>
   <style>
@@ -505,7 +506,7 @@ function generateFullReportHtml(r: FullReviewReport): string {
         <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
           <div class="card-title" style="margin-bottom: 0;">Reporting Guideline Compliance: ${escapeHtml(r.reportingGuideline.guidelineName)}</div>
           <span style="font-size: 13px; font-weight: 700; color: ${r.reportingGuideline.scorePercent >= 80 ? "#10B981" : r.reportingGuideline.scorePercent >= 60 ? "#F59E0B" : "#EF4444"};">
-            ${r.reportingGuideline.scorePercent}% Compliant
+            ${r.reportingGuideline.evidencedCount !== undefined && r.reportingGuideline.totalItems !== undefined ? `${r.reportingGuideline.evidencedCount}/${r.reportingGuideline.totalItems} Items (${r.reportingGuideline.scorePercent}%)` : `${r.reportingGuideline.scorePercent}% Compliant`}
           </span>
         </div>
         <p style="font-size: 12px; color: #64748B; margin-bottom: 12px;">Standardized reporting checklist audit based on international peer-review expectations.</p>
@@ -724,6 +725,7 @@ function generateBriefReportHtml(r: BriefJournalFitReport): string {
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline';">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ManuView Scope Fit Report: ${title}</title>
   <style>
@@ -952,7 +954,7 @@ function generateFullReportWord(r: FullReviewReport): string {
   ${r.reportingGuideline ? `
   <h2>5. Reporting Guideline Compliance Audit (${escapeHtml(r.reportingGuideline.guidelineName)})</h2>
   <div class="callout" style="background-color: #F8FAFC; border-left: 4pt solid ${r.reportingGuideline.scorePercent >= 80 ? "#10B981" : r.reportingGuideline.scorePercent >= 60 ? "#D97706" : "#DC2626"};">
-    <p style="font-weight: bold; margin: 0; font-size: 11pt;">Compliance Score: ${r.reportingGuideline.scorePercent}%</p>
+    <p style="font-weight: bold; margin: 0; font-size: 11pt;">Compliance Score: ${r.reportingGuideline.evidencedCount !== undefined && r.reportingGuideline.totalItems !== undefined ? `${r.reportingGuideline.evidencedCount}/${r.reportingGuideline.totalItems} Items (${r.reportingGuideline.scorePercent}%)` : `${r.reportingGuideline.scorePercent}%`}</p>
     ${(r.reportingGuideline.compliantItems && r.reportingGuideline.compliantItems.length > 0) ? `
       <p style="color: #166534; font-size: 9.5pt; margin-top: 6pt; margin-bottom: 2pt;"><strong>Compliant Items:</strong></p>
       <ul style="color: #166534; font-size: 9.5pt;">
