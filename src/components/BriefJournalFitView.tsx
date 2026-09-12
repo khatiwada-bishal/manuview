@@ -54,6 +54,14 @@ export function BriefJournalFitView({
         </span>
       );
     }
+    if (report.verdictColor === "grey") {
+      return (
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#F1F5F9] text-[#475569] border border-[#CBD5E1] shadow-2xs">
+          <AlertCircle className="w-3.5 h-3.5 text-[#64748B]" />
+          <span>{report.verdict}</span>
+        </span>
+      );
+    }
     return (
       <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#FDF0EF] text-[#7C2D2B] border border-[#F7CECC] shadow-2xs">
         <AlertCircle className="w-3.5 h-3.5" />
@@ -156,15 +164,35 @@ export function BriefJournalFitView({
               <div className="text-[10px] uppercase tracking-wider text-[#787774] font-semibold">
                 Overall Scope Match
               </div>
-              <div className={`text-2xl font-bold font-mono ${getScoreColor(report.fitScore)}`}>
-                {report.fitScore}%
+              <div
+                className={`text-2xl font-bold font-mono ${
+                  report.fitScore !== undefined ? getScoreColor(report.fitScore) : "text-[#64748B]"
+                }`}
+              >
+                {report.fitScore !== undefined ? `${report.fitScore}%` : "Not Assessed"}
               </div>
             </div>
             <div className="w-12 h-12 rounded-full bg-[#F7F7F5] border border-[#EBEBEA] flex items-center justify-center font-bold text-xs">
-              <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-[11px] font-mono shadow-xs" style={{
-                backgroundColor: report.fitScore >= 75 ? "#1E5A2A" : report.fitScore >= 50 ? "#78510E" : "#7C2D2B"
-              }}>
-                {report.fitScore >= 75 ? "FIT" : report.fitScore >= 50 ? "FAIR" : "RISK"}
+              <div
+                className="w-9 h-9 rounded-full flex items-center justify-center text-white text-[11px] font-mono shadow-xs"
+                style={{
+                  backgroundColor:
+                    report.fitScore === undefined
+                      ? "#64748B"
+                      : report.fitScore >= 75
+                      ? "#1E5A2A"
+                      : report.fitScore >= 50
+                      ? "#78510E"
+                      : "#7C2D2B",
+                }}
+              >
+                {report.fitScore === undefined
+                  ? "N/A"
+                  : report.fitScore >= 75
+                  ? "FIT"
+                  : report.fitScore >= 50
+                  ? "FAIR"
+                  : "RISK"}
               </div>
             </div>
           </div>
@@ -231,15 +259,19 @@ export function BriefJournalFitView({
           <div className="p-4 rounded-xl bg-white border border-[#EBEBEA] shadow-2xs space-y-1.5">
             <div className="flex items-center justify-between">
               <span className="font-semibold text-[#2F3437]">1. Subject Domain Alignment</span>
-              <span className={`font-mono font-bold ${getScoreColor(report.dimensions.domainMatch.score)}`}>
-                {report.dimensions.domainMatch.score}%
+              <span className={`font-mono font-bold ${report.dimensions.domainMatch.score !== undefined ? getScoreColor(report.dimensions.domainMatch.score) : "text-[#787774]"}`}>
+                {report.dimensions.domainMatch.score !== undefined ? `${report.dimensions.domainMatch.score}%` : "—"}
               </span>
             </div>
             <div className="w-full bg-[#F7F7F5] rounded-full h-1.5 overflow-hidden">
-              <div
-                className={`h-full ${getScoreBg(report.dimensions.domainMatch.score)}`}
-                style={{ width: `${report.dimensions.domainMatch.score}%` }}
-              />
+              {report.dimensions.domainMatch.score !== undefined ? (
+                <div
+                  className={`h-full ${getScoreBg(report.dimensions.domainMatch.score)}`}
+                  style={{ width: `${report.dimensions.domainMatch.score}%` }}
+                />
+              ) : (
+                <div className="h-full bg-transparent" />
+              )}
             </div>
             <p className="text-[11px] text-[#787774] leading-relaxed pt-0.5">
               {report.dimensions.domainMatch.feedback}
@@ -250,15 +282,19 @@ export function BriefJournalFitView({
           <div className="p-4 rounded-xl bg-white border border-[#EBEBEA] shadow-2xs space-y-1.5">
             <div className="flex items-center justify-between">
               <span className="font-semibold text-[#2F3437]">2. Conceptual Novelty &amp; Impact Tier</span>
-              <span className={`font-mono font-bold ${getScoreColor(report.dimensions.noveltySignificance.score)}`}>
-                {report.dimensions.noveltySignificance.score}%
+              <span className={`font-mono font-bold ${report.dimensions.noveltySignificance.score !== undefined ? getScoreColor(report.dimensions.noveltySignificance.score) : "text-[#787774]"}`}>
+                {report.dimensions.noveltySignificance.score !== undefined ? `${report.dimensions.noveltySignificance.score}%` : "—"}
               </span>
             </div>
             <div className="w-full bg-[#F7F7F5] rounded-full h-1.5 overflow-hidden">
-              <div
-                className={`h-full ${getScoreBg(report.dimensions.noveltySignificance.score)}`}
-                style={{ width: `${report.dimensions.noveltySignificance.score}%` }}
-              />
+              {report.dimensions.noveltySignificance.score !== undefined ? (
+                <div
+                  className={`h-full ${getScoreBg(report.dimensions.noveltySignificance.score)}`}
+                  style={{ width: `${report.dimensions.noveltySignificance.score}%` }}
+                />
+              ) : (
+                <div className="h-full bg-transparent" />
+              )}
             </div>
             <p className="text-[11px] text-[#787774] leading-relaxed pt-0.5">
               {report.dimensions.noveltySignificance.feedback}
@@ -269,15 +305,19 @@ export function BriefJournalFitView({
           <div className="p-4 rounded-xl bg-white border border-[#EBEBEA] shadow-2xs space-y-1.5">
             <div className="flex items-center justify-between">
               <span className="font-semibold text-[#2F3437]">3. Readership &amp; Community Relevance</span>
-              <span className={`font-mono font-bold ${getScoreColor(report.dimensions.readershipAlignment.score)}`}>
-                {report.dimensions.readershipAlignment.score}%
+              <span className={`font-mono font-bold ${report.dimensions.readershipAlignment.score !== undefined ? getScoreColor(report.dimensions.readershipAlignment.score) : "text-[#787774]"}`}>
+                {report.dimensions.readershipAlignment.score !== undefined ? `${report.dimensions.readershipAlignment.score}%` : "—"}
               </span>
             </div>
             <div className="w-full bg-[#F7F7F5] rounded-full h-1.5 overflow-hidden">
-              <div
-                className={`h-full ${getScoreBg(report.dimensions.readershipAlignment.score)}`}
-                style={{ width: `${report.dimensions.readershipAlignment.score}%` }}
-              />
+              {report.dimensions.readershipAlignment.score !== undefined ? (
+                <div
+                  className={`h-full ${getScoreBg(report.dimensions.readershipAlignment.score)}`}
+                  style={{ width: `${report.dimensions.readershipAlignment.score}%` }}
+                />
+              ) : (
+                <div className="h-full bg-transparent" />
+              )}
             </div>
             <p className="text-[11px] text-[#787774] leading-relaxed pt-0.5">
               {report.dimensions.readershipAlignment.feedback}
@@ -288,15 +328,19 @@ export function BriefJournalFitView({
           <div className="p-4 rounded-xl bg-white border border-[#EBEBEA] shadow-2xs space-y-1.5">
             <div className="flex items-center justify-between">
               <span className="font-semibold text-[#2F3437]">4. Keyword &amp; Search Indexing</span>
-              <span className={`font-mono font-bold ${getScoreColor(report.dimensions.keywordRelevance.score)}`}>
-                {report.dimensions.keywordRelevance.score}%
+              <span className={`font-mono font-bold ${report.dimensions.keywordRelevance.score !== undefined ? getScoreColor(report.dimensions.keywordRelevance.score) : "text-[#787774]"}`}>
+                {report.dimensions.keywordRelevance.score !== undefined ? `${report.dimensions.keywordRelevance.score}%` : "—"}
               </span>
             </div>
             <div className="w-full bg-[#F7F7F5] rounded-full h-1.5 overflow-hidden">
-              <div
-                className={`h-full ${getScoreBg(report.dimensions.keywordRelevance.score)}`}
-                style={{ width: `${report.dimensions.keywordRelevance.score}%` }}
-              />
+              {report.dimensions.keywordRelevance.score !== undefined ? (
+                <div
+                  className={`h-full ${getScoreBg(report.dimensions.keywordRelevance.score)}`}
+                  style={{ width: `${report.dimensions.keywordRelevance.score}%` }}
+                />
+              ) : (
+                <div className="h-full bg-transparent" />
+              )}
             </div>
             <p className="text-[11px] text-[#787774] leading-relaxed pt-0.5">
               {report.dimensions.keywordRelevance.feedback}
@@ -472,7 +516,7 @@ export function BriefJournalFitPrintView({
         <div className="text-right">
           <div className="text-[10px] uppercase text-[#666666] font-semibold">Verdict &bull; Scope Match</div>
           <div className="text-sm font-bold text-black">
-            {report.verdict} ({report.fitScore}%)
+            {report.verdict}{report.fitScore !== undefined ? ` (${report.fitScore}%)` : ""}
           </div>
         </div>
       </div>
@@ -511,22 +555,30 @@ export function BriefJournalFitPrintView({
           <tbody className="divide-y divide-[#EEEEEE]">
             <tr>
               <td className="py-1 font-semibold">Subject Domain Alignment</td>
-              <td className="py-1 text-center font-mono font-bold">{report.dimensions.domainMatch.score}%</td>
+              <td className="py-1 text-center font-mono font-bold">
+                {report.dimensions.domainMatch.score !== undefined ? `${report.dimensions.domainMatch.score}%` : "—"}
+              </td>
               <td className="py-1 text-[#444444]">{report.dimensions.domainMatch.feedback}</td>
             </tr>
             <tr>
               <td className="py-1 font-semibold">Conceptual Novelty &amp; Tier</td>
-              <td className="py-1 text-center font-mono font-bold">{report.dimensions.noveltySignificance.score}%</td>
+              <td className="py-1 text-center font-mono font-bold">
+                {report.dimensions.noveltySignificance.score !== undefined ? `${report.dimensions.noveltySignificance.score}%` : "—"}
+              </td>
               <td className="py-1 text-[#444444]">{report.dimensions.noveltySignificance.feedback}</td>
             </tr>
             <tr>
               <td className="py-1 font-semibold">Readership Relevance</td>
-              <td className="py-1 text-center font-mono font-bold">{report.dimensions.readershipAlignment.score}%</td>
+              <td className="py-1 text-center font-mono font-bold">
+                {report.dimensions.readershipAlignment.score !== undefined ? `${report.dimensions.readershipAlignment.score}%` : "—"}
+              </td>
               <td className="py-1 text-[#444444]">{report.dimensions.readershipAlignment.feedback}</td>
             </tr>
             <tr>
               <td className="py-1 font-semibold">Keyword Search Indexing</td>
-              <td className="py-1 text-center font-mono font-bold">{report.dimensions.keywordRelevance.score}%</td>
+              <td className="py-1 text-center font-mono font-bold">
+                {report.dimensions.keywordRelevance.score !== undefined ? `${report.dimensions.keywordRelevance.score}%` : "—"}
+              </td>
               <td className="py-1 text-[#444444]">{report.dimensions.keywordRelevance.feedback}</td>
             </tr>
           </tbody>

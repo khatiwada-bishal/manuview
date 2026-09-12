@@ -35,7 +35,7 @@ function triggerDownload(content: string, filename: string, mimeType: string) {
  * interactive HTML report that opens in any browser offline.
  */
 export function exportInteractiveHtmlReport(report: ReviewReport) {
-  const isFullReport = !("fitScore" in report);
+  const isFullReport = report.mode === "full";
   const filename = `ManuView_Interactive_Report_${sanitizeFilename(report.title)}.html`;
   const htmlContent = isFullReport
     ? generateFullReportHtml(report as FullReviewReport)
@@ -48,7 +48,7 @@ export function exportInteractiveHtmlReport(report: ReviewReport) {
  * Generates and triggers download of a native-compatible Microsoft Word document (.doc/.docx).
  */
 export function exportWordDocReport(report: ReviewReport) {
-  const isFullReport = !("fitScore" in report);
+  const isFullReport = report.mode === "full";
   const filename = `ManuView_Diagnostic_Report_${sanitizeFilename(report.title)}.doc`;
   const wordContent = isFullReport
     ? generateFullReportWord(report as FullReviewReport)
@@ -139,7 +139,7 @@ ${rows}
  * Triggers download of LaTeX Rebuttal Table (.tex)
  */
 export function exportLatexRebuttalTable(report: ReviewReport) {
-  const isFullReport = !("fitScore" in report);
+  const isFullReport = report.mode === "full";
   if (!isFullReport) return;
   const filename = `ManuView_Rebuttal_Matrix_${sanitizeFilename(report.title)}.tex`;
   const latexContent = generateLatexRebuttal(report as FullReviewReport);
@@ -150,7 +150,7 @@ export function exportLatexRebuttalTable(report: ReviewReport) {
  * Generates a clean BibTeX (.bib) file containing all verified references with valid DOIs
  */
 export function generateBibTeX(report: ReviewReport): string {
-  const isFullReport = !("fitScore" in report);
+  const isFullReport = report.mode === "full";
   if (!isFullReport) return "";
   const full = report as FullReviewReport;
   const references = full.citationIntegrity?.references || [];
@@ -718,8 +718,10 @@ function generateFullReportHtml(r: FullReviewReport): string {
 function generateBriefReportHtml(r: BriefJournalFitReport): string {
   const title = escapeHtml(r.title);
   const targetJournal = escapeHtml(r.targetJournal);
-  const fitScore = r.fitScore || 75;
   const dateStr = new Date().toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
+  const scoreBanner = r.fitScore !== undefined
+    ? `<div style="font-size: 28px; font-weight: 800;">${r.fitScore}% Match — ${escapeHtml(r.verdict)}</div>`
+    : `<div style="font-size: 22px; font-weight: 800; color: #475569;">${escapeHtml(r.verdict)}</div>`;
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -762,7 +764,7 @@ function generateBriefReportHtml(r: BriefJournalFitReport): string {
       <h1>${title}</h1>
       <p style="font-size: 13px; color: #64748B;">Target Journal: <strong>${targetJournal}</strong> • Generated on ${dateStr}</p>
       <div style="background: #F1F5F9; border-radius: 10px; padding: 16px; margin-top: 16px;">
-        <div style="font-size: 28px; font-weight: 800;">${fitScore}% Match — ${escapeHtml(r.verdict)}</div>
+        ${scoreBanner}
         <p style="font-size: 14px; color: #334155; margin-top: 8px;">${escapeHtml(r.summary)}</p>
       </div>
     </div>
@@ -979,8 +981,10 @@ function generateFullReportWord(r: FullReviewReport): string {
 function generateBriefReportWord(r: BriefJournalFitReport): string {
   const title = escapeHtml(r.title);
   const targetJournal = escapeHtml(r.targetJournal);
-  const fitScore = r.fitScore || 75;
   const dateStr = new Date().toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
+  const scoreBanner = r.fitScore !== undefined
+    ? `<p style="font-size: 14pt; font-weight: bold; margin: 0;">Scope Match: ${r.fitScore}% — ${escapeHtml(r.verdict)}</p>`
+    : `<p style="font-size: 14pt; font-weight: bold; margin: 0; color: #475569;">${escapeHtml(r.verdict)}</p>`;
 
   return `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
 <head>
@@ -999,7 +1003,7 @@ function generateBriefReportWord(r: BriefJournalFitReport): string {
   <h1>${title}</h1>
   <p>Target Journal: <strong>${targetJournal}</strong> | Date: ${dateStr}</p>
   <div style="background-color: #EFF6FF; border-left: 4pt solid #2563EB; padding: 10pt; margin: 10pt 0;">
-    <p style="font-size: 14pt; font-weight: bold; margin: 0;">Scope Match: ${fitScore}% — ${escapeHtml(r.verdict)}</p>
+    ${scoreBanner}
     <p style="margin-top: 4pt; margin-bottom: 0;">${escapeHtml(r.summary)}</p>
   </div>
   <h2>Scope Strengths Supporting Submission</h2>

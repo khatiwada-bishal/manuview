@@ -75,12 +75,18 @@ export async function fetchWorkByDOI(doi: string): Promise<OpenAlexWork | null> 
   }
 }
 
+export type OpenAlexLookup =
+  | { outcome: 'found'; source: OpenAlexSource }
+  | { outcome: 'not_found' }
+  | { outcome: 'low_confidence'; candidate: string; similarity: number }
+  | { outcome: 'unavailable'; reason: string };
+
 /**
- * Searches OpenAlex /sources for live journal scope concepts, metrics, and topics (A5)
+ * Searches OpenAlex /sources for live journal scope concepts, metrics, and topics (A5, REQ-OA-01)
  */
-export async function searchJournalInOpenAlex(journalName: string): Promise<OpenAlexSource | null> {
+export async function searchJournalInOpenAlex(journalName: string): Promise<OpenAlexLookup> {
   const cleanName = journalName.trim();
-  if (!cleanName || cleanName.length < 3) return null;
+  if (!cleanName || cleanName.length < 3) return { outcome: 'not_found' };
 
   const url = `https://api.openalex.org/sources?search=${encodeURIComponent(cleanName)}&mailto=${encodeURIComponent(POLITE_MAILTO)}`;
 
@@ -97,11 +103,19 @@ export async function searchJournalInOpenAlex(journalName: string): Promise<Open
     });
     clearTimeout(timeoutId);
 
-    if (!res.ok) return null;
+    if (res.status === 429) {
+      return { outcome: 'unavailable', reason: 'OpenAlex API rate limit reached (HTTP 429)' };
+    }
+
+    if (!res.ok) {
+      return { outcome: 'unavailable', reason: `OpenAlex service returned HTTP ${res.status}` };
+    }
 
     const data = await res.json();
     const hit = data.results?.[0];
-    if (!hit || !hit.display_name) return null;
+    if (!hit || !hit.display_name) {
+      return { outcome: 'not_found' };
+    }
 
     // Verify name match confidence
     const sim = titleSimilarity(hit.display_name, cleanName);
@@ -109,7 +123,7 @@ export async function searchJournalInOpenAlex(journalName: string): Promise<Open
     const normQuery = normalizeTitle(cleanName);
 
     if (sim < 0.35 && !normHit.includes(normQuery) && !normQuery.includes(normHit)) {
-      return null;
+      return { outcome: 'low_confidence', candidate: hit.display_name, similarity: sim };
     }
 
     const concepts = (hit.x_concepts || []).map((c: { id: string; display_name: string; score?: number }) => ({
@@ -126,7 +140,7 @@ export async function searchJournalInOpenAlex(journalName: string): Promise<Open
       domain: t.domain?.display_name,
     }));
 
-    return {
+    const source: OpenAlexSource = {
       id: hit.id,
       displayName: hit.display_name,
       hostOrganization: hit.host_organization_name,
@@ -139,8 +153,13 @@ export async function searchJournalInOpenAlex(journalName: string): Promise<Open
       homepageUrl: hit.homepage_url,
       worksCount: hit.works_count,
     };
-  } catch {
-    return null;
+
+    return { outcome: 'found', source };
+  } catch (err: any) {
+    if (err?.name === 'AbortError') {
+      return { outcome: 'unavailable', reason: 'OpenAlex request timed out' };
+    }
+    return { outcome: 'unavailable', reason: err?.message || 'OpenAlex service unreachable' };
   }
 }
 

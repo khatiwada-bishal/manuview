@@ -190,7 +190,7 @@ export interface PublishedArticleDetails {
 }
 
 export interface FullReviewReport {
-  mode?: 'full';
+  mode: 'full';
   id: string;
   createdAt: string;
   title: string;
@@ -219,15 +219,23 @@ export interface BriefJournalFitReport {
   abstract: string;
   keywords: string[];
   targetJournal: string;
-  fitScore: number; // 0 to 100
-  verdict: 'Strong Editorial Fit' | 'Moderate Scope Match' | 'Scope Mismatch / High Desk-Reject Hazard';
-  verdictColor: 'green' | 'amber' | 'red';
+  fitScore?: number; // 0 to 100 (omitted when not assessed)
+  verdict:
+    | 'Strong Editorial Fit'
+    | 'Moderate Scope Match'
+    | 'Scope Mismatch / High Desk-Reject Hazard'
+    | 'Not Assessed — journal profile unavailable';
+  verdictColor: 'green' | 'amber' | 'red' | 'grey';
+  scopeAssessment: {
+    method: 'curated_catalog' | 'openalex_profile' | 'llm_only' | 'unavailable';
+    reason?: string;
+  };
   summary: string;
   dimensions: {
-    domainMatch: { score: number; feedback: string };
-    noveltySignificance: { score: number; feedback: string };
-    readershipAlignment: { score: number; feedback: string };
-    keywordRelevance: { score: number; feedback: string };
+    domainMatch: { score?: number; feedback: string };
+    noveltySignificance: { score?: number; feedback: string };
+    readershipAlignment: { score?: number; feedback: string };
+    keywordRelevance: { score?: number; feedback: string };
   };
   keyHighlights: string[];
   deskRejectHazards: string[];

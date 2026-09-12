@@ -9,6 +9,7 @@ export interface JournalEntry {
   aimsAndScope: string;
   deskRejectHazards: string[];
   keyExpectations: string[];
+  isCrossDisciplinary?: boolean;
 }
 
 export const JOURNAL_CATALOG: JournalEntry[] = [
@@ -791,6 +792,16 @@ function detectDiscipline(title: string, abstract: string, targetJournal?: strin
  * Strictly filters within the manuscript's detected domain, guarantees zero discipline crossover,
  * and benchmarks tiers relative to the study's scope.
  */
+export function parseAcceptanceRate(rateStr: string): number {
+  if (!rateStr) return 0;
+  const m = rateStr.match(/(\d+(?:\.\d+)?)(?:\s*-\s*(\d+(?:\.\d+)?))?\s*%/);
+  if (!m) return 0;
+  if (m[2]) {
+    return (parseFloat(m[1]) + parseFloat(m[2])) / 2;
+  }
+  return parseFloat(m[1]);
+}
+
 export function findMatchingJournals(
   title: string,
   abstract: string,
@@ -801,48 +812,76 @@ export function findMatchingJournals(
   fallback: JournalEntry;
   detectedDiscipline: JournalEntry['discipline'];
   allMatches: { journal: JournalEntry; matchScore: number }[];
+  crossDisciplinary?: JournalEntry[];
 } {
   const discipline = detectDiscipline(title, abstract, targetJournal);
 
-  // Filter catalog strictly to matching discipline PLUS relevant multidisciplinary options
+  // Filter catalog strictly to matching discipline
   const domainJournals = JOURNAL_CATALOG.filter(j => j.discipline === discipline);
   const multiJournals = JOURNAL_CATALOG.filter(j => j.discipline === 'Multidisciplinary');
 
   // Sort domain journals by impact factor descending
   domainJournals.sort((a, b) => b.impactFactor - a.impactFactor);
-  multiJournals.sort((a, b) => b.impactFactor - a.impactFactor);
 
-  const candidates: JournalEntry[] = [];
-  for (const j of domainJournals) {
-    if (!candidates.some(c => c.name === j.name)) candidates.push(j);
+  let reach: JournalEntry;
+  let realistic: JournalEntry;
+  let fallback: JournalEntry;
+
+  if (domainJournals.length >= 3) {
+    // Reach: highest in-discipline impact factor
+    reach = domainJournals[0];
+
+    // Fallback: in-discipline journal with the highest acceptance rate (most accessible)
+    const nonReach = domainJournals.slice(1);
+    const sortedByAR = [...nonReach].sort((a, b) => {
+      const arDiff = parseAcceptanceRate(b.acceptanceRate) - parseAcceptanceRate(a.acceptanceRate);
+      if (arDiff !== 0) return arDiff;
+      return a.impactFactor - b.impactFactor;
+    });
+    fallback = sortedByAR[0];
+
+    // Realistic: in-discipline journal nearest the median acceptance rate among remaining
+    const remaining = domainJournals.filter(j => j.name !== reach.name && j.name !== fallback.name);
+    const domainARs = domainJournals.map(j => parseAcceptanceRate(j.acceptanceRate)).sort((a, b) => a - b);
+    const medianAR = domainARs[Math.floor(domainARs.length / 2)];
+
+    remaining.sort((a, b) => {
+      const distA = Math.abs(parseAcceptanceRate(a.acceptanceRate) - medianAR);
+      const distB = Math.abs(parseAcceptanceRate(b.acceptanceRate) - medianAR);
+      if (distA !== distB) return distA - distB;
+      return b.impactFactor - a.impactFactor;
+    });
+    realistic = remaining[0] || nonReach[0];
+  } else if (domainJournals.length === 2) {
+    reach = domainJournals[0];
+    fallback = domainJournals[1];
+    realistic = domainJournals[1];
+  } else if (domainJournals.length === 1) {
+    reach = domainJournals[0];
+    realistic = domainJournals[0];
+    fallback = domainJournals[0];
+  } else {
+    reach = multiJournals[0];
+    realistic = multiJournals[2] || multiJournals[1];
+    fallback = multiJournals[multiJournals.length - 1];
   }
-  for (const j of multiJournals) {
-    if (!candidates.some(c => c.name === j.name)) candidates.push(j);
-  }
 
-  let reach: JournalEntry = candidates[0];
-  let realistic: JournalEntry = candidates[1] || candidates[0];
-  let fallback: JournalEntry = candidates[candidates.length - 1] || candidates[0];
+  // Cross-disciplinary journals (clearly marked, never disguised as in-discipline)
+  const crossDisciplinary = discipline !== 'Multidisciplinary'
+    ? multiJournals.map(j => ({ ...j, isCrossDisciplinary: true }))
+    : [];
 
-  if (candidates.length >= 3) {
-    reach = candidates[0];
-    realistic = candidates[1];
-    // Find a distinct fallback with the lowest impact factor among remaining candidates
-    const remaining = candidates.slice(2).sort((a, b) => a.impactFactor - b.impactFactor);
-    fallback = remaining[0];
-  }
-
-  // If user specified an existing journal in targetJournal, verify it doesn't collide
-  const allScored = [...domainJournals, ...multiJournals].map(j => ({
-    journal: j,
-    matchScore: j.discipline === discipline ? 90 : 75
-  }));
+  const allScored = [
+    ...domainJournals.map(j => ({ journal: j, matchScore: 90 })),
+    ...crossDisciplinary.map(j => ({ journal: j, matchScore: 75 })),
+  ];
 
   return {
     reach,
     realistic,
     fallback,
     detectedDiscipline: discipline,
-    allMatches: allScored
+    allMatches: allScored,
+    crossDisciplinary: crossDisciplinary.length > 0 ? crossDisciplinary : undefined,
   };
 }
