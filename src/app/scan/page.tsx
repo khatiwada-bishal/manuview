@@ -45,6 +45,7 @@ import { ProviderSettingsModal } from "@/components/ProviderSettingsModal";
 import JournalCombobox from "@/components/JournalCombobox";
 import { BriefJournalFitView, BriefJournalFitPrintView } from "@/components/BriefJournalFitView";
 import { exportInteractiveHtmlReport, exportWordDocReport, exportLatexRebuttalTable, exportBibTeX } from "@/lib/export-generator";
+import { isSubstantiveReviewerObservation } from "@/lib/utils";
 
 // Sample preprint for instant one-click testing
 const SAMPLE_PREPRINT_TITLE = "Single-cell transcriptional profiling of DLL3 activation in neuroendocrine lung carcinoma";
@@ -1401,21 +1402,29 @@ export default function ScanPage() {
                         </ul>
                       </div>
 
-                      {report.reportingGuideline.additionalReviewerObservations && report.reportingGuideline.additionalReviewerObservations.length > 0 && (
-                        <div className="p-3.5 rounded-lg bg-white border border-[#EBEBEA] space-y-2 text-xs md:col-span-2">
-                          <span className="font-semibold text-[#555555] uppercase tracking-wider text-[10px] block">
-                            Additional Reviewer Observations:
-                          </span>
-                          <ul className="space-y-1 text-[#555555]">
-                            {report.reportingGuideline.additionalReviewerObservations.map((obs, idx) => (
-                              <li key={idx} className="flex items-start gap-1.5">
-                                <span className="text-gray-400">&bull;</span>
-                                <span>{obs}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
+                      {(() => {
+                        const substantiveObservations = (
+                          report.reportingGuideline.additionalReviewerObservations || []
+                        ).filter(isSubstantiveReviewerObservation);
+
+                        if (substantiveObservations.length === 0) return null;
+
+                        return (
+                          <div className="p-3.5 rounded-lg bg-white border border-[#EBEBEA] space-y-2 text-xs md:col-span-2">
+                            <span className="font-semibold text-[#555555] uppercase tracking-wider text-[10px] block">
+                              Additional Reviewer Observations:
+                            </span>
+                            <ul className="space-y-1 text-[#555555]">
+                              {substantiveObservations.map((obs, idx) => (
+                                <li key={idx} className="flex items-start gap-1.5">
+                                  <span className="text-gray-400">&bull;</span>
+                                  <span>{obs}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        );
+                      })()}
                     </div>
                   </div>
                 )}
@@ -1510,58 +1519,101 @@ export default function ScanPage() {
                     </div>
 
                     {/* Priority Filter Pills */}
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => setIssueFilter("all")}
-                        className={`px-2.5 py-1 rounded-lg text-xs font-medium transition cursor-pointer ${
-                          issueFilter === "all"
-                            ? "bg-white text-[#2F3437] font-semibold border border-[#d0d0d0] shadow-2xs"
-                            : "text-[#787774] hover:text-[#2F3437] hover:bg-[#F7F7F5]"
-                        }`}
-                      >
-                        All ({(report.priorityIssues || []).length})
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setIssueFilter("A")}
-                        className={`px-2.5 py-1 rounded-lg text-xs font-medium transition cursor-pointer ${
-                          issueFilter === "A"
-                            ? "bg-[#FDF0EF] text-[#7C2D2B] font-semibold border border-[#F7CECC] shadow-2xs"
-                            : "text-[#7C2D2B] hover:bg-[#FDF0EF]"
-                        }`}
-                      >
-                        🚨 Priority A
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setIssueFilter("B")}
-                        className={`px-2.5 py-1 rounded-lg text-xs font-medium transition cursor-pointer ${
-                          issueFilter === "B"
-                            ? "bg-[#FBF3DB] text-[#78510E] font-semibold border border-[#F4E2B6] shadow-2xs"
-                            : "text-[#78510E] hover:bg-[#FBF3DB]"
-                        }`}
-                      >
-                        ⚠️ Priority B
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setIssueFilter("C")}
-                        className={`px-2.5 py-1 rounded-lg text-xs font-medium transition cursor-pointer ${
-                          issueFilter === "C"
-                            ? "bg-[#EDF6EE] text-[#1E5A2A] font-semibold border border-[#CBE7CE] shadow-2xs"
-                            : "text-[#1E5A2A] hover:bg-[#EDF6EE]"
-                        }`}
-                      >
-                        💡 Priority C
-                      </button>
-                    </div>
+                    {(() => {
+                      const allIssues = report.priorityIssues || [];
+                      const countA = allIssues.filter((iss: PriorityIssue) => iss.priority === "A").length;
+                      const countB = allIssues.filter((iss: PriorityIssue) => iss.priority === "B").length;
+                      const countC = allIssues.filter((iss: PriorityIssue) => iss.priority === "C").length;
+
+                      return (
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => setIssueFilter("all")}
+                            className={`px-2.5 py-1 rounded-lg text-xs font-medium transition cursor-pointer ${
+                              issueFilter === "all"
+                                ? "bg-white text-[#2F3437] font-semibold border border-[#d0d0d0] shadow-2xs"
+                                : "text-[#787774] hover:text-[#2F3437] hover:bg-[#F7F7F5]"
+                            }`}
+                          >
+                            All ({allIssues.length})
+                          </button>
+                          {countA > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => setIssueFilter("A")}
+                              className={`px-2.5 py-1 rounded-lg text-xs font-medium transition cursor-pointer ${
+                                issueFilter === "A"
+                                  ? "bg-[#FDF0EF] text-[#7C2D2B] font-semibold border border-[#F7CECC] shadow-2xs"
+                                  : "text-[#7C2D2B] hover:bg-[#FDF0EF]"
+                              }`}
+                            >
+                              🚨 Priority A ({countA})
+                            </button>
+                          )}
+                          {countB > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => setIssueFilter("B")}
+                              className={`px-2.5 py-1 rounded-lg text-xs font-medium transition cursor-pointer ${
+                                issueFilter === "B"
+                                  ? "bg-[#FBF3DB] text-[#78510E] font-semibold border border-[#F4E2B6] shadow-2xs"
+                                  : "text-[#78510E] hover:bg-[#FBF3DB]"
+                              }`}
+                            >
+                              ⚠️ Priority B ({countB})
+                            </button>
+                          )}
+                          {countC > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => setIssueFilter("C")}
+                              className={`px-2.5 py-1 rounded-lg text-xs font-medium transition cursor-pointer ${
+                                issueFilter === "C"
+                                  ? "bg-[#EDF6EE] text-[#1E5A2A] font-semibold border border-[#CBE7CE] shadow-2xs"
+                                  : "text-[#1E5A2A] hover:bg-[#EDF6EE]"
+                              }`}
+                            >
+                              💡 Priority C ({countC})
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
 
                   <div className="space-y-3">
-                    {(report.priorityIssues || [])
-                      .filter((iss: PriorityIssue) => issueFilter === "all" || iss.priority === issueFilter)
-                      .map((issue: PriorityIssue) => (
+                    {(() => {
+                      const allIssues = report.priorityIssues || [];
+                      const filteredIssues = allIssues.filter(
+                        (iss: PriorityIssue) => issueFilter === "all" || iss.priority === issueFilter
+                      );
+
+                      if (filteredIssues.length === 0) {
+                        return (
+                          <div className="p-8 rounded-xl bg-[#F7F7F5] border border-dashed border-[#EBEBEA] text-center space-y-2">
+                            <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 mb-1">
+                              <CheckCircle2 className="w-5 h-5" />
+                            </div>
+                            <p className="text-sm font-semibold text-[#2F3437]">
+                              {issueFilter === "all"
+                                ? "No Pre-Submission Issues Detected"
+                                : `No Priority ${issueFilter} Issues Found`}
+                            </p>
+                            <p className="text-xs text-[#787774] max-w-md mx-auto leading-relaxed">
+                              {issueFilter === "A"
+                                ? "Zero critical desk-reject hazards or major methodological blockers detected in this category."
+                                : issueFilter === "B"
+                                ? "Zero substantive reviewer objections or required control additions found in this category."
+                                : issueFilter === "C"
+                                ? "Zero minor revisions or optional enhancements pending in this category."
+                                : "Your manuscript has cleared all automated integrity checks and high-priority reviewer objections."}
+                            </p>
+                          </div>
+                        );
+                      }
+
+                      return filteredIssues.map((issue: PriorityIssue) => (
                       <div
                         key={issue.id}
                         className="p-5 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] space-y-3"
@@ -1643,7 +1695,8 @@ export default function ScanPage() {
                           </div>
                         )}
                       </div>
-                    ))}
+                    ));
+                    })()}
                   </div>
                 </div>
 

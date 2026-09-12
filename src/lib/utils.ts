@@ -95,3 +95,54 @@ export function extractReferencesFromText(text: string): string[] {
   // Return parsed references, or empty array if none parsed (never slice arbitrary body lines)
   return refs;
 }
+
+const BARE_SECTION_OR_GENERIC_LABELS = new Set([
+  "title",
+  "abstract",
+  "introduction",
+  "background",
+  "methods",
+  "methodology",
+  "materials and methods",
+  "results",
+  "discussion",
+  "conclusion",
+  "conclusions",
+  "references",
+  "bibliography",
+  "limitations",
+  "acknowledgements",
+  "appendix",
+  "figures",
+  "tables",
+  "study design",
+  "data availability",
+  "funding",
+  "competing interests",
+  "declarations",
+]);
+
+/**
+ * Filters out bare manuscript section headers, generic labels, or trivial fragments from reviewer observations
+ */
+export function isSubstantiveReviewerObservation(item: string): boolean {
+  if (typeof item !== "string") return false;
+  const clean = item.trim();
+  // Too short to be an actionable reviewer critique or observation
+  if (clean.length < 25) return false;
+
+  const lower = clean.toLowerCase();
+  // Exact match against bare section headings
+  if (BARE_SECTION_OR_GENERIC_LABELS.has(lower)) return false;
+
+  // Header patterns like "Section: Methods", "Part 2: Discussion", "Methods Section"
+  if (/^(?:section|heading|part|item)\s*(?:\d+|:|\-)\s*\w+$/i.test(clean)) return false;
+  if (/^(?:title|abstract|introduction|methods|results|discussion|conclusion|references)\s*(?:section|header)?$/i.test(clean)) return false;
+
+  // Must contain at least 4 words
+  const words = clean.split(/\s+/).filter(Boolean);
+  if (words.length < 4) return false;
+
+  return true;
+}
+

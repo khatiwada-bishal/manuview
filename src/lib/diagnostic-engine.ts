@@ -13,6 +13,7 @@ import {
   validateReviewerPersonas,
   validateJournalRecommendations,
 } from "./schemas";
+import { isSubstantiveReviewerObservation } from "./utils";
 
 function generateReportId(prefix = "rev_"): string {
   try {
@@ -330,7 +331,7 @@ CRITICAL ANTI-HALLUCINATION & STRICT GROUNDING MANDATE:
    - Every priority issue MUST have a typed "evidenceAnchor": text: §X "<quote up to 25 words>", equation: Eq. Y, or absence: §Z lacks ...
    - Every priority issue MUST have a "rebuttalStrategy" detailing the point-by-point author defense and revision roadmap for the formal journal response letter.
 6. REPORTING GUIDELINES COMPLIANCE AUDIT:
-   Evaluate the manuscript against the applicable international reporting standard (STROBE for observational/customs data, CONSORT for clinical trials, PRISMA for reviews, ARRIVE for preclinical models, or Econometric/OR guidelines). Provide guidelineName, standardType, scorePercent (0-100), compliantItems, and missingOrPartialItems.
+   Evaluate the manuscript against the applicable international reporting standard (STROBE for observational/customs data, CONSORT for clinical trials, PRISMA for reviews, ARRIVE for preclinical models, or Econometric/OR guidelines). Provide guidelineName, standardType, scorePercent (0-100), compliantItems, and missingOrPartialItems. CRITICAL: compliantItems and missingOrPartialItems MUST contain complete, descriptive evaluation sentences detailing specific checklist requirements. NEVER output bare section names like 'Title', 'Abstract', 'Methods', or 'Results'.
 7. TARGET JOURNALS: Recommend 3 genuine, authentic peer-reviewed journals strictly in the manuscript's specific domain (Reach, Realistic, Fallback). Provide realistic impact factors and authentic scope rationales based on this paper's findings.
 8. Return your output ONLY as valid JSON matching the requested schema. CRITICAL: Do NOT include unescaped double quotes inside string values (always escape internal quotes as \"). Do NOT include trailing commas before } or ].`;
 
@@ -748,6 +749,7 @@ Please return your analysis as a JSON object matching this schema:
           ].filter(
             (obs: string) =>
               typeof obs === "string" &&
+              isSubstantiveReviewerObservation(obs) &&
               !domainSynthesis.reportingGuideline!.compliantItems.includes(obs) &&
               !domainSynthesis.reportingGuideline!.missingOrPartialItems.includes(obs)
           ),
