@@ -479,13 +479,15 @@ export async function runBriefJournalFitAnalysis(input: {
   );
   const matches = findMatchingJournals(title, abstract, targetJournal);
 
-  // Default heuristic values
+  // Default heuristic values:
+  // If the journal is not in the curated catalog, do NOT assume a domain match or award 84%!
+  const isCatalogKnown = Boolean(catalogEntry);
   const isDomainMatch = catalogEntry
     ? catalogEntry.discipline === matches.detectedDiscipline ||
       catalogEntry.discipline === "Multidisciplinary"
-    : true;
+    : false;
 
-  let heuristicScore = isDomainMatch ? 84 : 48;
+  let heuristicScore = isCatalogKnown ? (isDomainMatch ? 82 : 46) : 48;
   if (catalogEntry?.impactFactor && catalogEntry.impactFactor > 30) {
     heuristicScore = Math.max(68, heuristicScore - 8);
   }
@@ -519,7 +521,7 @@ ${targetJournal}
 ${
   catalogEntry
     ? `Discipline: ${catalogEntry.discipline}\nAims & Scope: ${catalogEntry.aimsAndScope}\nDesk Reject Hazards: ${catalogEntry.deskRejectHazards.join("; ")}`
-    : ""
+    : "Note: This journal is not in the indexed curated database; evaluate based on domain conventions and publication standards."
 }
 
 Evaluate whether this study is suitable for ${targetJournal} in terms of scope alignment, conceptual significance, and readership fit.
@@ -583,9 +585,11 @@ Respond with ONLY a valid JSON object matching this schema:
   const verdictColor: "green" | "amber" | "red" =
     verdict === "Strong Editorial Fit" ? "green" : verdict === "Moderate Scope Match" ? "amber" : "red";
 
-  const defaultSummary = isDomainMatch
-    ? `The manuscript demonstrates good thematic alignment with ${targetJournal}'s core scientific remit in ${matches.detectedDiscipline}. The title and abstract articulate a defined research question suitable for the journal's specialist readership.`
-    : `The manuscript's primary focus in ${matches.detectedDiscipline} may not directly align with ${targetJournal}'s standard scope, creating a potential desk-rejection risk unless contextualized with broader cross-disciplinary implications.`;
+  const defaultSummary = isCatalogKnown
+    ? isDomainMatch
+      ? `The manuscript demonstrates good thematic alignment with ${targetJournal}'s core scientific remit in ${matches.detectedDiscipline}. The title and abstract articulate a defined research question suitable for the journal's specialist readership.`
+      : `The manuscript's primary focus in ${matches.detectedDiscipline} may not directly align with ${targetJournal}'s standard scope, creating a potential desk-rejection risk unless contextualized with broader cross-disciplinary implications.`
+    : `"${targetJournal}" was not found in the curated catalog of 1,391 verified scholarly journals. Scope fit is unconfirmed; authors should consult the official journal aims and author guidelines directly prior to submission.`;
 
   const defaultHighlights = [
     `Clear problem formulation relevant to contemporary ${matches.detectedDiscipline} literature.`,
@@ -843,11 +847,29 @@ function synthesizeGroundedAcademicReview(
   // 6. Dynamic 6-Dimension Scores & Authentic Feedback
   const origScore = abstractCore.length > 40 && cleanTitle.length > 25 ? 4 : 3;
   const broadScore = manuscript.wordCount >= 2800 ? 4 : 3;
-  const claimsScore = causalCount > 0 && limitCount === 0 ? 3 : 4;
-  const methScore = manuscript.sections.methods && (sampleCount > 0 || eqCount > 0) ? 4 : 3;
+  const isMethodsMissing = Boolean(manuscript.sectionProvenance?.methodsMissing);
+  const isMethodsInferred = Boolean(manuscript.sectionProvenance?.methodsInferred);
+
+  const methScore = isMethodsMissing
+    ? 1
+    : isMethodsInferred
+    ? (sampleCount > 0 || eqCount > 0 ? 3 : 2)
+    : manuscript.sections.methods && (sampleCount > 0 || eqCount > 0)
+    ? 4
+    : 3;
+
+  const claimsScore = causalCount > 2 ? 3 : 4;
   const clarityScore = manuscript.wordCount > 1500 ? 4 : 3;
   const priorScore =
-    citationIntegrity.retractedCount > 0 ? 2 : citationIntegrity.unresolvableCount > 2 ? 3 : 5;
+    citationIntegrity.retractedCount > 0
+      ? 2
+      : citationIntegrity.unresolvableCount > 2
+      ? 3
+      : citationIntegrity.totalReferences > 0 && citationIntegrity.verifiedCount === 0
+      ? 3
+      : citationIntegrity.totalReferences > 0 && citationIntegrity.uncheckedCount > citationIntegrity.verifiedCount
+      ? 4
+      : 5;
 
   const dimensions: Record<string, DimensionScore> = {
     originality: {
@@ -892,19 +914,31 @@ function synthesizeGroundedAcademicReview(
     methodology: {
       score: methScore,
       label: "Methodological & Statistical Soundness",
-      verdict: `Methodological architecture incorporates ${eqCount} mathematical formulation(s) and ${sampleCount} sample indicator(s).`,
-      strengths: [
-        manuscript.sections.methods
-          ? "Formal procedural description in Methods section"
-          : "Documented methodological approach",
-        repoCount > 0
-          ? `Data availability supported by repository reference (${dataRepos[0]})`
-          : "Step-by-step procedural progression from data to findings",
-      ],
-      vulnerabilities: [
-        "Reporting formal sample power calculations (1 - beta >= 0.80) in Methods",
-        "Documenting full replication archive in a persistent public repository (Zenodo, GitHub, OSF)",
-      ],
+      verdict: isMethodsMissing
+        ? "CRITICAL: Formal Methods / Experimental section not detected in manuscript."
+        : isMethodsInferred
+        ? `Methodological narrative inferred from manuscript body (${eqCount} equation(s), ${sampleCount} sample indicator(s)); explicit 'Methods' heading was absent.`
+        : `Methodological architecture incorporates ${eqCount} mathematical formulation(s) and ${sampleCount} sample indicator(s).`,
+      strengths: isMethodsMissing
+        ? []
+        : [
+            !isMethodsInferred && manuscript.sections.methods
+              ? "Formal procedural description in dedicated Methods section"
+              : "Documented procedural workflow",
+            repoCount > 0
+              ? `Data availability supported by repository reference (${dataRepos[0]})`
+              : "Step-by-step procedural progression from data to findings",
+          ],
+      vulnerabilities: isMethodsMissing
+        ? [
+            "Manuscript lacks an explicit Materials & Methods section. Peer reviewers cannot evaluate protocol validity, statistical power, or reproducibility.",
+          ]
+        : [
+            isMethodsInferred
+              ? "Insert an explicit 'Materials and Methods' section heading so editors and referees can immediately locate experimental specifications"
+              : "Reporting formal sample power calculations (1 - beta >= 0.80) in Methods",
+            "Documenting full replication archive in a persistent public repository (Zenodo, GitHub, OSF)",
+          ],
     },
     clarity: {
       score: clarityScore,
@@ -937,6 +971,21 @@ function synthesizeGroundedAcademicReview(
 
   // 7. Dynamic Priority Issues
   const priorityIssues: PriorityIssue[] = [];
+
+  if (isMethodsMissing) {
+    priorityIssues.push({
+      id: "iss-missing-methods",
+      priority: "A",
+      title: "Explicit Methodology Section Missing",
+      category: "Methodology",
+      description: "No dedicated Materials & Methods or Methodology section was detected. Peer reviewers and editors consider the absence of explicit methodological protocols an immediate desk-rejection trigger.",
+      location: "Manuscript Structure",
+      evidenceAnchor: "absence: §Methods heading not detected in manuscript",
+      reviewerQuote: "'The manuscript does not include an identifiable Methods section. We cannot assess the validity, statistical power, or reproducibility of these findings.'",
+      actionableFix: "Insert an explicit 'Materials and Methods' or 'Methodology' section detailing study design, sample recruitment, instrumentation, and statistical models.",
+      rebuttalStrategy: "1. Insert an explicit Materials & Methods section with formal protocol specifications.\n2. Detail data collection and experimental controls in full.\n3. Add statistical analysis paragraph specifying all test assumptions.",
+    });
+  }
 
   if (citationIntegrity.retractedCount > 0) {
     priorityIssues.push({
@@ -1423,17 +1472,28 @@ function synthesizeGroundedAcademicReview(
     standardType = "Preclinical Molecular Oncology & Functional Assays";
   }
 
-  const compliantItems: string[] = [
-    "Structured academic section partitioning (IMRaD)",
-    `Bibliographic references verified against Crossref registry (${citationIntegrity.verifiedCount} verified)`,
-  ];
+  const compliantItems: string[] = [];
+  const missingOrPartialItems: string[] = [];
+
+  // Check section structure
+  if (!isMethodsMissing && !manuscript.sectionProvenance?.resultsMissing) {
+    compliantItems.push("Structured academic section partitioning (IMRaD)");
+  } else {
+    missingOrPartialItems.push("Explicit academic section partitioning (Methods or Results section missing)");
+  }
+
+  // Check bibliography verification
+  if (citationIntegrity.verifiedCount > 0) {
+    compliantItems.push(`Bibliographic references verified against Crossref registry (${citationIntegrity.verifiedCount} verified)`);
+  } else if (citationIntegrity.totalReferences > 0) {
+    missingOrPartialItems.push("Bibliographic reference registry verification (0 citations confirmed in Crossref)");
+  }
+
   if (sampleCount > 0) compliantItems.push(`Sample size and cohort observations documented (${sampleSizes[0]})`);
   if (eqCount > 0) compliantItems.push("Mathematical specifications formally derived");
   if (repoCount > 0) compliantItems.push(`Open-science repository referenced (${dataRepos[0]})`);
 
-  const missingOrPartialItems: string[] = [
-    "Explicit post-hoc statistical power calculations (1 - beta >= 0.80)",
-  ];
+  missingOrPartialItems.push("Explicit post-hoc statistical power calculations (1 - beta >= 0.80)");
   if (repoCount === 0) {
     missingOrPartialItems.push("Persistent DOI link for data and code replication archive (Zenodo, OSF, GitHub)");
   }
@@ -1441,10 +1501,15 @@ function synthesizeGroundedAcademicReview(
     missingOrPartialItems.push("Dedicated limitations paragraph detailing observational boundaries and rival hypotheses");
   }
 
+  const totalGuidelineItems = compliantItems.length + missingOrPartialItems.length;
+  const scorePercent = totalGuidelineItems > 0
+    ? Math.round((compliantItems.length / totalGuidelineItems) * 100)
+    : 0;
+
   const reportingGuideline: ReportingGuidelineCheck = {
     guidelineName,
     standardType,
-    scorePercent: Math.min(94, Math.max(78, 80 + compliantItems.length * 3 - missingOrPartialItems.length * 3)),
+    scorePercent,
     compliantItems,
     missingOrPartialItems,
   };

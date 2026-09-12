@@ -145,47 +145,58 @@ export async function verifyDOIWithCrossref(doi: string): Promise<Partial<Refere
 }
 
 export async function batchVerifyReferences(rawReferences: string[]): Promise<ReferenceVerification[]> {
-  const results: ReferenceVerification[] = [];
+  const results: ReferenceVerification[] = new Array(rawReferences.length);
+  const concurrency = 6;
+  let currentIndex = 0;
 
-  for (const raw of rawReferences) {
-    // Extract DOI if present, stripping trailing punctuation (dots, commas, semicolons, brackets)
-    const doiMatch = raw.match(/\b(10\.\d{4,9}\/[-._;()/:A-Za-z0-9]+)\b/i);
-    const doi = doiMatch ? doiMatch[1].replace(/[.,;)\]]+$/, '') : undefined;
+  async function worker() {
+    while (currentIndex < rawReferences.length) {
+      const idx = currentIndex++;
+      const raw = rawReferences[idx];
 
-    if (doi) {
-      const crossrefData = await verifyDOIWithCrossref(doi);
-      results.push({
-        raw,
-        doi,
-        title: crossrefData.title,
-        journal: crossrefData.journal,
-        year: crossrefData.year,
-        authors: crossrefData.authors,
-        status: crossrefData.status || "unchecked",
-        isRetracted: crossrefData.isRetracted || false,
-        retractionDetails: crossrefData.retractionDetails,
-        crossrefUrl: crossrefData.crossrefUrl,
-      });
-    } else {
-      // Check for textual retraction or expression of concern markers
-      const retractionCheck = checkRetractionStatus(undefined, raw);
-      const isRetracted = retractionCheck.isRetracted;
-      const isExpressionOfConcern = retractionCheck.isExpressionOfConcern;
-      
-      const status: ReferenceStatus = isRetracted
-        ? "retracted"
-        : isExpressionOfConcern
-        ? "expression_of_concern"
-        : "unchecked"; // Without a DOI or online match, references are UNCHECKED, never falsely claimed 'valid'
+      // Extract DOI if present, stripping trailing punctuation (dots, commas, semicolons, brackets)
+      const doiMatch = raw.match(/\b(10\.\d{4,9}\/[-._;()/:A-Za-z0-9]+)\b/i);
+      const doi = doiMatch ? doiMatch[1].replace(/[.,;)\]]+$/, '') : undefined;
 
-      results.push({
-        raw,
-        status,
-        isRetracted,
-        retractionDetails: retractionCheck.reason,
-      });
+      if (doi) {
+        const crossrefData = await verifyDOIWithCrossref(doi);
+        results[idx] = {
+          raw,
+          doi,
+          title: crossrefData.title,
+          journal: crossrefData.journal,
+          year: crossrefData.year,
+          authors: crossrefData.authors,
+          status: crossrefData.status || "unchecked",
+          isRetracted: crossrefData.isRetracted || false,
+          retractionDetails: crossrefData.retractionDetails,
+          crossrefUrl: crossrefData.crossrefUrl,
+        };
+      } else {
+        // Check for textual retraction or expression of concern markers
+        const retractionCheck = checkRetractionStatus(undefined, raw);
+        const isRetracted = retractionCheck.isRetracted;
+        const isExpressionOfConcern = retractionCheck.isExpressionOfConcern;
+        
+        const status: ReferenceStatus = isRetracted
+          ? "retracted"
+          : isExpressionOfConcern
+          ? "expression_of_concern"
+          : "unchecked"; // Without a DOI or online match, references are UNCHECKED, never falsely claimed 'valid'
+
+        results[idx] = {
+          raw,
+          status,
+          isRetracted,
+          retractionDetails: retractionCheck.reason,
+        };
+      }
     }
   }
+
+  const workerCount = Math.min(concurrency, rawReferences.length);
+  const workers = Array.from({ length: workerCount }, () => worker());
+  await Promise.all(workers);
 
   return results;
 }

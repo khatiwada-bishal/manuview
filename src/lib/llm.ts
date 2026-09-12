@@ -74,6 +74,8 @@ export function getServerConfigStatus(): {
   };
 }
 
+const LLM_TIMEOUT_MS = 90_000;
+
 export async function callLLM(
   messages: LLMMessage[],
   config?: ProviderConfig
@@ -138,6 +140,8 @@ export async function callLLM(
     const cleanModel = encodeURIComponent(geminiModel.trim());
     const cleanKey = encodeURIComponent(apiKey.trim());
     const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${cleanModel}:generateContent?key=${cleanKey}`;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), LLM_TIMEOUT_MS);
     try {
       const systemMessage = messages.find(m => m.role === 'system')?.content;
       const nonSystemMessages = messages.filter(m => m.role !== 'system');
@@ -176,6 +180,7 @@ export async function callLLM(
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestPayload),
+        signal: controller.signal,
       });
 
       // Fallback: If systemInstruction or responseMimeType is rejected on legacy models with 400, retry merged
@@ -189,6 +194,7 @@ export async function callLLM(
             contents: [{ role: "user", parts: [{ text: mergedText }] }],
             generationConfig: { temperature: 0.2, maxOutputTokens: 8192 },
           }),
+          signal: controller.signal,
         });
       }
 
@@ -208,8 +214,13 @@ export async function callLLM(
       if (text) return text;
       throw new Error("Gemini returned empty candidate response.");
     } catch (err: any) {
+      if (err.name === 'AbortError') {
+        throw new Error(`Google Gemini call timed out after ${LLM_TIMEOUT_MS / 1000}s`);
+      }
       console.error("Gemini call failed:", err.message);
       throw new Error(`Google Gemini call failed: ${err.message}`);
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
@@ -232,27 +243,46 @@ export async function callLLM(
       }
     }
     const chosenModel = model || getEnv('OPENAI_MODEL') || (provider === "groq" ? "llama-3.3-70b-versatile" : "gpt-4o-mini");
+    const isReasoningModel = /^o[13](?:-|$)/i.test(chosenModel);
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), LLM_TIMEOUT_MS);
 
     try {
-        const requestPayload: any = {
-          model: chosenModel,
-          messages,
-          temperature: 0.2,
-          max_tokens: 8192,
-          stream: false,
-        };
-        if (provider === "groq") {
-          requestPayload.response_format = { type: "json_object" };
+      const formattedMessages = messages.map(m => {
+        if (isReasoningModel && m.role === 'system') {
+          return { role: 'developer', content: m.content };
         }
+        return m;
+      });
 
-        const response = await fetch(endpoint, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${apiKey.trim()}`,
-          },
-          body: JSON.stringify(requestPayload),
-        });
+      const requestPayload: any = {
+        model: chosenModel,
+        messages: formattedMessages,
+        stream: false,
+      };
+
+      if (isReasoningModel) {
+        requestPayload.max_completion_tokens = 8192;
+        // Reasoning models reject temperature parameter
+      } else {
+        requestPayload.temperature = 0.2;
+        requestPayload.max_tokens = 8192;
+      }
+
+      if (provider === "groq") {
+        requestPayload.response_format = { type: "json_object" };
+      }
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey.trim()}`,
+        },
+        body: JSON.stringify(requestPayload),
+        signal: controller.signal,
+      });
 
       if (!response.ok) {
         let errMessage = `HTTP ${response.status}`;
@@ -270,8 +300,13 @@ export async function callLLM(
       if (content) return content;
       throw new Error(`${provider.toUpperCase()} returned empty completion response.`);
     } catch (err: any) {
+      if (err.name === 'AbortError') {
+        throw new Error(`${provider.toUpperCase()} call timed out after ${LLM_TIMEOUT_MS / 1000}s`);
+      }
       console.error(`${provider} call failed:`, err.message);
       throw new Error(`${provider.toUpperCase()} call failed: ${err.message}`);
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
@@ -279,6 +314,8 @@ export async function callLLM(
   // 3. Anthropic Claude API
   // -----------------------------------------------------------
   if (provider === "anthropic" && apiKey) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), LLM_TIMEOUT_MS);
     try {
       const systemMessage = messages.find(m => m.role === 'system')?.content || "";
       const userAssistantMessages = messages
@@ -300,6 +337,7 @@ export async function callLLM(
           messages: userAssistantMessages,
           temperature: 0.2,
         }),
+        signal: controller.signal,
       });
 
       if (!response.ok) {
@@ -318,8 +356,13 @@ export async function callLLM(
       if (text) return text;
       throw new Error("Anthropic returned empty message response.");
     } catch (err: any) {
+      if (err.name === 'AbortError') {
+        throw new Error(`Anthropic call timed out after ${LLM_TIMEOUT_MS / 1000}s`);
+      }
       console.error("Anthropic call failed:", err.message);
       throw new Error(`Anthropic call failed: ${err.message}`);
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
@@ -327,6 +370,8 @@ export async function callLLM(
   // 4. Local Ollama (100% Offline & Free)
   // -----------------------------------------------------------
   if (provider === "ollama") {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), LLM_TIMEOUT_MS);
     try {
       let cleanBase = (baseUrl || "http://localhost:11434").trim();
       if (!cleanBase.startsWith("http://") && !cleanBase.startsWith("https://")) {
@@ -341,8 +386,13 @@ export async function callLLM(
           model: model || getEnv('OLLAMA_MODEL') || "llama3.3",
           messages,
           stream: false,
-          options: { temperature: 0.2, num_predict: 8192 },
+          options: {
+            temperature: 0.2,
+            num_predict: 8192,
+            num_ctx: 16384,
+          },
         }),
+        signal: controller.signal,
       });
 
       if (response.ok) {
@@ -351,7 +401,12 @@ export async function callLLM(
       }
       throw new Error(`Ollama service returned HTTP ${response.status}`);
     } catch (err: any) {
+      if (err.name === 'AbortError') {
+        throw new Error(`Local Ollama service call timed out after ${LLM_TIMEOUT_MS / 1000}s`);
+      }
       throw new Error(`Local Ollama service unreachable at ${baseUrl}: ${err.message}`);
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 

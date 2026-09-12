@@ -114,6 +114,15 @@ export interface ManuscriptSection {
   content: string;
 }
 
+export interface SectionProvenance {
+  methodsInferred?: boolean;
+  resultsInferred?: boolean;
+  methodsMissing?: boolean;
+  resultsMissing?: boolean;
+  introductionInferred?: boolean;
+  discussionInferred?: boolean;
+}
+
 export interface ParsedManuscript {
   title: string;
   abstract: string;
@@ -126,6 +135,7 @@ export interface ParsedManuscript {
     discussion?: string;
     conclusion?: string;
   };
+  sectionProvenance?: SectionProvenance;
   rawText: string;
   references: string[];
   classification?: DocumentClassification;
