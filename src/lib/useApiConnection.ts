@@ -21,7 +21,7 @@ export function useApiConnection() {
     provider: null,
   });
 
-  const checkConnection = useCallback(async () => {
+  const checkConnection = useCallback(async (signal?: AbortSignal) => {
     setState((prev) => ({ ...prev, isLoading: true }));
     try {
       let config: ProviderConfig | undefined;
@@ -38,6 +38,7 @@ export function useApiConnection() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ config }),
+        signal,
       });
 
       const data = await res.json();
@@ -48,7 +49,7 @@ export function useApiConnection() {
           isConnected: true,
           isLoading: false,
           modelName: cleanModel,
-          latencyMs: data.latencyMs || 120,
+          latencyMs: typeof data.latencyMs === "number" ? data.latencyMs : null,
           provider: data.provider || "AI",
         });
       } else {
@@ -62,6 +63,7 @@ export function useApiConnection() {
         });
       }
     } catch (err: any) {
+      if (err?.name === "AbortError") return;
       setState({
         isConnected: false,
         isLoading: false,
@@ -74,20 +76,22 @@ export function useApiConnection() {
   }, []);
 
   useEffect(() => {
-    checkConnection();
+    const controller = new AbortController();
+    checkConnection(controller.signal);
 
     const handleConfigChange = () => {
-      checkConnection();
+      checkConnection(controller.signal);
     };
 
     window.addEventListener("manuview_config_changed", handleConfigChange);
     return () => {
+      controller.abort();
       window.removeEventListener("manuview_config_changed", handleConfigChange);
     };
   }, [checkConnection]);
 
   return {
     ...state,
-    refresh: checkConnection,
+    refresh: () => checkConnection(),
   };
 }

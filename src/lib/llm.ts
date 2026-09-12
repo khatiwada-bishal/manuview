@@ -29,46 +29,52 @@ function getSavedClientConfig(): ProviderConfig | undefined {
 
 export function getServerConfigStatus(): {
   hasServerKey: boolean;
+  hasClientKey?: boolean;
   activeProvider: LLMProvider | 'none';
   availableProviders: string[];
   baseUrl?: string;
   model?: string;
 } {
   const saved = getSavedClientConfig();
-  if (saved && saved.apiKey) {
+  const serverProviders: string[] = [];
+  let serverActiveProvider: LLMProvider | 'none' = 'none';
+
+  if (getEnv('OPENAI_API_KEY')) {
+    serverProviders.push('openai');
+    if (serverActiveProvider === 'none') serverActiveProvider = 'openai';
+  }
+  if (getEnv('GEMINI_API_KEY') || getEnv('GOOGLE_API_KEY')) {
+    serverProviders.push('gemini');
+    if (serverActiveProvider === 'none') serverActiveProvider = 'gemini';
+  }
+  if (getEnv('GROQ_API_KEY')) {
+    serverProviders.push('groq');
+    if (serverActiveProvider === 'none') serverActiveProvider = 'groq';
+  }
+  if (getEnv('ANTHROPIC_API_KEY')) {
+    serverProviders.push('anthropic');
+    if (serverActiveProvider === 'none') serverActiveProvider = 'anthropic';
+  }
+
+  const hasServerKey = serverProviders.length > 0;
+  const hasClientKey = Boolean(saved && saved.apiKey);
+
+  if (hasClientKey && saved) {
     return {
-      hasServerKey: true,
+      hasServerKey,
+      hasClientKey: true,
       activeProvider: saved.provider,
-      availableProviders: [saved.provider],
+      availableProviders: Array.from(new Set([saved.provider, ...serverProviders])),
       baseUrl: saved.baseUrl,
       model: saved.model,
     };
   }
 
-  const providers: string[] = [];
-  let activeProvider: LLMProvider | 'none' = 'none';
-
-  if (getEnv('OPENAI_API_KEY')) {
-    providers.push('openai');
-    if (activeProvider === 'none') activeProvider = 'openai';
-  }
-  if (getEnv('GEMINI_API_KEY') || getEnv('GOOGLE_API_KEY')) {
-    providers.push('gemini');
-    if (activeProvider === 'none') activeProvider = 'gemini';
-  }
-  if (getEnv('GROQ_API_KEY')) {
-    providers.push('groq');
-    if (activeProvider === 'none') activeProvider = 'groq';
-  }
-  if (getEnv('ANTHROPIC_API_KEY')) {
-    providers.push('anthropic');
-    if (activeProvider === 'none') activeProvider = 'anthropic';
-  }
-
   return {
-    hasServerKey: providers.length > 0,
-    activeProvider,
-    availableProviders: providers,
+    hasServerKey,
+    hasClientKey: false,
+    activeProvider: serverActiveProvider,
+    availableProviders: serverProviders,
     baseUrl: getEnv('OPENAI_BASE_URL') || undefined,
     model: getEnv('OPENAI_MODEL') || getEnv('GEMINI_MODEL') || getEnv('GROQ_MODEL') || undefined,
   };

@@ -45,34 +45,46 @@ export function extractDOIs(text: string): string[] {
 
 export function extractReferencesFromText(text: string): string[] {
   // Locate "References", "Bibliography", or "Literature Cited"
-  const refHeadingRegex = /(?:\n|^)(?:References|Bibliography|Literature Cited|Works Cited)\b/i;
-  const match = text.search(refHeadingRegex);
-  
-  if (match === -1) {
-    // If no heading, check for bracketed references [1], [2] or numbered lists
-    const lines = text.split('\n').filter(l => l.trim().length > 20);
-    const numberedRefs = lines.filter(l => /^(?:\[\d+\]|\d+\.|\([A-Za-z]+,\s*\d{4}\))/.test(l.trim()));
+  // Pick the last heading occurrence that has sufficient text following it (avoids TOC rows in PDFs)
+  const refHeadingRegex = /(?:\n|^)(?:References|Bibliography|Literature Cited|Works Cited)\s*(?:\n|:|$)/gi;
+  const matches = Array.from(text.matchAll(refHeadingRegex));
+
+  let matchIndex = -1;
+  for (let i = matches.length - 1; i >= 0; i--) {
+    const idx = matches[i].index;
+    if (typeof idx === "number" && text.length - idx >= 50) {
+      matchIndex = idx;
+      break;
+    }
+  }
+
+  if (matchIndex === -1) {
+    // If no heading, check for bracketed references [1], [2] or author-year citations
+    const lines = text.split("\n").map((l) => l.trim()).filter((l) => l.length > 20);
+    const numberedRefs = lines.filter((l) =>
+      /^(?:\[\d+\]|\d{1,3}\.\s+[A-Z]|\([A-Za-z]+,\s*\d{4}\))/.test(l)
+    );
     if (numberedRefs.length >= 3) return numberedRefs;
     return [];
   }
 
-  const refSection = text.slice(match);
+  const refSection = text.slice(matchIndex);
   const lines = refSection
-    .split('\n')
-    .map(l => l.trim())
-    .filter(l => l.length > 25 && !/^(References|Bibliography|Literature Cited)$/i.test(l));
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => l.length > 25 && !/^(?:References|Bibliography|Literature Cited|Works Cited)\b/i.test(l));
 
-  // Group multi-line entries if needed
+  // Group multi-line entries
   const refs: string[] = [];
-  let currentRef = '';
+  let currentRef = "";
 
   for (const line of lines) {
-    if (/^(?:\[\d+\]|\d+\.|\([A-Za-z]+,\s*\d{4}\)|[A-Z][a-z]+,\s*[A-Z])/.test(line)) {
+    if (/^(?:\[\d+\]|\d{1,3}\.\s+[A-Z]|\([A-Za-z]+,\s*\d{4}\)|[A-Z][a-z]+,\s*[A-Z])/.test(line)) {
       if (currentRef) refs.push(currentRef);
       currentRef = line;
     } else {
       if (currentRef) {
-        currentRef += ' ' + line;
+        currentRef += " " + line;
       } else {
         currentRef = line;
       }
@@ -80,5 +92,6 @@ export function extractReferencesFromText(text: string): string[] {
   }
   if (currentRef) refs.push(currentRef);
 
-  return refs.length > 0 ? refs : lines.slice(0, 50);
+  // Return parsed references, or empty array if none parsed (never slice arbitrary body lines)
+  return refs;
 }
