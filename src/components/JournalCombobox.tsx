@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { Search, Plus, Check, X, BookOpen, Trash2, ChevronDown } from "lucide-react";
 import MASTER_JOURNAL_LIST from "@/lib/journal-names.json";
 import { JOURNAL_CATALOG } from "@/lib/journals";
@@ -29,10 +30,56 @@ export default function JournalCombobox({
   const [customJournals, setCustomJournals] = useState<string[]>([]);
   const [activeIndex, setActiveIndex] = useState<number>(-1);
   const [addedToast, setAddedToast] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+  const [dropdownCoords, setDropdownCoords] = useState<{
+    top: number;
+    left: number;
+    width: number;
+    openUpwards: boolean;
+  }>({ top: 0, left: 0, width: 0, openUpwards: false });
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Update fixed position based on container input bounding client rect
+  const updateCoords = useCallback(() => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const dropdownHeight = 320;
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const openUpwards = spaceBelow < dropdownHeight && rect.top > dropdownHeight;
+
+    setDropdownCoords({
+      top: openUpwards ? Math.max(8, rect.top - 6) : rect.bottom + 6,
+      left: rect.left,
+      width: rect.width,
+      openUpwards,
+    });
+  }, []);
+
+  // Listen to window resize and scroll events (capture: true catches any nested scrollable parent)
+  useEffect(() => {
+    if (!isOpen) return;
+    updateCoords();
+
+    const handleScrollOrResize = () => {
+      updateCoords();
+    };
+
+    window.addEventListener("resize", handleScrollOrResize);
+    window.addEventListener("scroll", handleScrollOrResize, true);
+
+    return () => {
+      window.removeEventListener("resize", handleScrollOrResize);
+      window.removeEventListener("scroll", handleScrollOrResize, true);
+    };
+  }, [isOpen, updateCoords]);
 
   // Set of curated catalog journal names for quick lookup
   const catalogSet = useMemo(() => {
@@ -115,10 +162,14 @@ export default function JournalCombobox({
 
   const canAddNew = trimmedQuery.length >= 3 && !isExactMatch;
 
-  // Close dropdown on click outside
+  // Close dropdown on click outside (checks both input container and portal dropdown)
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      const clickedInsideContainer = containerRef.current && containerRef.current.contains(target);
+      const clickedInsideDropdown = dropdownRef.current && dropdownRef.current.contains(target);
+
+      if (!clickedInsideContainer && !clickedInsideDropdown) {
         setIsOpen(false);
         // If user left text without explicitly selecting, keep current value
         setSearchQuery(value || "");
@@ -322,13 +373,25 @@ export default function JournalCombobox({
         </div>
       )}
 
-      {/* Dropdown Menu */}
-      {isOpen && (
-        <div className="absolute top-full left-0 mt-1.5 w-full bg-white dark:bg-[#161F30] border border-[#EBEBEA] dark:border-[#334155] rounded-xl shadow-xl z-50 overflow-hidden text-xs divide-y divide-[#F7F7F5] dark:divide-[#1F2937] animate-fadeIn">
+      {/* Dropdown Menu rendered via Portal into document.body */}
+      {isOpen && mounted && typeof document !== "undefined" && createPortal(
+        <div
+          ref={dropdownRef}
+          style={{
+            position: "fixed",
+            ...(dropdownCoords.openUpwards
+              ? { bottom: `${window.innerHeight - dropdownCoords.top}px` }
+              : { top: `${dropdownCoords.top}px` }),
+            left: `${dropdownCoords.left}px`,
+            width: `${dropdownCoords.width}px`,
+            zIndex: 99999,
+          }}
+          className="bg-white dark:bg-[#161F30] border border-[#EBEBEA] dark:border-[#334155] rounded-xl shadow-2xl overflow-hidden text-xs divide-y divide-[#F7F7F5] dark:divide-[#1F2937] animate-fadeIn"
+        >
           {/* Header Info Bar */}
           <div className="px-3 py-1.5 bg-[#FAF9F7] dark:bg-[#0F141F] text-[10px] text-[#787774] dark:text-neutral-400 flex items-center justify-between font-mono">
             <span className="flex items-center gap-1">
-              <Search className="w-2.5 h-2.5 text-[#9B9A97]" />
+              <Search className="w-2.5 h-2.5 text-[#9B9A97] dark:text-neutral-500" />
               <span>{allJournals.length.toLocaleString()} catalogued journals</span>
             </span>
             <span>
@@ -341,8 +404,8 @@ export default function JournalCombobox({
             <div
               data-index={0}
               onClick={() => handleAddCustomJournal()}
-              className={`px-3 py-2.5 bg-[#F4F9FF] border-b border-[#E1EFFF] cursor-pointer flex items-center justify-between transition ${
-                activeIndex === 0 ? "bg-[#E5F2FF] text-[#0066CC]" : "hover:bg-[#EBF5FF] text-[#0075eb]"
+              className={`px-3 py-2.5 bg-[#F4F9FF] dark:bg-blue-950/40 border-b border-[#E1EFFF] dark:border-blue-900/50 cursor-pointer flex items-center justify-between transition ${
+                activeIndex === 0 ? "bg-[#E5F2FF] dark:bg-blue-900/40 text-[#0066CC] dark:text-blue-300" : "hover:bg-[#EBF5FF] dark:hover:bg-blue-900/30 text-[#0075eb] dark:text-blue-400"
               }`}
             >
               <div className="flex items-center gap-2">
@@ -350,15 +413,15 @@ export default function JournalCombobox({
                   <Plus className="w-3.5 h-3.5" />
                 </span>
                 <div>
-                  <div className="font-semibold text-xs text-[#0066CC]">
+                  <div className="font-semibold text-xs text-[#0066CC] dark:text-blue-300">
                     Add "{trimmedQuery}" to list
                   </div>
-                  <div className="text-[10px] text-[#0075eb]/70">
+                  <div className="text-[10px] text-[#0075eb]/70 dark:text-blue-400/70">
                     Not found in catalog — click to save and evaluate rubric
                   </div>
                 </div>
               </div>
-              <span className="text-[10px] font-semibold bg-[#D0E6FF] text-[#0055AA] px-1.5 py-0.5 rounded tracking-wide uppercase">
+              <span className="text-[10px] font-semibold bg-[#D0E6FF] dark:bg-blue-900/60 text-[#0055AA] dark:text-blue-200 px-1.5 py-0.5 rounded tracking-wide uppercase">
                 New Journal
               </span>
             </div>
@@ -367,21 +430,21 @@ export default function JournalCombobox({
           {/* List of Matching Journals */}
           <div
             ref={listRef}
-            className="max-h-64 overflow-y-auto divide-y divide-[#F7F7F5] overscroll-contain"
+            className="max-h-64 overflow-y-auto divide-y divide-[#F7F7F5] dark:divide-[#1F2937] overscroll-contain"
           >
             {trimmedQuery.length < 3 ? (
-              <div className="px-4 py-8 text-center text-[#787774]">
-                <BookOpen className="w-5 h-5 mx-auto mb-2 text-[#9B9A97]" />
-                <p className="font-semibold text-xs text-[#2F3437]">Type at least 3 letters to search</p>
-                <p className="text-[11px] text-[#9B9A97] mt-1 max-w-xs mx-auto">
+              <div className="px-4 py-8 text-center text-[#787774] dark:text-neutral-400">
+                <BookOpen className="w-5 h-5 mx-auto mb-2 text-[#9B9A97] dark:text-neutral-500" />
+                <p className="font-semibold text-xs text-[#2F3437] dark:text-neutral-200">Type at least 3 letters to search</p>
+                <p className="text-[11px] text-[#9B9A97] dark:text-neutral-400 mt-1 max-w-xs mx-auto">
                   Type 3 or more characters to display and scroll through all matching academic journals.
                 </p>
               </div>
             ) : filteredJournals.length === 0 && !canAddNew ? (
-              <div className="px-4 py-6 text-center text-[#787774]">
-                <BookOpen className="w-6 h-6 mx-auto mb-2 text-[#CCCCCC]" />
-                <p className="font-medium text-xs text-[#2F3437]">No matching journals found</p>
-                <p className="text-[11px] text-[#9B9A97] mt-1">
+              <div className="px-4 py-6 text-center text-[#787774] dark:text-neutral-400">
+                <BookOpen className="w-6 h-6 mx-auto mb-2 text-[#CCCCCC] dark:text-neutral-600" />
+                <p className="font-medium text-xs text-[#2F3437] dark:text-neutral-200">No matching journals found</p>
+                <p className="text-[11px] text-[#9B9A97] dark:text-neutral-400 mt-1">
                   Type at least 3 characters to create and add a new journal title.
                 </p>
               </div>
@@ -415,29 +478,29 @@ export default function JournalCombobox({
                             ? "bg-[#0F6B43]"
                             : isCustomAdded
                             ? "bg-[#9065B0]"
-                            : "bg-[#D3D1CB]"
+                            : "bg-[#D3D1CB] dark:bg-neutral-600"
                         }`}
                       />
-                      <span className="truncate font-medium text-xs text-[#2F3437]">
+                      <span className="truncate font-medium text-xs text-[#2F3437] dark:text-neutral-100">
                         {journal}
                       </span>
                     </div>
 
                     <div className="flex items-center gap-1.5 flex-shrink-0">
                       {isCurated && (
-                        <span className="text-[9px] font-medium bg-[#EBF8F2] text-[#0F6B43] border border-[#BDEBD6] px-1.5 py-0.5 rounded">
+                        <span className="text-[9px] font-medium bg-[#EBF8F2] dark:bg-emerald-950/50 text-[#0F6B43] dark:text-emerald-300 border border-[#BDEBD6] dark:border-emerald-800 px-1.5 py-0.5 rounded">
                           Curated
                         </span>
                       )}
                       {isCustomAdded && (
                         <div className="flex items-center gap-1">
-                          <span className="text-[9px] font-medium bg-[#F6EEFB] text-[#783CB3] border border-[#E9D4F7] px-1.5 py-0.5 rounded">
+                          <span className="text-[9px] font-medium bg-[#F6EEFB] dark:bg-purple-950/50 text-[#783CB3] dark:text-purple-300 border border-[#E9D4F7] dark:border-purple-800 px-1.5 py-0.5 rounded">
                             Custom
                           </span>
                           <button
                             type="button"
                             onClick={(e) => handleDeleteCustomJournal(e, journal)}
-                            className="p-1 hover:bg-[#FDF0EF] text-[#9B9A97] hover:text-[#7C2D2B] rounded transition"
+                            className="p-1 hover:bg-[#FDF0EF] dark:hover:bg-rose-950/40 text-[#9B9A97] dark:text-neutral-400 hover:text-[#7C2D2B] dark:hover:text-rose-300 rounded transition"
                             title="Remove from custom list"
                           >
                             <Trash2 className="w-2.5 h-2.5" />
@@ -445,7 +508,7 @@ export default function JournalCombobox({
                         </div>
                       )}
                       {isSelected && (
-                        <Check className="w-3.5 h-3.5 text-[#0075eb]" />
+                        <Check className="w-3.5 h-3.5 text-[#0075eb] dark:text-blue-400" />
                       )}
                     </div>
                   </div>
@@ -455,17 +518,18 @@ export default function JournalCombobox({
           </div>
 
           {/* Footer Guide / Status */}
-          <div className="px-3 py-1.5 bg-[#FAF9F7] text-[10px] text-[#787774] flex items-center justify-between border-t border-[#EBEBEA]">
+          <div className="px-3 py-1.5 bg-[#FAF9F7] dark:bg-[#0F141F] text-[10px] text-[#787774] dark:text-neutral-400 flex items-center justify-between border-t border-[#EBEBEA] dark:border-[#334155]">
             <span>
-              Use <kbd className="bg-white border border-[#EBEBEA] rounded px-1 py-0.2 font-mono text-[9px]">↑</kbd> <kbd className="bg-white border border-[#EBEBEA] rounded px-1 py-0.2 font-mono text-[9px]">↓</kbd> to navigate, <kbd className="bg-white border border-[#EBEBEA] rounded px-1 py-0.2 font-mono text-[9px]">Enter</kbd> to pick
+              Use <kbd className="bg-white dark:bg-neutral-800 border border-[#EBEBEA] dark:border-neutral-700 rounded px-1 py-0.2 font-mono text-[9px] text-neutral-700 dark:text-neutral-300">↑</kbd> <kbd className="bg-white dark:bg-neutral-800 border border-[#EBEBEA] dark:border-neutral-700 rounded px-1 py-0.2 font-mono text-[9px] text-neutral-700 dark:text-neutral-300">↓</kbd> to navigate, <kbd className="bg-white dark:bg-neutral-800 border border-[#EBEBEA] dark:border-neutral-700 rounded px-1 py-0.2 font-mono text-[9px] text-neutral-700 dark:text-neutral-300">Enter</kbd> to pick
             </span>
             {value && (
-              <span className="text-[#0F6B43] font-medium flex items-center gap-1">
+              <span className="text-[#0F6B43] dark:text-emerald-400 font-medium flex items-center gap-1">
                 <Check className="w-2.5 h-2.5" /> Selected
               </span>
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

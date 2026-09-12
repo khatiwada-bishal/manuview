@@ -437,7 +437,7 @@ export default function ScanPage() {
         </div>
 
         {/* Diagnostic Configuration Card */}
-        <div className="mb-6 rounded-2xl liquid-glass-card border border-black/5 dark:border-white/10 p-5 print:hidden space-y-4 shadow-sm">
+        <div className="mb-6 rounded-2xl liquid-glass-card border border-black/5 dark:border-white/10 p-5 print:hidden space-y-4 shadow-sm relative z-30">
           {/* Top Row: Target Journal Selection & AI Status Indicator */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
             {/* Target Journal Field */}
@@ -452,7 +452,7 @@ export default function ScanPage() {
                   Calibrates editorial acceptance rubric
                 </span>
               </div>
-              <div className="relative z-20">
+              <div className="relative z-30">
                 <JournalCombobox
                   value={targetJournal}
                   onChange={handleTargetJournalChange}
@@ -487,7 +487,7 @@ export default function ScanPage() {
               <div className="flex flex-wrap items-center gap-2">
                 {/* Connected with Model Switcher Dropdown */}
                 {apiStatus === 'connected' && (
-                  <div className="relative inline-block flex-1 min-w-[180px]">
+                  <div className="relative inline-block flex-1 min-w-[180px] z-30">
                     <button
                       type="button"
                       onClick={() => setModelDropdownOpen(!modelDropdownOpen)}
