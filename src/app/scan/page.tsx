@@ -1244,6 +1244,24 @@ export default function ScanPage() {
               )
             ) : (
               <>
+                {/* Provenance Disclosure Banner */}
+                {report.executionMode === "heuristic_offline" && (
+                  <div className="p-4 rounded-xl bg-[#FBF3DB] border border-[#F4E2B6] text-[#78510E] flex items-start gap-3 text-xs leading-relaxed">
+                    <span className="text-base select-none">⚡</span>
+                    <div>
+                      <div className="font-semibold text-[13px] text-[#5C3B00] mb-0.5">
+                        Deterministic Heuristic Calibration Active
+                      </div>
+                      <div>
+                        {report.llmCallError ? (
+                          <span className="font-medium text-[#7C2D2B]">Notice: {report.llmCallError}. </span>
+                        ) : null}
+                        Diagnostics were generated using deterministic structural heuristics, Crossref registry checks, and disciplinary catalog calibrations. To enable live deep LLM critiques and multi-persona adversarial debates, connect an AI provider in <strong>AI Settings</strong>.
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* Score & Editorial Triage Block */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   {/* Readiness Score Card */}
@@ -1348,7 +1366,18 @@ export default function ScanPage() {
                       <div key={key} className="p-4 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] flex flex-col justify-between hover:border-[#d0d0d0] hover:shadow-2xs transition space-y-3">
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold text-[#2F3437]">{dim.label}</span>
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-xs font-semibold text-[#2F3437]">{dim.label}</span>
+                              {dim.source && (
+                                <span className={`text-[9px] px-1 py-0.2 rounded font-medium border ${
+                                  dim.source === "llm"
+                                    ? "bg-[#EDF6EE] text-[#1E5A2A] border-[#CBE7CE]"
+                                    : "bg-[#F7F7F5] text-[#9B9A97] border-[#EBEBEA]"
+                                }`}>
+                                  {dim.source === "llm" ? "AI" : "Heuristic"}
+                                </span>
+                              )}
+                            </div>
                             <span className={`px-2 py-0.5 rounded font-mono text-xs font-semibold border ${
                               dim.score >= 4 ? "bg-[#EDF6EE] text-[#1E5A2A] border-[#CBE7CE]" :
                               dim.score === 3 ? "bg-[#FBF3DB] text-[#78510E] border-[#F4E2B6]" :
@@ -1474,6 +1503,17 @@ export default function ScanPage() {
                               {issue.category}
                             </span>
                             <span className="font-mono text-[10px] text-[#787774]">{issue.id}</span>
+                            {issue.source && (
+                              <span className={`text-[9px] px-1.5 py-0.2 rounded font-medium border ${
+                                issue.source === "crossref"
+                                  ? "bg-[#EFF6FF] text-[#1E40AF] border-[#BFDBFE]"
+                                  : issue.source === "llm"
+                                  ? "bg-[#EDF6EE] text-[#1E5A2A] border-[#CBE7CE]"
+                                  : "bg-[#F7F7F5] text-[#9B9A97] border-[#EBEBEA]"
+                              }`}>
+                                {issue.source === "crossref" ? "Registry" : issue.source === "llm" ? "AI" : "Heuristic"}
+                              </span>
+                            )}
                           </div>
                           <span className="text-[11px] text-[#787774]">
                             {issue.priority === "A" ? "Desk-Reject Hazard" : "Reviewer Objection"}
@@ -1622,6 +1662,15 @@ export default function ScanPage() {
                               {isDevilsAdvocate && (
                                 <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-red-100 text-red-800 border border-red-200">
                                   ⚡ Hostile Stress-Test / Adversarial Referee
+                                </span>
+                              )}
+                              {active.source && (
+                                <span className={`text-[10px] font-medium px-2 py-0.5 rounded border ${
+                                  active.source === "llm"
+                                    ? "bg-[#EDF6EE] text-[#1E5A2A] border-[#CBE7CE]"
+                                    : "bg-[#F7F7F5] text-[#787774] border-[#EBEBEA]"
+                                }`}>
+                                  {active.source === "llm" ? "Live AI Panel" : "Synthetic Role Profile"}
                                 </span>
                               )}
                             </div>

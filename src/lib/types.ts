@@ -12,6 +12,7 @@ export interface DimensionScore {
   verdict: string;
   strengths: string[];
   vulnerabilities: string[];
+  source?: 'llm' | 'heuristic';
 }
 
 export type PriorityLevel = 'A' | 'B' | 'C';
@@ -27,6 +28,7 @@ export interface PriorityIssue {
   reviewerQuote: string; // How a reviewer or editor would formulate this critique
   actionableFix: string; // Specific concrete step to resolve before submission
   rebuttalStrategy?: string; // Point-by-point author rebuttal framing for journal response letter
+  source?: 'llm' | 'heuristic' | 'crossref';
 }
 
 export interface ReviewerPersonaFeedback {
@@ -44,6 +46,7 @@ export interface ReviewerPersonaFeedback {
   mustAddressItems: string[];
   evidenceAnchors?: string[];
   counterArguments?: string[];
+  source?: 'llm' | 'heuristic';
 }
 
 export type ReferenceStatus = 'valid' | 'retracted' | 'expression_of_concern' | 'unresolvable' | 'unchecked';
@@ -190,6 +193,8 @@ export interface FullReviewReport {
   journalRecommendations: JournalRecommendation[];
   citationIntegrity: CitationIntegritySummary;
   reportingGuideline?: ReportingGuidelineCheck;
+  executionMode?: 'llm_synthesized' | 'heuristic_offline';
+  llmCallError?: string;
 }
 
 export interface BriefJournalFitReport {

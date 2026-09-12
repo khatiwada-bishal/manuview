@@ -217,9 +217,6 @@ function generateFullReportHtml(r: FullReviewReport): string {
       : r.overallScore || 70;
   const dateStr = new Date().toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
 
-  const personasJson = JSON.stringify(r.reviewerPersonas || []);
-  const issuesJson = JSON.stringify(r.priorityIssues || []);
-
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -599,7 +596,7 @@ function generateFullReportHtml(r: FullReviewReport): string {
           <div class="dimension-card">
             <div class="dim-header">
               <strong style="font-size: 14px;">${escapeHtml(dim.label)}</strong>
-              <span class="dim-score">${dim.score} / 5</span>
+              <span class="dim-score">${escapeHtml(String(dim.score))} / 5</span>
             </div>
             <div class="dim-verdict">${escapeHtml(dim.verdict)}</div>
             ${(dim.strengths && dim.strengths.length > 0) ? `
@@ -622,26 +619,29 @@ function generateFullReportHtml(r: FullReviewReport): string {
     <!-- Tab 4: Priority Issues -->
     <div id="tab-issues" class="tab-content">
       <div class="filter-pills">
-        <button class="filter-btn active" onclick="filterIssues('all')">All Issues</button>
-        <button class="filter-btn" onclick="filterIssues('A')">🚨 Priority A (Desk-Reject Risk)</button>
-        <button class="filter-btn" onclick="filterIssues('B')">⚠️ Priority B (Major Technical)</button>
-        <button class="filter-btn" onclick="filterIssues('C')">💡 Priority C (Presentation)</button>
+        <button class="filter-btn active" onclick="filterIssues('all', this)">All Issues</button>
+        <button class="filter-btn" onclick="filterIssues('A', this)">🚨 Priority A (Desk-Reject Risk)</button>
+        <button class="filter-btn" onclick="filterIssues('B', this)">⚠️ Priority B (Major Technical)</button>
+        <button class="filter-btn" onclick="filterIssues('C', this)">💡 Priority C (Presentation)</button>
       </div>
 
       <div id="issues-container">
-        ${(r.priorityIssues || []).map(iss => `
-          <div class="issue-item" data-priority="${iss.priority}">
+        ${(r.priorityIssues || []).map(iss => {
+          const priority = (iss.priority || "B").toUpperCase();
+          const priorityClass = priority.toLowerCase();
+          return `
+          <div class="issue-item" data-priority="${escapeHtml(priority)}">
             <div class="issue-header">
-              <span class="badge-${iss.priority.toLowerCase()}">Priority ${iss.priority}: ${escapeHtml(iss.category)}</span>
-              <span style="font-size: 11px; color: var(--text-muted); font-mono;">${iss.id}</span>
+              <span class="badge-${priorityClass}">Priority ${escapeHtml(priority)}: ${escapeHtml(iss.category || "General")}</span>
+              <span style="font-size: 11px; color: var(--text-muted); font-mono;">${escapeHtml(iss.id || "")}</span>
             </div>
-            <h4 style="font-size: 15px; margin: 6px 0;">${escapeHtml(iss.title)}</h4>
+            <h4 style="font-size: 15px; margin: 6px 0;">${escapeHtml(iss.title || "")}</h4>
             ${iss.evidenceAnchor ? `
               <div style="font-family: monospace; font-size: 11px; background: #F1F5F9; color: #475569; padding: 3px 8px; border-radius: 4px; display: inline-block; margin-bottom: 6px;">
                 Anchor: ${escapeHtml(iss.evidenceAnchor)}
               </div>
             ` : ""}
-            <p style="font-size: 13px; color: #334155;">${escapeHtml(iss.description)}</p>
+            <p style="font-size: 13px; color: #334155;">${escapeHtml(iss.description || "")}</p>
             ${iss.reviewerQuote ? `<div class="quote-box">Reviewer Anticipated Reaction: ${escapeHtml(iss.reviewerQuote)}</div>` : ""}
             ${iss.actionableFix ? `<div class="fix-box"><strong>Actionable Fix:</strong> ${escapeHtml(iss.actionableFix)}</div>` : ""}
             ${iss.rebuttalStrategy ? `
@@ -650,7 +650,7 @@ function generateFullReportHtml(r: FullReviewReport): string {
               </div>
             ` : ""}
           </div>
-        `).join("")}
+        `;}).join("")}
       </div>
     </div>
 
@@ -659,10 +659,10 @@ function generateFullReportHtml(r: FullReviewReport): string {
       <div class="journal-grid">
         ${(r.journalRecommendations || []).map(j => `
           <div class="journal-card">
-            <div class="journal-tier">${escapeHtml(j.tier)} Match (Fit: ${j.fitScore}%)</div>
-            <div class="journal-name">${escapeHtml(j.journalName)}</div>
-            <div class="journal-meta">Impact Factor: ${j.impactFactor} • ${escapeHtml(j.publisher)}</div>
-            <p style="font-size: 13px; color: #334155; margin-bottom: 12px;">${escapeHtml(j.scopeRationale)}</p>
+            <div class="journal-tier">${escapeHtml(j.tier || "Standard")} Match (Fit: ${escapeHtml(String(j.fitScore ?? ""))}%)</div>
+            <div class="journal-name">${escapeHtml(j.journalName || "")}</div>
+            <div class="journal-meta">Impact Factor: ${escapeHtml(String(j.impactFactor ?? "N/A"))} • ${escapeHtml(j.publisher || "")}</div>
+            <p style="font-size: 13px; color: #334155; margin-bottom: 12px;">${escapeHtml(j.scopeRationale || "")}</p>
             ${(j.rejectionRisks && j.rejectionRisks.length > 0) ? `
               <div style="font-size: 11px; font-weight: 700; color: #991B1B; margin-top: 8px;">DESK-REJECT RISKS:</div>
               <ul style="font-size: 12px; padding-left: 18px; color: #991B1B; margin-top: 4px;">
@@ -676,25 +676,28 @@ function generateFullReportHtml(r: FullReviewReport): string {
   </div>
 
   <script>
-    function switchTab(tabId) {
+    function switchTab(tabId, btn) {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      event.target.classList.add('active');
+      const activeBtn = btn || (window.event && window.event.target);
+      if (activeBtn) activeBtn.classList.add('active');
       const el = document.getElementById('tab-' + tabId);
       if (el) el.classList.add('active');
     }
 
-    function switchPersona(idx) {
+    function switchPersona(idx, btn) {
       document.querySelectorAll('.persona-pill').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.persona-panel').forEach(p => p.classList.remove('active'));
-      event.target.classList.add('active');
+      const activeBtn = btn || (window.event && window.event.target);
+      if (activeBtn) activeBtn.classList.add('active');
       const panel = document.getElementById('persona-panel-' + idx);
       if (panel) panel.classList.add('active');
     }
 
-    function filterIssues(level) {
+    function filterIssues(level, btn) {
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-      event.target.classList.add('active');
+      const activeBtn = btn || (window.event && window.event.target);
+      if (activeBtn) activeBtn.classList.add('active');
       document.querySelectorAll('.issue-item').forEach(item => {
         if (level === 'all' || item.getAttribute('data-priority') === level) {
           item.style.display = 'block';
@@ -905,21 +908,24 @@ function generateFullReportWord(r: FullReviewReport): string {
       <th style="width: 33%;">Issue Description</th>
       <th style="width: 33%;">Actionable Fix & Author Rebuttal Strategy</th>
     </tr>
-    ${(r.priorityIssues || []).map(iss => `
+    ${(r.priorityIssues || []).map(iss => {
+      const priority = (iss.priority || "B").toUpperCase();
+      const priorityClass = priority.toLowerCase();
+      return `
       <tr>
-        <td class="badge-${iss.priority.toLowerCase()}">Priority ${iss.priority}</td>
+        <td class="badge-${priorityClass}">Priority ${escapeHtml(priority)}</td>
         <td>
-          <strong>${escapeHtml(iss.title)}</strong><br>
-          <span style="font-size: 9pt; color: #64748B;">${escapeHtml(iss.category)}</span>
+          <strong>${escapeHtml(iss.title || "")}</strong><br>
+          <span style="font-size: 9pt; color: #64748B;">${escapeHtml(iss.category || "")}</span>
           ${iss.evidenceAnchor ? `<br><code style="font-size: 8pt; color: #475569;">${escapeHtml(iss.evidenceAnchor)}</code>` : ""}
         </td>
-        <td>${escapeHtml(iss.description)}</td>
+        <td>${escapeHtml(iss.description || "")}</td>
         <td>
-          <div><strong>Fix:</strong> ${escapeHtml(iss.actionableFix)}</div>
+          <div><strong>Fix:</strong> ${escapeHtml(iss.actionableFix || "")}</div>
           ${iss.rebuttalStrategy ? `<div style="margin-top: 4pt; color: #5B21B6; font-size: 9pt;"><strong>Rebuttal Framing:</strong> ${escapeHtml(iss.rebuttalStrategy)}</div>` : ""}
         </td>
       </tr>
-    `).join("")}
+    `;}).join("")}
   </table>
 
   <h2>4. Target Journal Recommendations</h2>

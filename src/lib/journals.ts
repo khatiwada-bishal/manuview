@@ -723,7 +723,8 @@ function detectDiscipline(title: string, abstract: string, targetJournal?: strin
     'supply chain', 'e-waste', 'carbon tax', 'cap-and-trade', 'inventory model', 'reverse logistics',
     'green investment', 'remanufacturing', 'operations research', 'opsearch', 'eoq', 'holding cost',
     'decision variable', 'nonlinear optimization', 'sensitivity analysis', 'replenishment',
-    'carbon policy', 'refurbishment', 'circular economy', 'production planning', 'remodeling', 'emissions'
+    'carbon policy', 'refurbishment', 'circular economy', 'production planning', 'remodeling',
+    'carbon emissions', 'emissions reduction', 'industrial emissions'
   ];
   const orScore = orTerms.filter(t => text.includes(t)).length;
 
@@ -731,7 +732,7 @@ function detectDiscipline(title: string, abstract: string, targetJournal?: strin
   const csTerms = [
     'neural network', 'deep learning', 'transformer', 'machine learning', 'computer vision',
     'segmentation', 'benchmark', 'classifier', 'algorithm', 'loss function', 'gpu',
-    'reinforcement learning', 'llm', 'natural language', 'backbone', 'convolutional', 'tpami', 'ieee'
+    'reinforcement learning', 'llm', 'natural language', 'backbone', 'convolutional', 'tpami', 'ieee trans'
   ];
   const csScore = csTerms.filter(t => text.includes(t)).length;
 
@@ -766,18 +767,19 @@ function detectDiscipline(title: string, abstract: string, targetJournal?: strin
   const bioScore = bioTerms.filter(t => text.includes(t)).length;
 
   // Evaluate scores with priority weighting
+  // Require at least 2 distinct domain terms or weighted score > 2.5 to avoid false positives on single incidental words
   const scores = [
-    { discipline: 'Operations Research & Management' as const, score: orScore * 2.2 },
-    { discipline: 'Computer Science' as const, score: csScore * 2.0 },
-    { discipline: 'Oncology' as const, score: oncoScore * 2.2 },
-    { discipline: 'Neuroscience' as const, score: neuroScore * 2.0 },
-    { discipline: 'Clinical' as const, score: clinScore * 1.8 },
-    { discipline: 'Biomedicine' as const, score: bioScore * 1.2 }
+    { discipline: 'Operations Research & Management' as const, score: orScore >= 2 ? orScore * 2.2 : 0 },
+    { discipline: 'Computer Science' as const, score: csScore >= 2 ? csScore * 2.0 : 0 },
+    { discipline: 'Oncology' as const, score: oncoScore >= 2 ? oncoScore * 2.2 : 0 },
+    { discipline: 'Neuroscience' as const, score: neuroScore >= 2 ? neuroScore * 2.0 : 0 },
+    { discipline: 'Clinical' as const, score: clinScore >= 2 ? clinScore * 1.8 : 0 },
+    { discipline: 'Biomedicine' as const, score: bioScore >= 2 ? bioScore * 1.2 : 0 }
   ];
 
   scores.sort((a, b) => b.score - a.score);
 
-  if (scores[0].score > 1) {
+  if (scores[0].score > 2.5) {
     return scores[0].discipline;
   }
 
@@ -808,28 +810,26 @@ export function findMatchingJournals(
 
   // Sort domain journals by impact factor descending
   domainJournals.sort((a, b) => b.impactFactor - a.impactFactor);
+  multiJournals.sort((a, b) => b.impactFactor - a.impactFactor);
 
-  let reach: JournalEntry;
-  let realistic: JournalEntry;
-  let fallback: JournalEntry;
+  const candidates: JournalEntry[] = [];
+  for (const j of domainJournals) {
+    if (!candidates.some(c => c.name === j.name)) candidates.push(j);
+  }
+  for (const j of multiJournals) {
+    if (!candidates.some(c => c.name === j.name)) candidates.push(j);
+  }
 
-  if (domainJournals.length >= 3) {
-    reach = domainJournals[0];
-    realistic = domainJournals[1];
-    fallback = domainJournals[domainJournals.length - 1];
-  } else if (domainJournals.length === 2) {
-    reach = domainJournals[0];
-    realistic = domainJournals[1];
-    fallback = multiJournals.find(j => j.name === "PLOS ONE") || domainJournals[1];
-  } else if (domainJournals.length === 1) {
-    reach = multiJournals.find(j => j.name === "Nature") || domainJournals[0];
-    realistic = domainJournals[0];
-    fallback = multiJournals.find(j => j.name === "PLOS ONE") || domainJournals[0];
-  } else {
-    // Pure multidisciplinary
-    reach = multiJournals.find(j => j.name === "Nature") || multiJournals[0];
-    realistic = multiJournals.find(j => j.name === "Nature Communications") || multiJournals[1];
-    fallback = multiJournals.find(j => j.name === "PLOS ONE") || multiJournals[multiJournals.length - 1];
+  let reach: JournalEntry = candidates[0];
+  let realistic: JournalEntry = candidates[1] || candidates[0];
+  let fallback: JournalEntry = candidates[candidates.length - 1] || candidates[0];
+
+  if (candidates.length >= 3) {
+    reach = candidates[0];
+    realistic = candidates[1];
+    // Find a distinct fallback with the lowest impact factor among remaining candidates
+    const remaining = candidates.slice(2).sort((a, b) => a.impactFactor - b.impactFactor);
+    fallback = remaining[0];
   }
 
   // If user specified an existing journal in targetJournal, verify it doesn't collide

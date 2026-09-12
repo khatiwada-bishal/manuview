@@ -592,12 +592,28 @@ export function parseManuscriptText(rawText: string, filename?: string): ParsedM
   if (lines.length > 1) {
     const authorLineCandidate = lines[1];
     if (
-      authorLineCandidate.length > 5 &&
-      authorLineCandidate.length < 120 &&
+      authorLineCandidate.length > 3 &&
+      authorLineCandidate.length < 160 &&
       !skipHeaderRegex.test(authorLineCandidate) &&
-      !/(?:abstract|introduction|doi|keywords)/i.test(authorLineCandidate)
+      !/(?:abstract|introduction|doi|keywords|http|university|institute|department)/i.test(authorLineCandidate)
     ) {
-      authors.push(authorLineCandidate);
+      const rawTokens = authorLineCandidate
+        .replace(/\band\b/gi, ",")
+        .replace(/&/g, ",")
+        .split(/[,;]/);
+
+      for (const token of rawTokens) {
+        const cleaned = token
+          .replace(/[0-9*†‡§]+/g, "")
+          .replace(/\b(?:ph\.?d|m\.?d|dr|prof)\b/gi, "")
+          .trim();
+        if (cleaned.length >= 2 && cleaned.split(/\s+/).length <= 4) {
+          authors.push(cleaned);
+        }
+      }
+      if (authors.length === 0 && authorLineCandidate.length < 80) {
+        authors.push(authorLineCandidate.trim());
+      }
     }
   }
 
