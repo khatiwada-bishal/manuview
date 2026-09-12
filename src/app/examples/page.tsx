@@ -103,7 +103,7 @@ export default function ExamplesPage() {
             Ready to scan your own draft?
           </h3>
           <p className="text-xs text-neutral-600 dark:text-neutral-400 mb-6 leading-relaxed">
-            Upload your paper (.docx, .pdf, or text) to run the full 6-dimension diagnostic rubric and 4-persona simulation.
+            Upload your paper (.docx, .pdf, or text) to run the full 6-dimension diagnostic rubric and 5-persona simulation.
           </p>
           <Link
             href="/scan"

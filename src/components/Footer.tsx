@@ -34,7 +34,7 @@ export function Footer() {
               <li><Link href="/scan" className="hover:text-neutral-900 dark:hover:text-neutral-200 transition">Pre-Submission Scan</Link></li>
               <li><Link href="/examples" className="hover:text-neutral-900 dark:hover:text-neutral-200 transition">Sample Preprints</Link></li>
               <li><Link href="/scan" className="hover:text-neutral-900 dark:hover:text-neutral-200 transition">The 6 Scoring Rubrics</Link></li>
-              <li><Link href="/scan" className="hover:text-neutral-900 dark:hover:text-neutral-200 transition">4-Persona Peer Review</Link></li>
+              <li><Link href="/scan" className="hover:text-neutral-900 dark:hover:text-neutral-200 transition">5-Persona Peer Review</Link></li>
               <li><Link href="/tools/journal-fit" className="hover:text-neutral-900 dark:hover:text-neutral-200 transition">Journal Fit Predictor</Link></li>
             </ul>
           </div>

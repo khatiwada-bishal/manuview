@@ -25,7 +25,7 @@ Commercial pre-submission review and academic consulting platforms charge resear
 | **Reviewer Posture** | Mechanical spelling fixes | Agreeable / flattering bias | **Calibrated editorial & peer-reviewer scrutiny** |
 | **Failure Detection** | Punctuation | Surface-level prose commentary | **Causal overclaims, missing controls, statistical power gaps, desk-reject risks** |
 | **Citations** | Style format check only | Frequently hallucinates papers | **Real-time verification against Crossref, OpenAlex, & Retraction Watch** |
-| **Simulated Personas**| None | Single-prompt chat | **Multi-stage 4-Persona Reviewer Simulation** |
+| **Simulated Personas**| None | Single-prompt chat | **Multi-stage 5-Persona Reviewer Simulation** |
 | **Data Privacy** | Cloud servers | Cloud / training retention | **Local-first (run via Ollama/vLLM) or private API keys** |
 
 ---
@@ -45,11 +45,12 @@ Commercial pre-submission review and academic consulting platforms charge resear
   - ⚠️ **Priority B (Should-Fix)**: Major technical challenges peer reviewers will raise.
   - 💡 **Priority C (Worth-Improving)**: Presentation and contextual enhancements.
 
-### 2. The 4-Persona Reviewer Simulator
+### 2. The 5-Persona Reviewer Simulator
 - **Methods Reviewer**: Scrutinizes protocols, sample sizes, experimental controls, reagents, and code/data reproducibility.
 - **Domain Expert**: Assesses novelty, relevance to the field, benchmark comparisons, and biological/theoretical significance.
 - **Journal Editor**: Evaluates scope alignment, target readership interest, and desk-rejection hazards.
 - **Statistician**: Audits distribution assumptions, multiplicity corrections, p-hacking risks, and error bar definitions.
+- **Devil's Advocate**: Attacks rival hypotheses, unruled-out confounders, and overclaimed causal mechanisms.
 
 ### 3. Citation & Reference Integrity Scanner
 - **Hallucinated Reference Detection**: Resolves DOIs in real-time against **Crossref** and **OpenAlex** to catch hallucinated AI citations.
@@ -86,7 +87,7 @@ graph TD
         Parser["Document Parser (PDF / DOCX Extraction)"]
         VerifyEngine["Reference Verification Engine (Crossref + OpenAlex + Retraction Watch)"]
         DiagEngine["Multi-Stage Diagnostic Engine (Reviewer Rubrics)"]
-        PersonaSim["4-Persona Reviewer Simulator"]
+        PersonaSim["5-Persona Reviewer Simulator"]
     end
     
     API --> Parser
@@ -125,7 +126,7 @@ graph TD
 - [x] Manuscript Ingestion Engine (PDF & DOCX section extractor)
 - [x] Reference Integrity & Retraction Verification Engine
 - [x] 6-Dimension Diagnostic Scoring Engine
-- [x] 4-Persona Reviewer Simulator
+- [x] 5-Persona Reviewer Simulator
 - [x] Standalone Submission Tools (Journal Fit, PRISMA, Cover Letter, Rebuttal Builder)
 - [x] Report Export (.docx, .pdf, and interactive web report)
 - [ ] One-click Docker setup for 100% offline local deployment

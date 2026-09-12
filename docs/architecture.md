@@ -22,7 +22,7 @@ ManuView is structured into four decoupled layers:
 ┌──────────────▼────┐   ┌──────▼──────┐   ┌────▼──────────────┐
 │ Ingestion Engine  │   │ Verification│   │ Diagnostic Engine │
 │  - PDF/DOCX Parser│   │  - Crossref │   │  - 6-Dim Rubric   │
-│  - Section Split  │   │  - OpenAlex │   │  - 4-Persona Sim  │
+│  - Section Split  │   │  - OpenAlex │   │  - 5-Persona Sim  │
 │  - Ref Extraction │   │  - Retractions│ │  - Priority Matrix│
 └───────────────────┘   └─────────────┘   └───────────┬───────┘
                                                       │
@@ -69,11 +69,12 @@ ManuView is structured into four decoupled layers:
    - Scans for unsupported causal assertions, correlation mistaken for causation, and missing control conditions.
 3. **Pass 3: Methodology & Statistical Evaluation**:
    - Checks sample size rationale, statistical tests, power calculation, blinding, and data transparency.
-4. **Pass 4: 4-Persona Reviewer Simulation**:
+4. **Pass 4: 5-Persona Reviewer Simulation**:
    - Methods Reviewer
    - Domain Specialist
    - Journal Editor
    - Biostatistician / Statistician
+   - Devil's Advocate / Adversarial Referee
 5. **Pass 5: Prioritized Action Plan**:
    - Classifies issues into Priority A (desk reject), Priority B (reviewer objection), Priority C (minor polish).
 

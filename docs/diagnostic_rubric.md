@@ -58,11 +58,12 @@ Every identified weakness is categorized into one of three action levels:
 
 ---
 
-## 3. The 4 Reviewer Personas
+## 3. The 5 Reviewer Personas
 
-During the comprehensive review stage, the manuscript is evaluated across four distinct simulated perspectives:
+During the comprehensive review stage, the manuscript is evaluated across five distinct simulated perspectives:
 
 1. **Methods Reviewer**: "Can another laboratory replicate this protocol without guessing? Are all reagents, scripts, and parameters documented?"
 2. **Domain Specialist**: "Does this actually advance what we know in this specific domain, or does it overlook competitor publications from the past 18 months?"
 3. **Journal Editor**: "Why should our broad readership care about this paper? Does the abstract immediately explain why this work matters today?"
 4. **Statistician**: "Are the statistical tests appropriate for the data distribution? Were p-values adjusted for multiple comparisons? Are error bars standard deviation or standard error?"
+5. **Devil's Advocate**: "What rival hypotheses or unmeasured confounders could explain these exact same observations? Has the author ruled out alternative mechanisms with negative and rescue controls?"

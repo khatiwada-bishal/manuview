@@ -142,7 +142,7 @@ export default function ToolsIndexPage() {
                 Need a comprehensive pre-submission diagnostic?
               </h3>
               <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                The Pre-Submission Scan evaluates claims, statistics, controls, and 4 reviewer personas in one pass.
+                The Pre-Submission Scan evaluates claims, statistics, controls, and 5 reviewer personas in one pass.
               </p>
             </div>
           </div>

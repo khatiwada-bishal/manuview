@@ -657,7 +657,7 @@ export default function ScanPage() {
               <span className="text-neutral-300 dark:text-neutral-700">&bull;</span>
               <span className="flex items-center gap-1 font-medium">
                 <Users className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-                <span>4 Reviewer Personas</span>
+                <span>5 Reviewer Personas</span>
               </span>
               <span className="text-neutral-300 dark:text-neutral-700">&bull;</span>
               <span className="flex items-center gap-1 font-medium">
@@ -2027,10 +2027,10 @@ export default function ScanPage() {
               </div>
             )}
 
-            {/* 5. ALL 4-PERSONA REVIEWERS (PRINTED IN FULL SEQUENTIALLY) */}
+            {/* 5. ALL 5-PERSONA REVIEWERS (PRINTED IN FULL SEQUENTIALLY) */}
             <div className="space-y-3">
               <h2 className="text-xs font-bold uppercase tracking-wider text-[#111111] border-b border-[#E5E5E5] pb-1">
-                3. 4-Persona Peer-Review Simulation (Full Referee Critiques)
+                3. 5-Persona Peer-Review Simulation (Full Referee Critiques)
               </h2>
               <div className="space-y-3.5">
                 {(report.reviewerPersonas || []).map((persona, idx) => (

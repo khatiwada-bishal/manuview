@@ -98,7 +98,7 @@ export function Navbar() {
             v2.0
           </span>
           <span className="text-neutral-600 dark:text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-white transition">
-            Field-Adaptive 4-Persona Peer-Review Simulation &amp; Crossref Audit
+            Field-Adaptive 5-Persona Peer-Review Simulation &amp; Crossref Audit
           </span>
           <ChevronRight className="w-3.5 h-3.5 text-neutral-400 dark:text-neutral-500 group-hover:text-neutral-600 dark:group-hover:text-neutral-300 group-hover:translate-x-0.5 transition" />
         </Link>

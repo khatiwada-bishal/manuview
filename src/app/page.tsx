@@ -1120,8 +1120,8 @@ export default function HomePage() {
               Keep reviews moving 24/7 with expert referee agents.
             </h3>
 
-            {/* 4 Persona Cards in Bento */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 mt-4">
+            {/* 5 Persona Cards in Bento */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3.5 mt-4">
               <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 shadow-xs space-y-2.5 hover:shadow-md transition">
                 <div className="flex items-center gap-2 font-semibold text-xs text-emerald-800 dark:text-emerald-300">
                   <FlaskConical className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
@@ -1171,6 +1171,19 @@ export default function HomePage() {
                 </p>
                 <div className="text-[10px] font-semibold text-cyan-800 dark:text-cyan-300 bg-white/70 dark:bg-cyan-950/40 border border-cyan-500/20 px-2 py-0.5 rounded">
                   Statistical Validity
+                </div>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 shadow-xs space-y-2.5 hover:shadow-md transition">
+                <div className="flex items-center gap-2 font-semibold text-xs text-rose-800 dark:text-rose-300">
+                  <ShieldAlert className="w-4 h-4 text-rose-600 dark:text-rose-400" />
+                  <span>Devil&apos;s Advocate</span>
+                </div>
+                <p className="text-[11px] text-neutral-700 dark:text-neutral-300 leading-relaxed">
+                  Attacks rival hypotheses, unruled-out confounders, and overclaimed causal mechanisms.
+                </p>
+                <div className="text-[10px] font-semibold text-rose-800 dark:text-rose-300 bg-white/70 dark:bg-rose-950/40 border border-rose-500/20 px-2 py-0.5 rounded">
+                  Adversarial Stress-Test
                 </div>
               </div>
             </div>
@@ -1343,7 +1356,7 @@ export default function HomePage() {
             Empower your next submission.
           </h2>
           <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-8 max-w-lg mx-auto leading-relaxed">
-            Diagnose methodological vulnerabilities, verify cited DOIs in real time, and simulate 4 expert peer reviews before journal editors do.
+            Diagnose methodological vulnerabilities, verify cited DOIs in real time, and simulate 5 expert peer reviews before journal editors do.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-3.5">

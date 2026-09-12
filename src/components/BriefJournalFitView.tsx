@@ -421,7 +421,7 @@ export function BriefJournalFitView({
             Run the Full 6-Dimension Pre-Submission Manuscript Audit
           </h4>
           <p className="text-xs text-neutral-400 max-w-xl">
-            Upload your complete manuscript (.pdf, .docx) to audit causal claims, experimental controls, methodology power, 4 simulated peer-reviewer personas, and Crossref citation integrity.
+            Upload your complete manuscript (.pdf, .docx) to audit causal claims, experimental controls, methodology power, 5 simulated peer-reviewer personas, and Crossref citation integrity.
           </p>
         </div>
 
