@@ -594,31 +594,55 @@ export default function ScanPage() {
                   </div>
                 )}
 
-                {/* Ping / Check Connection Action */}
+                {/* Unified Ping Value & Test Ping Button */}
                 <button
                   type="button"
                   onClick={checkProviderStatus}
                   disabled={pinging}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl liquid-glass-btn-secondary text-xs font-semibold text-neutral-700 dark:text-neutral-200 transition shadow-xs disabled:opacity-50 cursor-pointer"
-                  title="Test API latency & verify connection"
+                  title={
+                    pinging
+                      ? "Testing API latency..."
+                      : scanPingResult
+                      ? `${scanPingResult.success ? `Latency: ${scanPingResult.latencyMs}ms` : "Provider offline"} — Click to re-test ping`
+                      : "Test API latency & verify connection"
+                  }
+                  className={`group relative min-w-[88px] sm:min-w-[96px] h-9 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-200 shadow-xs disabled:opacity-60 cursor-pointer ${
+                    pinging
+                      ? "liquid-glass-btn-secondary text-blue-600 dark:text-blue-400 border border-blue-500/30"
+                      : scanPingResult
+                      ? scanPingResult.success
+                        ? "bg-emerald-500/10 hover:bg-emerald-500/20 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 border border-emerald-500/25 dark:border-emerald-700/40 text-emerald-700 dark:text-emerald-300 hover:text-emerald-800 dark:hover:text-emerald-200"
+                        : "bg-rose-500/10 hover:bg-rose-500/20 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 border border-rose-500/25 dark:border-rose-700/40 text-rose-700 dark:text-rose-300 hover:text-rose-800 dark:hover:text-rose-200"
+                      : "liquid-glass-btn-secondary text-neutral-700 dark:text-neutral-200 border border-black/5 dark:border-white/10"
+                  }`}
                 >
-                  <Activity className={`w-3.5 h-3.5 ${pinging ? "animate-spin text-blue-500" : "text-neutral-500 dark:text-neutral-400"}`} />
-                  <span className="hidden sm:inline">{pinging ? "Testing..." : "Test Ping"}</span>
-                </button>
+                  {pinging ? (
+                    <div className="flex items-center gap-1.5">
+                      <Activity className="w-3.5 h-3.5 animate-spin text-blue-500 shrink-0" />
+                      <span>Testing...</span>
+                    </div>
+                  ) : scanPingResult ? (
+                    <>
+                      {/* Default View: Shows Ping Value */}
+                      <div className="flex items-center gap-1 font-mono font-bold group-hover:hidden transition-all duration-150">
+                        <Zap className="w-3 h-3 text-amber-500 fill-amber-500 shrink-0" />
+                        <span>{scanPingResult.success ? `${scanPingResult.latencyMs}ms` : "Offline"}</span>
+                      </div>
 
-                {scanPingResult && (
-                  <span
-                    className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[11px] font-mono font-bold border shadow-2xs ${
-                      scanPingResult.success
-                        ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/25"
-                        : "bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/25"
-                    }`}
-                    title={scanPingResult.error || scanPingResult.message}
-                  >
-                    <Zap className="w-3 h-3 text-amber-500 fill-amber-500 shrink-0" />
-                    <span>{scanPingResult.success ? `${scanPingResult.latencyMs}ms` : "Offline"}</span>
-                  </span>
-                )}
+                      {/* Hover View: Shows Test Ping */}
+                      <div className="hidden group-hover:flex items-center gap-1.5 transition-all duration-150">
+                        <Activity className="w-3.5 h-3.5 text-neutral-600 dark:text-neutral-300 shrink-0 transition-transform group-hover:scale-110" />
+                        <span>Test Ping</span>
+                      </div>
+                    </>
+                  ) : (
+                    /* Initial View: No Ping Value Yet */
+                    <div className="flex items-center gap-1.5">
+                      <Activity className="w-3.5 h-3.5 text-neutral-500 dark:text-neutral-400 shrink-0" />
+                      <span>Test Ping</span>
+                    </div>
+                  )}
+                </button>
               </div>
             </div>
           </div>
