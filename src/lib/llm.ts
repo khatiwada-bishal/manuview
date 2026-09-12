@@ -30,6 +30,19 @@ function getSavedClientConfig(): ProviderConfig | undefined {
   return undefined;
 }
 
+/**
+ * Sanitizes sensitive credentials (API keys, authorization tokens) from error strings (REQ-SEC-01)
+ */
+export function sanitizeErrorMessage(msg: string): string {
+  if (!msg) return "";
+  return msg
+    .replace(/key=[a-zA-Z0-9_\-]+/gi, "key=[REDACTED]")
+    .replace(/Bearer\s+[a-zA-Z0-9_\-\.]+/gi, "Bearer [REDACTED]")
+    .replace(/sk-[a-zA-Z0-9_\-]{20,}/gi, "sk-[REDACTED]")
+    .replace(/AIza[a-zA-Z0-9_\-]{30,}/gi, "AIza[REDACTED]")
+    .replace(/gsk_[a-zA-Z0-9_\-]{20,}/gi, "gsk_[REDACTED]");
+}
+
 export function getServerConfigStatus(): {
   hasServerKey: boolean;
   hasClientKey?: boolean;
@@ -213,10 +226,11 @@ export async function callLLM(
           const errJson = await response.json();
           errText = errJson.error?.message || errText;
         } catch {
-          errText = await response.text() || errText;
+          errText = (await response.text()) || errText;
         }
-        console.error("Gemini API error:", response.status, errText);
-        throw new Error(`Gemini API error (${response.status}): ${errText}`);
+        const safeErr = sanitizeErrorMessage(errText);
+        console.error("Gemini API error:", response.status, safeErr);
+        throw new Error(`Gemini API error (${response.status}): ${safeErr}`);
       }
       const data = await response.json();
       const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -226,8 +240,9 @@ export async function callLLM(
       if (err.name === 'AbortError') {
         throw new Error(`Google Gemini call timed out after ${LLM_TIMEOUT_MS / 1000}s`);
       }
-      console.error("Gemini call failed:", err.message);
-      throw new Error(`Google Gemini call failed: ${err.message}`);
+      const safeMsg = sanitizeErrorMessage(err.message);
+      console.error("Gemini call failed:", safeMsg);
+      throw new Error(`Google Gemini call failed: ${safeMsg}`);
     } finally {
       clearTimeout(timeoutId);
     }
@@ -279,7 +294,8 @@ export async function callLLM(
         requestPayload.max_tokens = 8192;
       }
 
-      if (provider === "groq") {
+      const isJsonRequested = messages.some((m) => /json/i.test(m.content));
+      if (provider === "groq" || (provider === "openai" && isJsonRequested && !isReasoningModel)) {
         requestPayload.response_format = { type: "json_object" };
       }
 
@@ -299,10 +315,11 @@ export async function callLLM(
           const errJson = await response.json();
           errMessage = errJson.error?.message || errJson.message || errMessage;
         } catch {
-          errMessage = await response.text() || errMessage;
+          errMessage = (await response.text()) || errMessage;
         }
-        console.error(`${provider} API error:`, response.status, errMessage);
-        throw new Error(`${provider.toUpperCase()} API error (${response.status}): ${errMessage}`);
+        const safeErr = sanitizeErrorMessage(errMessage);
+        console.error(`${provider} API error:`, response.status, safeErr);
+        throw new Error(`${provider.toUpperCase()} API error (${response.status}): ${safeErr}`);
       }
       const data = await response.json();
       const content = data.choices?.[0]?.message?.content;
@@ -312,8 +329,9 @@ export async function callLLM(
       if (err.name === 'AbortError') {
         throw new Error(`${provider.toUpperCase()} call timed out after ${LLM_TIMEOUT_MS / 1000}s`);
       }
-      console.error(`${provider} call failed:`, err.message);
-      throw new Error(`${provider.toUpperCase()} call failed: ${err.message}`);
+      const safeMsg = sanitizeErrorMessage(err.message);
+      console.error(`${provider} call failed:`, safeMsg);
+      throw new Error(`${provider.toUpperCase()} call failed: ${safeMsg}`);
     } finally {
       clearTimeout(timeoutId);
     }
@@ -355,10 +373,11 @@ export async function callLLM(
           const errJson = await response.json();
           errMessage = errJson.error?.message || errMessage;
         } catch {
-          errMessage = await response.text() || errMessage;
+          errMessage = (await response.text()) || errMessage;
         }
-        console.error("Anthropic API error:", response.status, errMessage);
-        throw new Error(`Anthropic API error (${response.status}): ${errMessage}`);
+        const safeErr = sanitizeErrorMessage(errMessage);
+        console.error("Anthropic API error:", response.status, safeErr);
+        throw new Error(`Anthropic API error (${response.status}): ${safeErr}`);
       }
       const data = await response.json();
       const text = data.content?.[0]?.text;
@@ -368,8 +387,9 @@ export async function callLLM(
       if (err.name === 'AbortError') {
         throw new Error(`Anthropic call timed out after ${LLM_TIMEOUT_MS / 1000}s`);
       }
-      console.error("Anthropic call failed:", err.message);
-      throw new Error(`Anthropic call failed: ${err.message}`);
+      const safeMsg = sanitizeErrorMessage(err.message);
+      console.error("Anthropic call failed:", safeMsg);
+      throw new Error(`Anthropic call failed: ${safeMsg}`);
     } finally {
       clearTimeout(timeoutId);
     }
@@ -388,19 +408,25 @@ export async function callLLM(
       }
       cleanBase = cleanBase.replace(/\/+$/, "");
 
+      const isJsonRequested = messages.some((m) => /json/i.test(m.content));
+      const requestPayload: any = {
+        model: model || getEnv('OLLAMA_MODEL') || "llama3.3",
+        messages,
+        stream: false,
+        options: {
+          temperature: 0.2,
+          num_predict: 8192,
+          num_ctx: 16384,
+        },
+      };
+      if (isJsonRequested) {
+        requestPayload.format = "json";
+      }
+
       const response = await fetch(`${cleanBase}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: model || getEnv('OLLAMA_MODEL') || "llama3.3",
-          messages,
-          stream: false,
-          options: {
-            temperature: 0.2,
-            num_predict: 8192,
-            num_ctx: 16384,
-          },
-        }),
+        body: JSON.stringify(requestPayload),
         signal: controller.signal,
       });
 
@@ -413,7 +439,8 @@ export async function callLLM(
       if (err.name === 'AbortError') {
         throw new Error(`Local Ollama service call timed out after ${LLM_TIMEOUT_MS / 1000}s`);
       }
-      throw new Error(`Local Ollama service unreachable at ${baseUrl}: ${err.message}`);
+      const safeMsg = sanitizeErrorMessage(err.message);
+      throw new Error(`Local Ollama service unreachable at ${baseUrl}: ${safeMsg}`);
     } finally {
       clearTimeout(timeoutId);
     }
@@ -940,7 +967,7 @@ export async function testLLMConnection(
           model: geminiModel,
           latencyMs,
           message: `Gemini API returned error ${response.status}`,
-          error: errMessage,
+          error: sanitizeErrorMessage(errMessage),
           availableModels,
           details: { statusCode: response.status },
         };
@@ -1012,7 +1039,7 @@ export async function testLLMConnection(
           model: chosenModel,
           latencyMs,
           message: `${provider.toUpperCase()} connection failed (${response.status})`,
-          error: errMessage,
+          error: sanitizeErrorMessage(errMessage),
           availableModels,
           details: { endpoint, statusCode: response.status },
         };
@@ -1072,7 +1099,7 @@ export async function testLLMConnection(
           model: chosenModel,
           latencyMs,
           message: `Anthropic API returned error ${response.status}`,
-          error: errMessage,
+          error: sanitizeErrorMessage(errMessage),
           availableModels,
           details: { statusCode: response.status },
         };
@@ -1131,7 +1158,7 @@ export async function testLLMConnection(
           model: model || "llama3.3",
           latencyMs,
           message: `Ollama service returned status ${response.status}`,
-          error: `Ollama at ${cleanBase} responded with status ${response.status}`,
+          error: sanitizeErrorMessage(`Ollama at ${cleanBase} responded with status ${response.status}`),
           availableModels,
         };
       }
@@ -1158,7 +1185,7 @@ export async function testLLMConnection(
       message: isTimeout ? `Connection timed out after ${timeoutMs / 1000}s` : `Connection failed`,
       error: isTimeout
         ? `Request timed out. Ensure the endpoint and network are reachable.`
-        : err.message || "Network error: Unable to reach the API server.",
+        : sanitizeErrorMessage(err.message || "Network error: Unable to reach the API server."),
       availableModels: CURATED_MODELS[provider] || CURATED_MODELS.gemini,
     };
   }
