@@ -15,7 +15,7 @@ const KNOWN_RETRACTED_DOIS: Record<string, string> = {
   "10.1056/NEJMoa2007621": "Retracted: Database veracity could not be validated.",
   // STAP cell pluripotency (Nature)
   "10.1038/nature13008": "Retracted: Critical errors and fabricated image data found in multiple figures.",
-  // Superconductivity LK-99 / Room temp SC claims (Nature)
+  // Room-temperature superconductivity CSH claim (Dias et al., Nature 2020)
   "10.1038/s41586-020-2801-z": "Retracted: Irregularities in background subtraction methods.",
   // Disputed microplastics in fish larvae (Science)
   "10.1126/science.aad8828": "Retracted: Suspected data fabrication and missing raw files.",

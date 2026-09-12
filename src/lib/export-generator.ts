@@ -61,8 +61,8 @@ function escapeLatex(text?: string | null): string {
   if (!text) return "";
   return String(text)
     .replace(/\\/g, "\\textbackslash{}")
-    .replace(/[{}]/g, "\\$0")
-    .replace(/[#$%&_~^]/g, "\\$0");
+    .replace(/[{}]/g, "\\$&")
+    .replace(/[#$%&_~^]/g, "\\$&");
 }
 
 /**
@@ -168,20 +168,27 @@ export function generateBibTeX(report: ReviewReport): string {
   references.forEach((ref, index) => {
     const firstAuthor = (ref.authors && ref.authors[0]) 
       ? ref.authors[0].split(/\s+/).pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") 
-      : "author";
-    const year = ref.year || "2024";
-    const key = `${firstAuthor}${year}_ref${index + 1}`;
+      : "ref";
+    const yearStr = ref.year ? String(ref.year) : "";
+    const key = `${firstAuthor || "ref"}${yearStr ? `_${yearStr}` : ""}_${index + 1}`;
 
-    const authorList = (ref.authors && ref.authors.length > 0)
-      ? ref.authors.join(" and ")
-      : "Contributing Authors";
-
-    bibtex += `@article{${key},
-  title     = {${(ref.title || ref.raw || "Cited Work").replace(/[{}]/g, "")}},
-  author    = {${authorList}},
-  journal   = {${ref.journal || "Scholarly Literature"}},
-  year      = {${year}}${ref.doi ? `,\n  doi       = {${ref.doi}},\n  url       = {https://doi.org/${ref.doi}}` : ""}
-}\n\n`;
+    const lines: string[] = [];
+    lines.push(`@article{${key},`);
+    lines.push(`  title     = {${(ref.title || ref.raw || "Cited Work").replace(/[{}]/g, "")}},`);
+    if (ref.authors && ref.authors.length > 0) {
+      lines.push(`  author    = {${ref.authors.join(" and ")}},`);
+    }
+    if (ref.journal) {
+      lines.push(`  journal   = {${ref.journal}},`);
+    }
+    if (ref.year) {
+      lines.push(`  year      = {${ref.year}},`);
+    }
+    if (ref.doi) {
+      lines.push(`  doi       = {${ref.doi}},`);
+      lines.push(`  url       = {https://doi.org/${ref.doi}}`);
+    }
+    bibtex += lines.join("\n") + "\n}\n\n";
   });
 
   return bibtex;

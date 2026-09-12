@@ -1769,7 +1769,7 @@ export default function ScanPage() {
                   </div>
 
                   {/* Stat tiles */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
                     <div className="p-3.5 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] text-center">
                       <div className="text-xl font-bold font-serif text-[#2F3437]">{report.citationIntegrity.totalReferences}</div>
                       <div className="text-[11px] text-[#787774]">Total References</div>
@@ -1777,6 +1777,10 @@ export default function ScanPage() {
                     <div className="p-3.5 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] text-center">
                       <div className="text-xl font-bold font-serif text-[#1E5A2A]">{report.citationIntegrity.verifiedCount}</div>
                       <div className="text-[11px] text-[#787774]">Crossref Verified</div>
+                    </div>
+                    <div className="p-3.5 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] text-center">
+                      <div className="text-xl font-bold font-serif text-[#555555]">{report.citationIntegrity.uncheckedCount || 0}</div>
+                      <div className="text-[11px] text-[#787774]">Not Checked</div>
                     </div>
                     <div className="p-3.5 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] text-center">
                       <div className={`text-xl font-bold font-serif ${report.citationIntegrity.unresolvableCount > 0 ? "text-[#7C2D2B]" : "text-[#2F3437]"}`}>
@@ -1814,13 +1818,21 @@ export default function ScanPage() {
                               <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#FDF0EF] text-[#7C2D2B] border border-[#F7CECC]">
                                 RETRACTED
                               </span>
+                            ) : ref.status === 'expression_of_concern' ? (
+                              <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A]">
+                                Concern
+                              </span>
                             ) : ref.status === 'valid' ? (
                               <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#EDF6EE] text-[#1E5A2A] border border-[#CBE7CE]">
                                 Crossref Verified
                               </span>
+                            ) : ref.status === 'unresolvable' ? (
+                              <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#FDF0EF] text-[#7C2D2B] border border-[#F7CECC]">
+                                Unresolvable (404)
+                              </span>
                             ) : (
-                              <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#2e281b] text-[#78510E] border border-[#4a3e26]">
-                                Unverified
+                              <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#F0F0EF] text-[#666666] border border-[#D5D5D4]">
+                                Not Checked
                               </span>
                             )}
                           </div>
@@ -2098,19 +2110,23 @@ export default function ScanPage() {
               <h2 className="text-xs font-bold uppercase tracking-wider text-[#111111] border-b border-[#E5E5E5] pb-1">
                 4. Citation &amp; Reference Integrity Audit
               </h2>
-              <div className="grid grid-cols-3 gap-2 p-2.5 rounded-lg bg-[#F7F7F5] border border-[#E5E5E5] text-center text-xs">
+              <div className="grid grid-cols-4 gap-2 p-2.5 rounded-lg bg-[#F7F7F5] border border-[#E5E5E5] text-center text-xs">
                 <div>
                   <span className="text-[10px] text-[#666666] block">Total References</span>
                   <span className="font-mono font-bold text-sm text-[#111111]">{report.citationIntegrity?.totalReferences || 0}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-[#666666] block">Unresolvable DOIs</span>
-                  <span className={`font-mono font-bold text-sm ${report.citationIntegrity?.unresolvableCount ? "text-[#7C2D2B]" : "text-[#1E5A2A]"}`}>
+                  <span className="text-[10px] text-[#666666] block">Crossref Verified</span>
+                  <span className="font-mono font-bold text-sm text-[#1E5A2A]">{report.citationIntegrity?.verifiedCount || 0}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-[#666666] block">Unresolvable (404)</span>
+                  <span className={`font-mono font-bold text-sm ${report.citationIntegrity?.unresolvableCount ? "text-[#7C2D2B]" : "text-[#2F3437]"}`}>
                     {report.citationIntegrity?.unresolvableCount || 0}
                   </span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-[#666666] block">Retracted Papers Flagged</span>
+                  <span className="text-[10px] text-[#666666] block">Retracted Flagged</span>
                   <span className={`font-mono font-bold text-sm ${report.citationIntegrity?.retractedCount ? "text-[#7C2D2B]" : "text-[#1E5A2A]"}`}>
                     {report.citationIntegrity?.retractedCount || 0}
                   </span>
@@ -2134,10 +2150,14 @@ export default function ScanPage() {
                         <td className="p-1.5 text-center">
                           {ref.isRetracted ? (
                             <span className="font-bold text-[#7C2D2B]">RETRACTED</span>
+                          ) : ref.status === 'expression_of_concern' ? (
+                            <span className="font-bold text-[#92400E]">CONCERN</span>
                           ) : ref.status === 'valid' ? (
                             <span className="font-semibold text-[#1E5A2A]">Verified</span>
+                          ) : ref.status === 'unresolvable' ? (
+                            <span className="font-semibold text-[#7C2D2B]">Unresolvable (404)</span>
                           ) : (
-                            <span className="font-semibold text-[#78510E]">Unresolvable</span>
+                            <span className="font-semibold text-[#666666]">Not Checked</span>
                           )}
                         </td>
                       </tr>

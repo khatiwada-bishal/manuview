@@ -25,6 +25,8 @@ export default function ReferenceCheckerPage() {
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<{
     total: number;
+    verifiedCount?: number;
+    uncheckedCount?: number;
     retractedCount: number;
     unresolvableCount: number;
     verified: ReferenceVerification[];
@@ -113,8 +115,8 @@ export default function ReferenceCheckerPage() {
             <div className="flex justify-end pt-1">
               <button
                 type="submit"
-                disabled={loading || !input.trim()}
-                className="w-full sm:w-auto px-6 py-2.5 rounded-xl liquid-glass-btn-primary disabled:opacity-50 text-white font-semibold text-xs shadow-xs transition flex items-center justify-center gap-2 cursor-pointer"
+                disabled={loading}
+                className="liquid-glass-btn-primary px-6 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
               >
                 {loading ? (
                   <>
@@ -150,20 +152,26 @@ export default function ReferenceCheckerPage() {
               </div>
             )}
 
-            {/* Metrics Grid (4 Stat Cards) */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {/* Metrics Grid (5 Stat Cards) */}
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
               <div className="p-4 rounded-2xl liquid-glass-card text-center">
                 <div className="text-[11px] font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Total Audited</div>
                 <div className="text-2xl font-bold font-serif text-neutral-900 dark:text-white mt-1">{results.total}</div>
               </div>
               <div className="p-4 rounded-2xl liquid-glass-card border border-emerald-500/20 bg-emerald-500/5 text-center">
-                <div className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">Verified Valid</div>
+                <div className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">Crossref Verified</div>
                 <div className="text-2xl font-bold font-serif text-emerald-800 dark:text-emerald-300 mt-1">
-                  {results.total - results.unresolvableCount - results.retractedCount}
+                  {results.verified.filter((r) => r.status === "valid").length}
+                </div>
+              </div>
+              <div className="p-4 rounded-2xl liquid-glass-card border border-neutral-500/20 bg-neutral-500/5 text-center">
+                <div className="text-[11px] font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-wider">Not Checked</div>
+                <div className="text-2xl font-bold font-serif text-neutral-700 dark:text-neutral-300 mt-1">
+                  {results.verified.filter((r) => r.status === "unchecked").length}
                 </div>
               </div>
               <div className="p-4 rounded-2xl liquid-glass-card border border-amber-500/20 bg-amber-500/5 text-center">
-                <div className="text-[11px] font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">Unresolvable / AI Risk</div>
+                <div className="text-[11px] font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">Unresolvable (404)</div>
                 <div className="text-2xl font-bold font-serif text-amber-800 dark:text-amber-300 mt-1">{results.unresolvableCount}</div>
               </div>
               <div className="p-4 rounded-2xl liquid-glass-card border border-rose-500/20 bg-rose-500/5 text-center">
@@ -213,6 +221,8 @@ export default function ReferenceCheckerPage() {
                             ? "bg-rose-500/10"
                             : ref.status === "unresolvable"
                             ? "bg-amber-500/5"
+                            : ref.status === "expression_of_concern"
+                            ? "bg-amber-500/10"
                             : "hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-colors"
                         }
                       >
@@ -222,15 +232,25 @@ export default function ReferenceCheckerPage() {
                               <AlertTriangle className="w-2.5 h-2.5" />
                               RETRACTED
                             </span>
+                          ) : ref.status === "expression_of_concern" ? (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/40">
+                              <AlertTriangle className="w-2.5 h-2.5" />
+                              EXPRESSION OF CONCERN
+                            </span>
                           ) : ref.status === "valid" ? (
                             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40">
                               <CheckCircle2 className="w-2.5 h-2.5" />
                               VERIFIED
                             </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/40">
+                          ) : ref.status === "unresolvable" ? (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/15 text-rose-700 dark:text-rose-300 border border-rose-500/30">
                               <Info className="w-2.5 h-2.5" />
-                              UNRESOLVABLE
+                              UNRESOLVABLE (404)
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-neutral-500/15 text-neutral-600 dark:text-neutral-400 border border-neutral-500/30">
+                              <Info className="w-2.5 h-2.5" />
+                              NOT CHECKED (NO DOI)
                             </span>
                           )}
                         </td>

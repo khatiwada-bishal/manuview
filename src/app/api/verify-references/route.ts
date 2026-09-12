@@ -23,10 +23,14 @@ export async function POST(req: NextRequest) {
     const verified = await batchVerifyReferences(refList.slice(0, 30));
     const retractedCount = verified.filter(v => v.isRetracted).length;
     const unresolvableCount = verified.filter(v => v.status === 'unresolvable').length;
+    const verifiedCount = verified.filter(v => v.status === 'valid').length;
+    const uncheckedCount = verified.filter(v => v.status === 'unchecked').length;
 
     return NextResponse.json({
       success: true,
       total: verified.length,
+      verifiedCount,
+      uncheckedCount,
       retractedCount,
       unresolvableCount,
       verified,

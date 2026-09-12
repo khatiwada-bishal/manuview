@@ -43,9 +43,10 @@ export async function runManuscriptDiagnostic(
         totalReferences: manuscript.references.length,
         verifiedCount: 0,
         unresolvableCount: 0,
+        uncheckedCount: manuscript.references.length,
         retractedCount: 0,
-        selfCitationRatio: 0,
-        recencyProfile: { last5YearsPercent: 0, olderThan5YearsPercent: 0 },
+        expressionOfConcernCount: 0,
+        retractionCheckAvailable: true,
         references: [],
       },
       reportingGuideline: undefined,
@@ -60,26 +61,27 @@ export async function runManuscriptDiagnostic(
     const verifiedRefs = await batchVerifyReferences(sampleRefs);
     const totalRefs = manuscript.references.length || verifiedRefs.length;
     const retractedCount = verifiedRefs.filter((r) => r.isRetracted).length;
+    const expressionOfConcernCount = verifiedRefs.filter((r) => r.status === "expression_of_concern").length;
     const unresolvableCount = verifiedRefs.filter((r) => r.status === "unresolvable").length;
     const verifiedCount = verifiedRefs.filter((r) => r.status === "valid").length;
+    const uncheckedCount = verifiedRefs.filter((r) => r.status === "unchecked").length;
+
     const currentYear = new Date().getFullYear();
-    let recentCount = 0;
-    verifiedRefs.forEach((r) => {
-      if (r.year && currentYear - r.year <= 5) recentCount++;
-    });
+    const datedRefs = verifiedRefs.filter((r) => typeof r.year === "number");
+    const recentCount = datedRefs.filter((r) => currentYear - (r.year as number) <= 5).length;
 
     const citationIntegrity: CitationIntegritySummary = {
       totalReferences: totalRefs,
       verifiedCount,
       unresolvableCount,
+      uncheckedCount,
       retractedCount,
-      selfCitationRatio: 12.5,
-      recencyProfile: {
-        last5YearsPercent:
-          verifiedRefs.length > 0 ? Math.round((recentCount / verifiedRefs.length) * 100) : 65,
-        olderThan5YearsPercent:
-          verifiedRefs.length > 0 ? Math.round(((verifiedRefs.length - recentCount) / verifiedRefs.length) * 100) : 35,
-      },
+      expressionOfConcernCount,
+      retractionCheckAvailable: true,
+      recencyProfile: datedRefs.length > 0 ? {
+        last5YearsPercent: Math.round((recentCount / datedRefs.length) * 100),
+        olderThan5YearsPercent: Math.round(((datedRefs.length - recentCount) / datedRefs.length) * 100),
+      } : undefined,
       references: verifiedRefs,
     };
 
@@ -110,27 +112,27 @@ export async function runManuscriptDiagnostic(
 
   const totalRefs = manuscript.references.length || verifiedRefs.length;
   const retractedCount = verifiedRefs.filter((r) => r.isRetracted).length;
+  const expressionOfConcernCount = verifiedRefs.filter((r) => r.status === "expression_of_concern").length;
   const unresolvableCount = verifiedRefs.filter((r) => r.status === "unresolvable").length;
   const verifiedCount = verifiedRefs.filter((r) => r.status === "valid").length;
+  const uncheckedCount = verifiedRefs.filter((r) => r.status === "unchecked").length;
 
   const currentYear = new Date().getFullYear();
-  let recentCount = 0;
-  verifiedRefs.forEach((r) => {
-    if (r.year && currentYear - r.year <= 5) recentCount++;
-  });
+  const datedRefs = verifiedRefs.filter((r) => typeof r.year === "number");
+  const recentCount = datedRefs.filter((r) => currentYear - (r.year as number) <= 5).length;
 
   const citationIntegrity: CitationIntegritySummary = {
     totalReferences: totalRefs,
     verifiedCount,
     unresolvableCount,
+    uncheckedCount,
     retractedCount,
-    selfCitationRatio: 12.5,
-    recencyProfile: {
-      last5YearsPercent:
-        verifiedRefs.length > 0 ? Math.round((recentCount / verifiedRefs.length) * 100) : 65,
-      olderThan5YearsPercent:
-        verifiedRefs.length > 0 ? Math.round(((verifiedRefs.length - recentCount) / verifiedRefs.length) * 100) : 35,
-    },
+    expressionOfConcernCount,
+    retractionCheckAvailable: true,
+    recencyProfile: datedRefs.length > 0 ? {
+      last5YearsPercent: Math.round((recentCount / datedRefs.length) * 100),
+      olderThan5YearsPercent: Math.round(((datedRefs.length - recentCount) / datedRefs.length) * 100),
+    } : undefined,
     references: verifiedRefs,
   };
 
@@ -1037,129 +1039,129 @@ function synthesizeGroundedAcademicReview(
   const disciplineProfiles: Record<string, PersonaProfile> = {
     "Operations Research & Management": {
       methods: {
-        name: "Prof. David Henshaw, Ph.D.",
-        title: "Chair of Mathematical Programming & Operations Optimization",
-        affiliation: "School of Industrial and Systems Engineering, Georgia Institute of Technology",
+        name: "Lead Methods Referee (Mathematical Programming)",
+        title: "Senior Referee in Mathematical Optimization & Algorithmic Convergence",
+        affiliation: "School of Industrial & Systems Engineering",
         expertise: "Mathematical optimization, algorithmic convergence, Karush-Kuhn-Tucker conditions, and inventory models",
       },
       domain: {
-        name: "Dr. Maria Santos, Ph.D.",
-        title: "Senior Research Scientist in Operations Management & Reverse Logistics",
-        affiliation: "Rotterdam School of Management, Erasmus University",
+        name: "Domain Specialist (Operations & Supply Chain)",
+        title: "Senior Referee in Operations Economics & Reverse Logistics",
+        affiliation: "Department of Operations & Supply Chain Management",
         expertise: "Supply chain operations, circular economy, and production economics",
       },
       editor: {
-        name: "Prof. Erwin van der Laan, Ph.D.",
-        title: "Senior Editorial Board Member",
-        affiliation: "Department of Technology and Operations Management, Leading Operations Research Journals",
+        name: "Senior Handling Editor (Decision Sciences)",
+        title: "Executive Editorial Board Member",
+        affiliation: "Editorial Board, Operations Research & Management Science",
         expertise: "Operations research scope, editorial triage, and managerial decision support",
       },
       statistician: {
-        name: "Dr. Jean-Luc Mercier, Ph.D.",
-        title: "Professor of Quantitative Decision Sciences",
-        affiliation: "Department of Decision Sciences, HEC Montréal",
+        name: "Quantitative Methods Auditor (Operations Analytics)",
+        title: "Referee in Quantitative Decision Sciences & Sensitivity Analysis",
+        affiliation: "Division of Quantitative Decision Sciences",
         expertise: "Sensitivity analysis, numerical stability, and optimization diagnostics",
       },
       devilsAdvocate: {
-        name: "Dr. Marcus Vance, Ph.D.",
-        title: "Senior Industrial Systems Referee & Boundary Auditor",
-        affiliation: "Department of Industrial Engineering, Purdue University",
+        name: "Adversarial Stress-Testing Referee (Systems Rigor)",
+        title: "Industrial Systems Implementation & Boundary Auditor",
+        affiliation: "Consortium for Industrial & Engineering Stress-Testing",
         expertise: "Adversarial stress-testing, parameter gaming, and industrial implementation friction",
       },
     },
     "Computer Science": {
       methods: {
-        name: "Prof. Alexei Korolev, Ph.D.",
-        title: "Chair of Algorithmic Systems & Neural Architectures",
-        affiliation: "Department of Computer Science, Stanford University",
+        name: "Lead Methods Referee (Algorithmic Systems)",
+        title: "Senior Referee in Neural Architectures & Algorithmic Complexity",
+        affiliation: "Department of Computer Science & Algorithmic Theory",
         expertise: "Neural architectures, algorithmic complexity, and computational benchmarks",
       },
       domain: {
-        name: "Dr. Priya Venkatraman, Ph.D.",
-        title: "Principal Research Scientist in Representation Learning",
-        affiliation: "Computer Science and Artificial Intelligence Laboratory (CSAIL), MIT",
+        name: "Domain Specialist (Representation Learning)",
+        title: "Principal Referee in Machine Learning & Empirical Benchmarking",
+        affiliation: "Laboratory for Computational Intelligence",
         expertise: "Empirical benchmarking, representation learning, and transferability",
       },
       editor: {
-        name: "Prof. David MacKay, Ph.D.",
+        name: "Executive Handling Editor (Computing & ML)",
         title: "Senior Executive Editor (Machine Learning Systems)",
         affiliation: "Editorial Board, High-Impact Computational Journals",
         expertise: "Computational novelty, algorithmic advance, and editorial triage",
       },
       statistician: {
-        name: "Dr. Stefan Mueller, Ph.D.",
-        title: "Professor of Statistical Learning & Multi-Seed Inference",
-        affiliation: "Department of Computer Science, ETH Zurich",
+        name: "Statistical Learning Auditor (Multi-Seed Inference)",
+        title: "Senior Referee in Statistical Learning & Empirical Validation",
+        affiliation: "Division of Statistical Learning & Applied Inference",
         expertise: "Multi-seed variance reporting, Wilcoxon testing, and hyperparameter sensitivity",
       },
       devilsAdvocate: {
-        name: "Dr. Karl Vance, Ph.D.",
-        title: "Lead AI Reproducibility Auditor & Adversarial Tester",
-        affiliation: "Carnegie Mellon University / AI Benchmarking Group",
+        name: "Adversarial Reproducibility Referee (AI Stress-Testing)",
+        title: "Lead AI Reproducibility Auditor & Adversarial Benchmark Tester",
+        affiliation: "AI Reproducibility & Open Benchmarking Group",
         expertise: "Benchmark overfitting, compute-unbalanced baseline comparisons, and out-of-distribution failure",
       },
     },
     Clinical: {
       methods: {
-        name: "Prof. Clara Thorne, M.D., Ph.D.",
-        title: "Chair of Clinical Trial Methodology & Protocol Rigor",
-        affiliation: "Nuffield Department of Medicine, University of Oxford",
+        name: "Lead Methods Referee (Clinical Trial Rigor)",
+        title: "Senior Referee in Clinical Protocol & Trial Methodology",
+        affiliation: "Department of Clinical Trials & Observational Study Protocols",
         expertise: "Clinical trial design, observational study protocols, and STROBE/CONSORT standards",
       },
       domain: {
-        name: "Dr. Nathan Sterling, M.D.",
-        title: "Senior Clinical Investigator in Outcomes Research",
-        affiliation: "Johns Hopkins University School of Medicine",
+        name: "Clinical Investigator (Outcomes & Translation)",
+        title: "Senior Referee in Clinical Outcomes & Patient Stratification",
+        affiliation: "Division of Clinical Medicine & Outcomes Research",
         expertise: "Clinical outcomes, patient stratification, and healthcare translation",
       },
       editor: {
-        name: "Prof. Katherine Bell, Ph.D.",
-        title: "Senior Executive Editor (Clinical Medicine)",
+        name: "Executive Handling Editor (Clinical Medicine)",
+        title: "Senior Executive Editor (General Medicine)",
         affiliation: "Editorial Board, Leading General Medical Journals",
         expertise: "Editorial triage, clinical impact, and patient-centered research",
       },
       statistician: {
-        name: "Dr. Julian Ross, Ph.D.",
-        title: "Professor of Biostatistics & Causal Inference",
-        affiliation: "Harvard T.H. Chan School of Public Health",
+        name: "Biostatistics Referee (Causal Inference)",
+        title: "Senior Referee in Biostatistics & Epidemiological Modeling",
+        affiliation: "Department of Biostatistics & Causal Inference",
         expertise: "Survival analysis, proportional hazards, propensity score matching, and missing data",
       },
       devilsAdvocate: {
-        name: "Dr. Martin Croft, M.D., Ph.D.",
-        title: "Evidence-Based Medicine Auditor & Clinical Trial Skeptic",
-        affiliation: "Oxford Centre for Evidence-Based Medicine",
+        name: "Adversarial Clinical Auditor (Evidence-Based Medicine)",
+        title: "Evidence-Based Medicine Referee & Observational Bias Skeptic",
+        affiliation: "Centre for Evidence-Based Clinical Audit",
         expertise: "Confounding by indication, immortal time bias, and clinical 'So What?' thresholds",
       },
     },
     Oncology: {
       methods: {
-        name: "Prof. Elena Rostova, Ph.D.",
-        title: "Lead Investigator in High-Throughput Functional Genomics",
-        affiliation: "Department of Oncology-Pathology, Karolinska Institute",
+        name: "Lead Methods Referee (Functional Genomics)",
+        title: "Senior Referee in High-Throughput Functional Assays & Screening",
+        affiliation: "Department of Experimental Oncology & Functional Genomics",
         expertise: "Cellular assays, functional screening, experimental controls, and protocol reproducibility",
       },
       domain: {
-        name: "Dr. Sarah Chen, M.D., Ph.D.",
-        title: "Senior Clinical Investigator in Oncology",
-        affiliation: "Thoracic Oncology Division, Memorial Sloan Kettering Cancer Center",
+        name: "Domain Specialist (Mechanistic Oncology)",
+        title: "Senior Referee in Cancer Biology & Biomarker Discovery",
+        affiliation: "Division of Molecular Oncology & Translational Therapeutics",
         expertise: "Mechanistic biology, therapeutic resistance, and biomarker discovery",
       },
       editor: {
-        name: "Dr. Alistair Finch, D.Phil.",
-        title: "Senior Executive Editor (Cancer Biology & Translational Medicine)",
-        affiliation: "High-Impact Multidisciplinary Journal Editorial Board",
+        name: "Executive Handling Editor (Cancer Biology)",
+        title: "Senior Executive Editor (Translational Oncology)",
+        affiliation: "High-Impact Multidisciplinary Oncology Editorial Board",
         expertise: "Translational relevance, high-impact scientific framing, and desk-rejection triage",
       },
       statistician: {
-        name: "Dr. Marcus Weber, Ph.D.",
-        title: "Senior Professor of Biostatistics & High-Dimensional Inference",
-        affiliation: "Department of Biostatistics, Harvard T.H. Chan School of Public Health",
+        name: "High-Dimensional Biostatistics Auditor",
+        title: "Senior Referee in High-Dimensional Inference & Multiple Testing",
+        affiliation: "Department of Biostatistics & Genomic Data Science",
         expertise: "Multiplicity adjustments, false discovery rate control, and biological replicate variance",
       },
       devilsAdvocate: {
-        name: "Prof. Jonathan Weiss, M.D., Ph.D.",
-        title: "Translational Oncology Referee & Experimental Skeptic",
-        affiliation: "Dana-Farber Cancer Institute / Harvard Medical School",
+        name: "Adversarial Experimental Skeptic (Translational Oncology)",
+        title: "Translational Oncology Referee & Experimental Artifact Auditor",
+        affiliation: "Translational Medicine Skepticism & Replication Group",
         expertise: "Culture-adaptation artifacts, off-target toxicity, and clinical translation failure",
       },
     },
@@ -1167,33 +1169,33 @@ function synthesizeGroundedAcademicReview(
 
   const defaultProfile: PersonaProfile = {
     methods: {
-      name: "Prof. Arthur Pendelton, Ph.D.",
-      title: `Chair of Research Methodology & Empirical Design`,
-      affiliation: `Faculty of ${discipline}, University of Cambridge`,
+      name: `Lead Methods Referee (Empirical Rigor: ${discipline})`,
+      title: `Senior Referee in Research Methodology & Empirical Design`,
+      affiliation: `Faculty of ${discipline} Methodology & Standards`,
       expertise: `Methodological protocols, reproducibility standards, and experimental design in ${discipline}`,
     },
     domain: {
-      name: "Dr. Mariana Vasquez, Ph.D.",
-      title: `Professor of ${discipline}`,
-      affiliation: `Department of ${discipline}, Columbia University`,
+      name: `Domain Specialist (${discipline})`,
+      title: `Senior Referee in ${discipline} Frontiers`,
+      affiliation: `Department of ${discipline} Research & Evaluation`,
       expertise: `Domain frontiers, theoretical novelty, and literature positioning in ${discipline}`,
     },
     editor: {
-      name: "Prof. Evelyn Reed, Ph.D.",
+      name: `Executive Handling Editor (${discipline})`,
       title: "Senior Editorial Board Member",
-      affiliation: `Editorial Board, Leading Journals in ${discipline}`,
+      affiliation: `Editorial Advisory Board, Journals in ${discipline}`,
       expertise: "Editorial triage, broad readership interest, and desk-rejection risk assessment",
     },
     statistician: {
-      name: "Dr. Christopher Doyle, Ph.D.",
-      title: "Professor of Quantitative Methods & Applied Statistics",
-      affiliation: "Department of Statistics, University of Chicago",
+      name: `Quantitative Integrity Auditor (${discipline})`,
+      title: "Senior Referee in Applied Statistics & Quantitative Integrity",
+      affiliation: "Consortium for Quantitative Methods & Data Standards",
       expertise: "Sample power, inferential validity, variance reporting, and numerical stability",
     },
     devilsAdvocate: {
-      name: "Dr. Ronald Sterling, Ph.D.",
-      title: "Senior Research Auditor & Adversarial Methodologist",
-      affiliation: "Consortium for Open and Rigorous Science / University of Chicago",
+      name: `Adversarial Referee (Hostile Stress-Test: ${discipline})`,
+      title: "Senior Research Auditor & Adversarial Stress-Tester",
+      affiliation: "Consortium for Rigorous & Reproducible Science",
       expertise: "Selective reporting, p-hacking risks, unmeasured confounding, and adversarial stress-testing",
     },
   };

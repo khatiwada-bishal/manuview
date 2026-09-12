@@ -46,6 +46,8 @@ export interface ReviewerPersonaFeedback {
   counterArguments?: string[];
 }
 
+export type ReferenceStatus = 'valid' | 'retracted' | 'expression_of_concern' | 'unresolvable' | 'unchecked';
+
 export interface ReferenceVerification {
   raw: string;
   doi?: string;
@@ -53,7 +55,7 @@ export interface ReferenceVerification {
   authors?: string[];
   year?: number;
   journal?: string;
-  status: 'valid' | 'retracted' | 'unresolvable' | 'expression_of_concern';
+  status: ReferenceStatus;
   isRetracted: boolean;
   retractionDetails?: string;
   crossrefUrl?: string;
@@ -62,10 +64,13 @@ export interface ReferenceVerification {
 export interface CitationIntegritySummary {
   totalReferences: number;
   verifiedCount: number;
-  unresolvableCount: number; // Potential AI hallucination
+  unresolvableCount: number; // Potential AI hallucination (confirmed 404)
+  uncheckedCount: number; // References without DOI or lookup offline/rate-limited
   retractedCount: number;
-  selfCitationRatio: number;
-  recencyProfile: {
+  expressionOfConcernCount?: number;
+  retractionCheckAvailable: boolean; // false if Crossref/network failed or offline
+  selfCitationRatio?: number; // Omitted if authors cannot be matched
+  recencyProfile?: {
     last5YearsPercent: number;
     olderThan5YearsPercent: number;
   };
