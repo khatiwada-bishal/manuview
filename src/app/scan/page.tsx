@@ -110,17 +110,53 @@ export default function ScanPage() {
   }>({ type: 'offline', name: 'AI Engine', model: 'Checking status...' });
 
   // Multi-tab Article Management
-  const [tabs, setTabs] = useState<ArticleTab[]>(INITIAL_SAMPLE_ARTICLES);
-  const [activeTabId, setActiveTabId] = useState<string | null>("tab-customs-weee");
+  const [tabs, setTabs] = useState<ArticleTab[]>([]);
+  const [activeTabId, setActiveTabId] = useState<string | null>(null);
   const [activeSubView, setActiveSubView] = useState<string>("all");
   const [contextMenuTabId, setContextMenuTabId] = useState<string | null>(null);
   const [exportDropdownOpen, setExportDropdownOpen] = useState(false);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
   const tabScrollRef = React.useRef<HTMLDivElement>(null);
   const contextMenuRef = React.useRef<HTMLDivElement>(null);
 
   const activeTab = tabs.find((t) => t.id === activeTabId);
   const activeReport = (activeTab ? activeTab.report : customReport) as ReviewReport | null;
   const report = activeReport;
+
+  const checkTabOverflow = React.useCallback(() => {
+    const el = tabScrollRef.current;
+    if (!el) {
+      setCanScrollLeft(false);
+      setCanScrollRight(false);
+      return;
+    }
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    setCanScrollLeft(scrollLeft > 2);
+    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 2);
+  }, []);
+
+  React.useEffect(() => {
+    checkTabOverflow();
+    const el = tabScrollRef.current;
+    if (!el) return;
+    el.addEventListener("scroll", checkTabOverflow, { passive: true });
+    window.addEventListener("resize", checkTabOverflow);
+
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined") {
+      resizeObserver = new ResizeObserver(() => {
+        checkTabOverflow();
+      });
+      resizeObserver.observe(el);
+    }
+
+    return () => {
+      el.removeEventListener("scroll", checkTabOverflow);
+      window.removeEventListener("resize", checkTabOverflow);
+      if (resizeObserver) resizeObserver.disconnect();
+    };
+  }, [tabs, checkTabOverflow]);
 
   React.useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -170,21 +206,7 @@ export default function ScanPage() {
     setActiveTabId(tabId);
     setContextMenuTabId(null);
     setActiveSubView(subView);
-
-    if (subView === "all") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    } else {
-      setTimeout(() => {
-        const el = document.getElementById(`section-${subView}`);
-        if (el) {
-          el.scrollIntoView({ behavior: "smooth", block: "start" });
-          el.classList.add("ring-2", "ring-[#0A85EA]", "transition-all", "duration-500");
-          setTimeout(() => {
-            el.classList.remove("ring-2", "ring-[#0A85EA]");
-          }, 1500);
-        }
-      }, 100);
-    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   React.useEffect(() => {
@@ -513,188 +535,229 @@ export default function ScanPage() {
         </div>
 
         {/* Desktop-Style Article Tab Bar */}
-        <div className="mb-6 flex items-center justify-between gap-2 border-b border-black/10 dark:border-white/10 pb-2 print:hidden">
-          <div className="flex items-center gap-1.5 flex-1 min-w-0 overflow-hidden">
-            {/* Left scroll arrow */}
-            <button
-              type="button"
-              onClick={scrollTabsLeft}
-              className="p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition shrink-0 cursor-pointer"
-              title="Scroll tabs left"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
+        {tabs.length > 0 && (
+          <div className="mb-6 flex items-center justify-between gap-2 border-b border-black/10 dark:border-white/10 pb-2 print:hidden">
+            <div className="flex items-center gap-1.5 flex-1 min-w-0 overflow-hidden">
+              {/* Left scroll arrow - ONLY visible when tabs overflow left */}
+              {canScrollLeft && (
+                <button
+                  type="button"
+                  onClick={scrollTabsLeft}
+                  className="p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition shrink-0 cursor-pointer"
+                  title="Scroll tabs left"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+              )}
 
-            {/* Scrollable tabs container */}
-            <div
-              ref={tabScrollRef}
-              className="flex items-center gap-1.5 overflow-x-auto no-scrollbar scroll-smooth py-1"
-            >
-              {tabs.map((tab) => {
-                const isActive = activeTabId === tab.id;
-                const isContextMenuOpen = contextMenuTabId === tab.id;
-                return (
-                  <div
-                    key={tab.id}
-                    className={`group relative flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0 cursor-pointer select-none border ${
-                      isActive
-                        ? "bg-white dark:bg-[#1E2024] text-blue-600 dark:text-blue-400 border-blue-500/30 shadow-sm"
-                        : "bg-black/[0.03] dark:bg-white/[0.03] text-neutral-600 dark:text-neutral-400 border-transparent hover:bg-black/[0.06] dark:hover:bg-white/[0.06] hover:text-neutral-900 dark:hover:text-white"
-                    }`}
-                    onClick={() => {
-                      setActiveTabId(tab.id);
-                      setActiveSubView("all");
-                    }}
-                  >
-                    <FileText className={`w-3.5 h-3.5 shrink-0 ${isActive ? "text-blue-600 dark:text-blue-400" : "text-neutral-400"}`} />
-                    <span className="truncate max-w-[130px] sm:max-w-[170px]" title={tab.title}>
-                      {tab.shortName || tab.title}
-                    </span>
-
-                    {/* Context menu toggle button (side chevron) */}
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setContextMenuTabId(isContextMenuOpen ? null : tab.id);
-                      }}
-                      className={`p-0.5 rounded hover:bg-black/10 dark:hover:bg-white/10 transition cursor-pointer ${
-                        isContextMenuOpen ? "text-blue-600 dark:text-blue-400" : "text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200"
+              {/* Scrollable tabs container */}
+              <div
+                ref={tabScrollRef}
+                className="flex items-center gap-1.5 overflow-x-auto no-scrollbar scroll-smooth py-1"
+              >
+                {tabs.map((tab) => {
+                  const isActive = activeTabId === tab.id;
+                  const isContextMenuOpen = contextMenuTabId === tab.id;
+                  return (
+                    <div
+                      key={tab.id}
+                      className={`group relative flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0 cursor-pointer select-none border ${
+                        isActive
+                          ? "bg-white dark:bg-[#1E2024] text-blue-600 dark:text-blue-400 border-blue-500/30 shadow-sm"
+                          : "bg-black/[0.03] dark:bg-white/[0.03] text-neutral-600 dark:text-neutral-400 border-transparent hover:bg-black/[0.06] dark:hover:bg-white/[0.06] hover:text-neutral-900 dark:hover:text-white"
                       }`}
-                      title="Article menu & sections"
-                    >
-                      <ChevronDown className="w-3 h-3" />
-                    </button>
-
-                    {/* Close tab button */}
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleCloseTab(tab.id);
+                      onClick={() => {
+                        setActiveTabId(tab.id);
+                        setActiveSubView("all");
                       }}
-                      className="p-0.5 rounded hover:bg-rose-500/10 hover:text-rose-600 text-neutral-400 opacity-60 group-hover:opacity-100 transition ml-0.5 cursor-pointer"
-                      title="Close tab"
                     >
-                      <X className="w-3 h-3" />
-                    </button>
+                      <FileText className={`w-3.5 h-3.5 shrink-0 ${isActive ? "text-blue-600 dark:text-blue-400" : "text-neutral-400"}`} />
+                      <span className="truncate max-w-[130px] sm:max-w-[170px]" title={tab.title}>
+                        {tab.shortName || tab.title}
+                      </span>
 
-                    {/* Context Dropdown Menu */}
-                    {isContextMenuOpen && (
-                      <div
-                        ref={contextMenuRef}
-                        className="absolute left-0 top-full mt-1.5 w-64 rounded-2xl bg-white dark:bg-[#1E2024] border border-black/10 dark:border-white/15 shadow-xl z-50 py-2 text-xs divide-y divide-black/5 dark:divide-white/5 animate-in fade-in zoom-in-95 duration-150"
-                        onClick={(e) => e.stopPropagation()}
+                      {/* Context menu toggle button (down arrow) */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setContextMenuTabId(isContextMenuOpen ? null : tab.id);
+                        }}
+                        className={`p-0.5 rounded hover:bg-black/10 dark:hover:bg-white/10 transition cursor-pointer ${
+                          isContextMenuOpen ? "text-blue-600 dark:text-blue-400" : "text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200"
+                        }`}
+                        title="Article menu & sub-views"
                       >
-                        <div className="px-3 py-1.5 text-[11px] font-medium text-neutral-500 dark:text-neutral-400 truncate">
-                          {tab.title}
-                        </div>
+                        <ChevronDown className="w-3.5 h-3.5" />
+                      </button>
 
-                        <div className="py-1">
-                          <button
-                            type="button"
-                            onClick={() => handleSelectSubView("synthesis", tab.id)}
-                            className="w-full text-left px-3 py-1.5 flex items-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-neutral-700 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer"
-                          >
-                            <span>📋</span>
-                            <span>Editorial Synthesis &amp; Triage</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleSelectSubView("personas", tab.id)}
-                            className="w-full text-left px-3 py-1.5 flex items-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-neutral-700 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer"
-                          >
-                            <span>👥</span>
-                            <span>5-Persona Simulation (Adversarial)</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleSelectSubView("citations", tab.id)}
-                            className="w-full text-left px-3 py-1.5 flex items-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-neutral-700 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer"
-                          >
-                            <span>🔍</span>
-                            <span>Citation &amp; Retraction Audit</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleSelectSubView("guidelines", tab.id)}
-                            className="w-full text-left px-3 py-1.5 flex items-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-neutral-700 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer"
-                          >
-                            <span>📑</span>
-                            <span>Reporting Guidelines Compliance</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleSelectSubView("action-plan", tab.id)}
-                            className="w-full text-left px-3 py-1.5 flex items-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-neutral-700 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer"
-                          >
-                            <span>🚨</span>
-                            <span>Prioritized Action Plan</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleSelectSubView("journal-fit", tab.id)}
-                            className="w-full text-left px-3 py-1.5 flex items-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-neutral-700 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer"
-                          >
-                            <span>🎯</span>
-                            <span>Target Journal Fit</span>
-                          </button>
-                        </div>
+                      {/* Close tab button */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCloseTab(tab.id);
+                        }}
+                        className="p-0.5 rounded hover:bg-rose-500/10 hover:text-rose-600 text-neutral-400 opacity-60 group-hover:opacity-100 transition ml-0.5 cursor-pointer"
+                        title="Close tab"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
 
-                        <div className="pt-1">
-                          <button
-                            type="button"
-                            onClick={() => handleSelectSubView("all", tab.id)}
-                            className="w-full text-left px-3 py-1.5 flex items-center gap-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 font-medium transition cursor-pointer"
-                          >
-                            <span>📄</span>
-                            <span>View All Sections</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setContextMenuTabId(null);
-                              handleCloseTab(tab.id);
-                            }}
-                            className="w-full text-left px-3 py-1.5 flex items-center gap-2 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-600 dark:text-rose-400 transition cursor-pointer"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                            <span>Close Article</span>
-                          </button>
+                      {/* Context Dropdown Menu with 6 Sub-Menus */}
+                      {isContextMenuOpen && (
+                        <div
+                          ref={contextMenuRef}
+                          className="absolute left-0 top-full mt-1.5 w-64 rounded-2xl bg-white dark:bg-[#1E2024] border border-black/10 dark:border-white/15 shadow-xl z-50 py-2 text-xs divide-y divide-black/5 dark:divide-white/5 animate-in fade-in zoom-in-95 duration-150"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <div className="px-3 py-1.5 text-[11px] font-medium text-neutral-500 dark:text-neutral-400 truncate">
+                            {tab.title}
+                          </div>
+
+                          <div className="py-1">
+                            <button
+                              type="button"
+                              onClick={() => handleSelectSubView("synthesis", tab.id)}
+                              className={`w-full text-left px-3 py-1.5 flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/20 text-neutral-700 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer ${
+                                isActive && activeSubView === "synthesis" ? "font-semibold text-blue-600 dark:text-blue-400 bg-blue-50/60 dark:bg-blue-900/20" : ""
+                              }`}
+                            >
+                              <span className="flex items-center gap-2">
+                                <span>📋</span>
+                                <span>Editorial Synthesis</span>
+                              </span>
+                              {isActive && activeSubView === "synthesis" && <Check className="w-3.5 h-3.5 text-blue-600" />}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleSelectSubView("personas", tab.id)}
+                              className={`w-full text-left px-3 py-1.5 flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/20 text-neutral-700 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer ${
+                                isActive && activeSubView === "personas" ? "font-semibold text-blue-600 dark:text-blue-400 bg-blue-50/60 dark:bg-blue-900/20" : ""
+                              }`}
+                            >
+                              <span className="flex items-center gap-2">
+                                <span>👥</span>
+                                <span>5 Personas (Simulation)</span>
+                              </span>
+                              {isActive && activeSubView === "personas" && <Check className="w-3.5 h-3.5 text-blue-600" />}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleSelectSubView("citations", tab.id)}
+                              className={`w-full text-left px-3 py-1.5 flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/20 text-neutral-700 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer ${
+                                isActive && activeSubView === "citations" ? "font-semibold text-blue-600 dark:text-blue-400 bg-blue-50/60 dark:bg-blue-900/20" : ""
+                              }`}
+                            >
+                              <span className="flex items-center gap-2">
+                                <span>🔍</span>
+                                <span>Citations &amp; Retraction Audit</span>
+                              </span>
+                              {isActive && activeSubView === "citations" && <Check className="w-3.5 h-3.5 text-blue-600" />}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleSelectSubView("guidelines", tab.id)}
+                              className={`w-full text-left px-3 py-1.5 flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/20 text-neutral-700 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer ${
+                                isActive && activeSubView === "guidelines" ? "font-semibold text-blue-600 dark:text-blue-400 bg-blue-50/60 dark:bg-blue-900/20" : ""
+                              }`}
+                            >
+                              <span className="flex items-center gap-2">
+                                <span>📑</span>
+                                <span>Reporting Guidelines</span>
+                              </span>
+                              {isActive && activeSubView === "guidelines" && <Check className="w-3.5 h-3.5 text-blue-600" />}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleSelectSubView("action-plan", tab.id)}
+                              className={`w-full text-left px-3 py-1.5 flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/20 text-neutral-700 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer ${
+                                isActive && activeSubView === "action-plan" ? "font-semibold text-blue-600 dark:text-blue-400 bg-blue-50/60 dark:bg-blue-900/20" : ""
+                              }`}
+                            >
+                              <span className="flex items-center gap-2">
+                                <span>🚨</span>
+                                <span>Action Plan (Prioritized)</span>
+                              </span>
+                              {isActive && activeSubView === "action-plan" && <Check className="w-3.5 h-3.5 text-blue-600" />}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleSelectSubView("journal-fit", tab.id)}
+                              className={`w-full text-left px-3 py-1.5 flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/20 text-neutral-700 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer ${
+                                isActive && activeSubView === "journal-fit" ? "font-semibold text-blue-600 dark:text-blue-400 bg-blue-50/60 dark:bg-blue-900/20" : ""
+                              }`}
+                            >
+                              <span className="flex items-center gap-2">
+                                <span>🎯</span>
+                                <span>Journal Fit &amp; Tiers</span>
+                              </span>
+                              {isActive && activeSubView === "journal-fit" && <Check className="w-3.5 h-3.5 text-blue-600" />}
+                            </button>
+                          </div>
+
+                          <div className="pt-1">
+                            <button
+                              type="button"
+                              onClick={() => handleSelectSubView("all", tab.id)}
+                              className={`w-full text-left px-3 py-1.5 flex items-center justify-between hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 font-medium transition cursor-pointer ${
+                                isActive && activeSubView === "all" ? "text-blue-600 dark:text-blue-400 font-semibold" : ""
+                              }`}
+                            >
+                              <span className="flex items-center gap-2">
+                                <span>📄</span>
+                                <span>Overview / All Sections</span>
+                              </span>
+                              {isActive && activeSubView === "all" && <Check className="w-3.5 h-3.5 text-blue-600" />}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setContextMenuTabId(null);
+                                handleCloseTab(tab.id);
+                              }}
+                              className="w-full text-left px-3 py-1.5 flex items-center gap-2 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-600 dark:text-rose-400 transition cursor-pointer"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                              <span>Close Article</span>
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Right scroll arrow - ONLY visible when tabs overflow right */}
+              {canScrollRight && (
+                <button
+                  type="button"
+                  onClick={scrollTabsRight}
+                  className="p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition shrink-0 cursor-pointer"
+                  title="Scroll tabs right"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              )}
             </div>
 
-            {/* Right scroll arrow */}
+            {/* New Article / Plus Button */}
             <button
               type="button"
-              onClick={scrollTabsRight}
-              className="p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition shrink-0 cursor-pointer"
-              title="Scroll tabs right"
+              onClick={handleStartNewArticle}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition shrink-0 cursor-pointer shadow-xs border ${
+                activeTabId === null
+                  ? "bg-blue-600 text-white border-blue-500 shadow-blue-500/20"
+                  : "bg-white dark:bg-[#1E2024] text-neutral-800 dark:text-neutral-200 border-black/10 dark:border-white/10 hover:border-blue-500/50 hover:text-blue-600 dark:hover:text-blue-400"
+              }`}
+              title="Start review of a new article"
             >
-              <ChevronRight className="w-4 h-4" />
+              <Plus className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">New Review</span>
             </button>
           </div>
-
-          {/* New Article / Plus Button */}
-          <button
-            type="button"
-            onClick={handleStartNewArticle}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition shrink-0 cursor-pointer shadow-xs border ${
-              activeTabId === null
-                ? "bg-blue-600 text-white border-blue-500 shadow-blue-500/20"
-                : "bg-white dark:bg-[#1E2024] text-neutral-800 dark:text-neutral-200 border-black/10 dark:border-white/10 hover:border-blue-500/50 hover:text-blue-600 dark:hover:text-blue-400"
-            }`}
-            title="Start review of a new article"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">New Review</span>
-          </button>
-        </div>
+        )}
 
         {/* EITHER: New Review Mode / Input Form */}
         {(!report || activeTabId === null) ? (
@@ -1344,23 +1407,33 @@ export default function ScanPage() {
               {/* Score Box & Print Button */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-neutral-50 dark:bg-white/[0.03] border border-black/5 dark:border-white/10">
                 <div className="space-y-1">
-                  <div className="flex items-center gap-3">
-                    <span className="text-4xl sm:text-5xl font-extrabold font-serif text-neutral-900 dark:text-white">
-                      {typeof report.overallScore === "number" ? report.overallScore : "88"}
-                    </span>
-                    <span className={`px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wide border ${
-                      (report.overallScore ?? 88) >= 80
-                        ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20"
-                        : (report.overallScore ?? 88) >= 65
-                        ? "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20"
-                        : "bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20"
-                    }`}>
-                      {(report.overallScore ?? 88) >= 80 ? "READY WITH MINOR REVISION" : (report.overallScore ?? 88) >= 65 ? "REVISION PRIORITIZED" : "SUBSTANTIVE HAZARDS"}
-                    </span>
-                  </div>
-                  <div className="text-[11px] font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                    / 100 OVERALL ACCEPTANCE POTENTIAL
-                  </div>
+                  {typeof report.overallScore === "number" ? (
+                    <>
+                      <div className="flex items-center gap-3">
+                        <span className="text-4xl sm:text-5xl font-extrabold font-serif text-neutral-900 dark:text-white">
+                          {report.overallScore}
+                        </span>
+                        <span className={`px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wide border ${
+                          report.overallScore >= 80
+                            ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20"
+                            : report.overallScore >= 65
+                            ? "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20"
+                            : "bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20"
+                        }`}>
+                          {report.overallScore >= 80 ? "READY WITH MINOR REVISION" : report.overallScore >= 65 ? "REVISION PRIORITIZED" : "SUBSTANTIVE HAZARDS"}
+                        </span>
+                      </div>
+                      <div className="text-[11px] font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+                        / 100 OVERALL ACCEPTANCE POTENTIAL
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <span className="text-2xl font-serif text-neutral-500 dark:text-neutral-400 italic">
+                        {report.executionMode === "heuristic_offline" ? "Deterministic Diagnostic Completed" : "Comprehensive Review Completed"}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <button
@@ -1373,25 +1446,25 @@ export default function ScanPage() {
                 </button>
               </div>
 
-              {/* Quick Sub-Navigation Pills */}
+              {/* Quick Sub-Navigation Pills (All 6 Sub-Menus + Overview) */}
               <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pt-2 border-t border-black/5 dark:border-white/10 text-xs">
                 <button
                   type="button"
                   onClick={() => handleSelectSubView("all", activeTab?.id || "")}
-                  className={`px-3 py-1 rounded-lg transition font-medium shrink-0 cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-lg transition font-medium shrink-0 cursor-pointer ${
                     activeSubView === "all"
-                      ? "bg-blue-600 text-white"
+                      ? "bg-blue-600 text-white shadow-sm"
                       : "bg-black/5 dark:bg-white/5 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
                   }`}
                 >
-                  All Sections
+                  Overview / All
                 </button>
                 <button
                   type="button"
                   onClick={() => handleSelectSubView("synthesis", activeTab?.id || "")}
-                  className={`px-3 py-1 rounded-lg transition font-medium shrink-0 cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-lg transition font-medium shrink-0 cursor-pointer ${
                     activeSubView === "synthesis"
-                      ? "bg-blue-600 text-white"
+                      ? "bg-blue-600 text-white shadow-sm"
                       : "bg-black/5 dark:bg-white/5 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
                   }`}
                 >
@@ -1400,9 +1473,9 @@ export default function ScanPage() {
                 <button
                   type="button"
                   onClick={() => handleSelectSubView("personas", activeTab?.id || "")}
-                  className={`px-3 py-1 rounded-lg transition font-medium shrink-0 cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-lg transition font-medium shrink-0 cursor-pointer ${
                     activeSubView === "personas"
-                      ? "bg-blue-600 text-white"
+                      ? "bg-blue-600 text-white shadow-sm"
                       : "bg-black/5 dark:bg-white/5 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
                   }`}
                 >
@@ -1411,33 +1484,31 @@ export default function ScanPage() {
                 <button
                   type="button"
                   onClick={() => handleSelectSubView("citations", activeTab?.id || "")}
-                  className={`px-3 py-1 rounded-lg transition font-medium shrink-0 cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-lg transition font-medium shrink-0 cursor-pointer ${
                     activeSubView === "citations"
-                      ? "bg-blue-600 text-white"
+                      ? "bg-blue-600 text-white shadow-sm"
                       : "bg-black/5 dark:bg-white/5 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
                   }`}
                 >
                   🔍 Citations
                 </button>
-                {report.reportingGuideline && (
-                  <button
-                    type="button"
-                    onClick={() => handleSelectSubView("guidelines", activeTab?.id || "")}
-                    className={`px-3 py-1 rounded-lg transition font-medium shrink-0 cursor-pointer ${
-                      activeSubView === "guidelines"
-                        ? "bg-blue-600 text-white"
-                        : "bg-black/5 dark:bg-white/5 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
-                    }`}
-                  >
-                    📑 Guidelines
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={() => handleSelectSubView("guidelines", activeTab?.id || "")}
+                  className={`px-3 py-1.5 rounded-lg transition font-medium shrink-0 cursor-pointer ${
+                    activeSubView === "guidelines"
+                      ? "bg-blue-600 text-white shadow-sm"
+                      : "bg-black/5 dark:bg-white/5 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
+                  }`}
+                >
+                  📑 Guidelines
+                </button>
                 <button
                   type="button"
                   onClick={() => handleSelectSubView("action-plan", activeTab?.id || "")}
-                  className={`px-3 py-1 rounded-lg transition font-medium shrink-0 cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-lg transition font-medium shrink-0 cursor-pointer ${
                     activeSubView === "action-plan"
-                      ? "bg-blue-600 text-white"
+                      ? "bg-blue-600 text-white shadow-sm"
                       : "bg-black/5 dark:bg-white/5 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
                   }`}
                 >
@@ -1446,9 +1517,9 @@ export default function ScanPage() {
                 <button
                   type="button"
                   onClick={() => handleSelectSubView("journal-fit", activeTab?.id || "")}
-                  className={`px-3 py-1 rounded-lg transition font-medium shrink-0 cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-lg transition font-medium shrink-0 cursor-pointer ${
                     activeSubView === "journal-fit"
-                      ? "bg-blue-600 text-white"
+                      ? "bg-blue-600 text-white shadow-sm"
                       : "bg-black/5 dark:bg-white/5 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
                   }`}
                 >
@@ -1458,6 +1529,7 @@ export default function ScanPage() {
             </div>
 
             {/* Card 2: Editorial Synthesis & Triage Assessment */}
+            {(activeSubView === "all" || activeSubView === "synthesis") && (
             <div id="section-synthesis" className="rounded-2xl sm:rounded-3xl bg-white dark:bg-[#16181B] border border-black/5 dark:border-white/10 p-6 sm:p-8 shadow-sm space-y-5 transition-all duration-300">
               <div className="space-y-1">
                 <div className="flex items-center gap-2 text-neutral-900 dark:text-white font-serif font-bold text-lg">
@@ -1537,9 +1609,10 @@ export default function ScanPage() {
                 </div>
               </div>
             </div>
+            )}
 
             {/* Document Classification & Personalized Salutation Callout (Only for review-eligible manuscripts) */}
-            {report.isEligibleForReview !== false && report.classification && report.classification.isAcademicManuscript && (
+            {(activeSubView === "all" || activeSubView === "synthesis") && report.isEligibleForReview !== false && report.classification && report.classification.isAcademicManuscript && (
               <div className={`p-5 rounded-xl border text-xs space-y-3 ${
                 report.classification.isAcademicManuscript
                   ? "bg-[#EDF6EE] border-[#CBE7CE] text-[#1E5A2A]"
@@ -1769,7 +1842,7 @@ export default function ScanPage() {
             ) : (
               <>
                 {/* Provenance Disclosure Banner */}
-                {report.executionMode === "heuristic_offline" && (
+                {(activeSubView === "all" || activeSubView === "synthesis") && report.executionMode === "heuristic_offline" && (
                   <div className="p-4 rounded-xl bg-[#FBF3DB] border border-[#F4E2B6] text-[#78510E] flex items-start gap-3 text-xs leading-relaxed">
                     <span className="text-base select-none">⚡</span>
                     <div>
@@ -1787,7 +1860,8 @@ export default function ScanPage() {
                 )}
 
                 {/* Reporting Guideline Compliance Audit Card (STROBE, CONSORT, PRISMA, ARRIVE, etc.) */}
-                {report.reportingGuideline && (
+                {(activeSubView === "all" || activeSubView === "guidelines") && (
+                  report.reportingGuideline ? (
                   <div id="section-guidelines" className="rounded-2xl sm:rounded-3xl bg-white dark:bg-[#16181B] border border-black/5 dark:border-white/10 p-6 sm:p-8 shadow-sm space-y-5 transition-all duration-300">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#EBEBEA] dark:border-white/10">
                       <div>
@@ -1902,10 +1976,22 @@ export default function ScanPage() {
                       })()}
                     </div>
                   </div>
+                  ) : activeSubView === "guidelines" ? (
+                    <div id="section-guidelines" className="rounded-2xl sm:rounded-3xl bg-white dark:bg-[#16181B] border border-black/5 dark:border-white/10 p-6 sm:p-8 shadow-sm space-y-4">
+                      <div className="flex items-center gap-2 pb-3 border-b border-black/5 dark:border-white/10 text-sm font-semibold text-[#2F3437] dark:text-white">
+                        <Scale className="w-4 h-4 text-[#1E5A2A]" />
+                        <span>Reporting Guidelines Compliance</span>
+                      </div>
+                      <div className="p-4 rounded-xl bg-neutral-50 dark:bg-white/[0.03] border border-black/5 dark:border-white/10 text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed font-light">
+                        No specific clinical or observational reporting guideline checklist (such as STROBE, CONSORT, PRISMA, or ARRIVE) was detected or mandated for this manuscript study design.
+                      </div>
+                    </div>
+                  ) : null
                 )}
 
                 {/* The 6 Evaluation Dimensions */}
-                {report.dimensions ? (
+                {(activeSubView === "all" || activeSubView === "synthesis") && (
+                report.dimensions ? (
                   <div id="section-dimensions" className="rounded-2xl sm:rounded-3xl bg-white dark:bg-[#16181B] border border-black/5 dark:border-white/10 p-6 sm:p-8 shadow-sm space-y-5 transition-all duration-300">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 text-sm font-semibold text-[#2F3437]">
@@ -1983,9 +2069,11 @@ export default function ScanPage() {
                     <BarChart3 className="w-4 h-4 text-[#9B9A97]" />
                     <span>Dimensional scoring is unavailable in offline mode. Connect an AI provider to evaluate the 6 scholarly dimensions.</span>
                   </div>
+                )
                 )}
 
                 {/* Prioritized Action Plan */}
+                {(activeSubView === "all" || activeSubView === "action-plan") && (
                 <div id="section-action-plan" className="rounded-2xl sm:rounded-3xl bg-white dark:bg-[#16181B] border border-black/5 dark:border-white/10 p-6 sm:p-8 shadow-sm space-y-5 transition-all duration-300">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-black/5 dark:border-white/10">
                     <div className="flex items-center gap-2 text-sm font-semibold text-[#2F3437] dark:text-white">
@@ -2174,9 +2262,11 @@ export default function ScanPage() {
                     })()}
                   </div>
                 </div>
+                )}
 
                 {/* 5-Persona Peer-Review Simulation (Adversarial Panel) */}
-                {report.reviewerPersonas && report.reviewerPersonas.length > 0 ? (
+                {(activeSubView === "all" || activeSubView === "personas") && (
+                report.reviewerPersonas && report.reviewerPersonas.length > 0 ? (
                 <div id="section-personas" className="rounded-2xl sm:rounded-3xl bg-white dark:bg-[#16181B] border border-black/5 dark:border-white/10 p-6 sm:p-8 shadow-sm space-y-5 transition-all duration-300">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-3 border-b border-black/5 dark:border-white/10">
                     <div className="flex items-center gap-2 text-sm font-semibold text-[#2F3437] dark:text-white">
@@ -2419,9 +2509,11 @@ export default function ScanPage() {
                     <Users className="w-4 h-4 text-[#9B9A97]" />
                     <span>Reviewer persona simulation is unavailable in offline mode. Connect an AI provider to enable multi-persona peer review.</span>
                   </div>
+                )
                 )}
 
                 {/* Citation & Reference Integrity Audit */}
+                {(activeSubView === "all" || activeSubView === "citations") && (
                 <div id="section-citations" className="rounded-2xl sm:rounded-3xl bg-white dark:bg-[#16181B] border border-black/5 dark:border-white/10 p-6 sm:p-8 shadow-sm space-y-5 transition-all duration-300">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-3 border-b border-black/5 dark:border-white/10">
                     <div className="flex items-center gap-2 text-sm font-semibold text-[#2F3437] dark:text-white">
@@ -2520,8 +2612,10 @@ export default function ScanPage() {
                     </div>
                   </div>
                 </div>
+                )}
 
                 {/* Target Journal Recommendation Tiers */}
+                {(activeSubView === "all" || activeSubView === "journal-fit") && (
                 <div id="section-journal-fit" className="rounded-2xl sm:rounded-3xl bg-white dark:bg-[#16181B] border border-black/5 dark:border-white/10 p-6 sm:p-8 shadow-sm space-y-5 transition-all duration-300">
                   <div className="flex items-center gap-2 pb-3 border-b border-black/5 dark:border-white/10 text-sm font-semibold text-[#2F3437] dark:text-white">
                     <BookOpen className="w-4 h-4 text-[#787774] dark:text-neutral-400" />
@@ -2562,6 +2656,7 @@ export default function ScanPage() {
                     ))}
                   </div>
                 </div>
+                )}
               </>
             )}
           </div>
