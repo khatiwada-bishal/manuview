@@ -314,10 +314,11 @@ CRITICAL ANTI-HALLUCINATION & STRICT GROUNDING MANDATE:
 1. STRICTLY CONFINED TO THIS DOCUMENT: You MUST review ONLY the exact scientific discipline, methodology, datasets, empirical findings, and claims present in the provided manuscript text.
 2. ABSOLUTELY NO CANNED CONTENT: Critiques must focus exclusively on the theories, domains, techniques, and terminology explicitly introduced in the manuscript text. Avoid injecting external research domains, buzzwords, or off-topic methodologies that do not appear in the author's submission.
 3. VERBATIM & CONTENT-DRIVEN CRITIQUES: Every single critique, strength, vulnerability, and reviewer objection MUST cite specific variables, equations, sample sizes (n), p-values, datasets, algorithms, or paragraphs directly from the uploaded text.
-4. TAILORED 5-PERSONA ADVERSARIAL REVIEW PANEL: Define 5 world-class reviewer personas tailored specifically to THIS paper's subfield and methodology:
+4. TAILORED 5-PERSONA ADVERSARIAL REVIEW PANEL:
+   You MUST provide EXACTLY 5 reviewer personas in the "reviewerPersonas" array, one for EACH of the following 5 distinct roles (NONE may be omitted):
    - "methods_reviewer": Lead expert in the core methodology/model of THIS paper. Critiques experimental protocols, mathematical proofs, algorithm convergence, or econometric specification.
    - "domain_expert": Renowned researcher in this paper's exact subfield. Evaluates domain novelty, mechanistic plausibility, and theoretical grounding.
-   - "journal_editor": Senior executive editor from top-tier journals in this exact field. Evaluates editorial triage, broad significance, and desk-rejection risk.
+   - "journal_editor": Senior handling/executive editor from top-tier journals in this exact field. Evaluates editorial triage, broad significance, and desk-rejection risk.
    - "statistician": Senior quantitative methods / biostatistics / numerical referee. Audits sample power, variance reporting, multiplicity corrections, and data availability.
    - "devils_advocate": Hostile stress-test / adversarial referee targeting:
      * Unruled-out rival hypotheses & alternative explanations
@@ -661,15 +662,54 @@ Please return your analysis as a JSON object matching this schema:
   finalPriorityIssues = [...additionalIssues, ...finalPriorityIssues];
 
   // Reviewer Personas (Zero personas in heuristic_offline mode - REQ-EN-06)
+  const CANONICAL_PERSONA_ROLES: ReviewerPersonaFeedback["persona"][] = [
+    "methods_reviewer",
+    "domain_expert",
+    "journal_editor",
+    "statistician",
+    "devils_advocate",
+  ];
+
   let finalPersonas: ReviewerPersonaFeedback[] = [];
   if (executionMode !== "heuristic_offline") {
     if (personaValidation.isValid && personaValidation.data) {
-      finalPersonas = personaValidation.data.map((p) => ({
+      const llmPersonas: ReviewerPersonaFeedback[] = personaValidation.data.map((p) => ({
         ...p,
         persona: p.persona || ("domain_expert" as const),
         decisionRecommendation: p.decisionRecommendation || ("Major Revision" as const),
+        majorCritiques: p.majorCritiques || ["Document methodology and procedural controls systematically."],
+        missingControlsOrAnalyses: p.missingControlsOrAnalyses || [],
+        mustAddressItems: p.mustAddressItems || [],
         source: "llm" as const,
       }));
+
+      // Ensure all 5 canonical roles are represented.
+      // If any role was omitted by the LLM (e.g. only 4 generated), backfill the missing role from domainSynthesis
+      const existingRoles = new Set(llmPersonas.map((p) => p.persona));
+      const assembledPersonas: ReviewerPersonaFeedback[] = [...llmPersonas];
+
+      for (const role of CANONICAL_PERSONA_ROLES) {
+        if (!existingRoles.has(role)) {
+          const fallback = domainSynthesis.personas.find((p) => p.persona === role);
+          if (fallback) {
+            assembledPersonas.push({
+              ...fallback,
+              source: "heuristic" as const,
+            });
+            existingRoles.add(role);
+          }
+        }
+      }
+
+      // Sort canonically: methods -> domain -> editor -> statistician -> devils_advocate
+      assembledPersonas.sort((a, b) => {
+        const idxA = CANONICAL_PERSONA_ROLES.indexOf(a.persona);
+        const idxB = CANONICAL_PERSONA_ROLES.indexOf(b.persona);
+        return (idxA === -1 ? 99 : idxA) - (idxB === -1 ? 99 : idxB);
+      });
+
+      // Guarantee exactly 5 personas
+      finalPersonas = assembledPersonas.slice(0, 5);
     } else {
       finalPersonas = domainSynthesis.personas.map((p) => ({
         ...p,

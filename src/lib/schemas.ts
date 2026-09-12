@@ -45,19 +45,25 @@ export const PriorityIssueSchema = z.object({
   rebuttalStrategy: z.string().default("Address in revision and clarify methodology bounds"),
 });
 
-export const ReviewerPersonaTypeSchema = z.enum([
-  "methods_reviewer",
-  "domain_expert",
-  "journal_editor",
-  "statistician",
-  "devils_advocate",
-]);
+export const ReviewerPersonaTypeSchema = z.string().transform((val) => {
+  const norm = (val || "").toLowerCase().replace(/[\s\-_]+/g, "_").trim();
+  if (norm.includes("method")) return "methods_reviewer" as const;
+  if (norm.includes("stat") || norm.includes("quant")) return "statistician" as const;
+  if (norm.includes("devil") || norm.includes("adversar") || norm.includes("stress")) return "devils_advocate" as const;
+  if (norm.includes("editor") || norm.includes("journal")) return "journal_editor" as const;
+  return "domain_expert" as const;
+});
 
 export const DecisionRecommendationSchema = z.enum([
   "Major Revision",
   "Reject / Resubmit",
   "Desk Reject",
   "Minor Revision",
+]);
+
+const StringOrArray = z.union([
+  z.array(z.string()),
+  z.string().transform((s) => [s]),
 ]);
 
 export const ReviewerPersonaSchema = z.object({
@@ -68,13 +74,13 @@ export const ReviewerPersonaSchema = z.object({
   expertise: z.string().default("Domain Specialist"),
   roleDescription: z.string().default("Panel Referee"),
   decisionRecommendation: DecisionRecommendationSchema.catch("Major Revision"),
-  keyChallenge: z.string().min(1),
+  keyChallenge: z.string().default("Methodological rigor and contribution significance"),
   assessment: z.string().min(1),
-  majorCritiques: z.array(z.string()).min(1),
-  missingControlsOrAnalyses: z.array(z.string()).default([]),
-  mustAddressItems: z.array(z.string()).default([]),
-  evidenceAnchors: z.array(z.string()).default([]),
-  counterArguments: z.array(z.string()).default([]),
+  majorCritiques: StringOrArray.catch(["Explicit parameter and control documentation required."]),
+  missingControlsOrAnalyses: StringOrArray.catch([]),
+  mustAddressItems: StringOrArray.catch([]),
+  evidenceAnchors: StringOrArray.catch([]),
+  counterArguments: StringOrArray.catch([]),
 });
 
 export const JournalTierSchema = z.enum(["Reach", "Realistic", "Fallback"]);

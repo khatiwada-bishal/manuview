@@ -1653,7 +1653,7 @@ export default function ScanPage() {
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                     <div className="flex items-center gap-2 text-sm font-semibold text-[#2F3437]">
                       <Users className="w-4 h-4 text-[#787774]" />
-                      <span>5-Persona Peer-Review Simulation (Adversarial Panel)</span>
+                      <span>{report.reviewerPersonas?.length || 5}-Persona Peer-Review Simulation (Adversarial Panel)</span>
                     </div>
                     <span className="text-[11px] text-[#787774]">
                       Independent domain evaluations
