@@ -845,6 +845,1164 @@ export const JOURNAL_CATALOG: JournalEntry[] = [
       "Clear explanation of environmental implications for ecosystems or public health"
     ]
   }
+,
+  // --- Additional Multidisciplinary Journals ---
+  {
+    name: "Scientific Reports",
+    publisher: "Springer Nature",
+    impactFactor: 3.8,
+    discipline: "Multidisciplinary",
+    acceptanceRate: "50-55%",
+    reviewSpeed: "6-8 weeks to first decision",
+    openAccess: "Gold OA",
+    aimsAndScope: "Publishes technically valid, original research across all areas of natural sciences, medicine, engineering, and psychology without subjective perceived impact filters.",
+    deskRejectHazards: [
+      "Methodological invalidity or absent negative/positive controls",
+      "Refusal to deposit raw source data in open access repositories",
+      "Overinterpreted conclusions unsupported by quantitative evidence"
+    ],
+    keyExpectations: [
+      "Methodological soundness and rigorous scientific execution",
+      "Full adherence to FAIR data sharing standards"
+    ]
+  },
+  {
+    name: "iScience",
+    publisher: "Cell Press / Elsevier",
+    impactFactor: 5.8,
+    discipline: "Multidisciplinary",
+    acceptanceRate: "35-40%",
+    reviewSpeed: "4-6 weeks to first decision",
+    openAccess: "Gold OA",
+    aimsAndScope: "Publishes pure and applied research in life, physical, earth, and health sciences that contributes substantial advance to a specific field.",
+    deskRejectHazards: [
+      "Narrow descriptive observations lacking cross-disciplinary relevance",
+      "Underpowered cohort statistics or missing replication assays"
+    ],
+    keyExpectations: [
+      "Rigorous experimental design with clear interdisciplinary potential",
+      "Transparent reporting of all computational models and wet-lab protocols"
+    ]
+  },
+  {
+    name: "Royal Society Open Science",
+    publisher: "The Royal Society",
+    impactFactor: 3.5,
+    discipline: "Multidisciplinary",
+    acceptanceRate: "45-50%",
+    reviewSpeed: "5-7 weeks to first decision",
+    openAccess: "Gold OA",
+    aimsAndScope: "Publishes high-quality peer-reviewed research across all science, mathematics, and engineering, adhering to open science principles.",
+    deskRejectHazards: [
+      "Failure to provide full open code and raw data files",
+      "Statistical flaws without power calculation disclosures"
+    ],
+    keyExpectations: [
+      "Technical soundness, reproducible methods, and open peer-review compliance",
+      "Objective empirical reporting"
+    ]
+  },
+  {
+    name: "Research",
+    publisher: "AAAS / Science Partner Journal",
+    impactFactor: 11.0,
+    discipline: "Multidisciplinary",
+    acceptanceRate: "18-22%",
+    reviewSpeed: "4-6 weeks to first decision",
+    openAccess: "Gold OA",
+    aimsAndScope: "Publishes breakthrough discoveries and novel technological innovations of broad scientific interest spanning physics, biology, and applied sciences.",
+    deskRejectHazards: [
+      "Incremental advance without transformative technological breakthrough",
+      "Limited general interest restricted to narrow domain"
+    ],
+    keyExpectations: [
+      "Significant conceptual leap or major technological innovation",
+      "High cross-disciplinary interest and rigorous validation"
+    ]
+  },
+  {
+    name: "Cell Reports",
+    publisher: "Cell Press",
+    impactFactor: 8.8,
+    discipline: "Multidisciplinary",
+    acceptanceRate: "20-25%",
+    reviewSpeed: "4-6 weeks to first decision",
+    openAccess: "Gold OA",
+    aimsAndScope: "Publishes thought-provoking research across all life sciences, focusing on biological mechanisms and single-step conceptual advances.",
+    deskRejectHazards: [
+      "Lack of mechanistic resolution for observed phenotypes",
+      "Inadequate biological replicates or missing control treatments"
+    ],
+    keyExpectations: [
+      "Conclusive mechanistic findings supported by orthogonal assays",
+      "Broad appeal across cell, molecular, and integrative biology"
+    ]
+  },
+  {
+    name: "Communications Biology",
+    publisher: "Springer Nature",
+    impactFactor: 5.9,
+    discipline: "Multidisciplinary",
+    acceptanceRate: "28-32%",
+    reviewSpeed: "5-7 weeks to first decision",
+    openAccess: "Gold OA",
+    aimsAndScope: "Publishes high-quality primary research and commentary in all areas of the biological sciences.",
+    deskRejectHazards: [
+      "Incomplete experimental validation or insufficient replicates",
+      "Descriptive datasets lacking functional significance"
+    ],
+    keyExpectations: [
+      "Sound biological rationale with robust experimental design",
+      "Complete data deposition in compliant public repositories"
+    ]
+  },
+
+  // --- Additional Oncology Journals ---
+  {
+    name: "Cancer Cell",
+    publisher: "Cell Press / Elsevier",
+    impactFactor: 50.3,
+    discipline: "Oncology",
+    acceptanceRate: "7-9%",
+    reviewSpeed: "4-5 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes major conceptual breakthroughs in cancer biology and clinical oncology that dramatically advance our understanding of malignant transformation and patient treatment.",
+    deskRejectHazards: [
+      "Lack of in vivo validation in syngeneic or patient-derived xenograft models",
+      "Failure to demonstrate clinical relevance in primary patient tumor cohorts",
+      "Superficial mechanistic insight without targeted genetic intervention"
+    ],
+    keyExpectations: [
+      "Profound mechanistic discovery with direct therapeutic consequences",
+      "Comprehensive multi-omic and functional in vivo profiling"
+    ]
+  },
+  {
+    name: "The Lancet Oncology",
+    publisher: "Elsevier",
+    impactFactor: 41.6,
+    discipline: "Oncology",
+    acceptanceRate: "8-10%",
+    reviewSpeed: "3-5 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes definitive randomized clinical trials, global oncology policy, and practice-changing translational cancer medicine.",
+    deskRejectHazards: [
+      "Preclinical laboratory studies without direct clinical patient trial cohorts",
+      "Retrospective single-institution cohorts lacking prospective validation",
+      "Underpowered endpoint statistical survival analysis"
+    ],
+    keyExpectations: [
+      "Practice-changing clinical evidence and definitive phase 2/3 trial data",
+      "Rigorous patient safety, survival metrics, and quality of life endpoints"
+    ]
+  },
+  {
+    name: "Journal of Clinical Oncology",
+    publisher: "American Society of Clinical Oncology (ASCO)",
+    impactFactor: 45.3,
+    discipline: "Oncology",
+    acceptanceRate: "10-12%",
+    reviewSpeed: "4-6 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Official journal of ASCO publishing authoritative clinical trials, precision oncology biomarkers, and therapeutic regimens.",
+    deskRejectHazards: [
+      "Preliminary biomarker assays without external validation cohorts",
+      "Non-randomized comparisons when standard randomized trials exist",
+      "Missing long-term overall survival or progression-free survival metrics"
+    ],
+    keyExpectations: [
+      "Rigorous prospective clinical methodology and robust statistical analysis",
+      "Direct implications for oncology standard of care"
+    ]
+  },
+  {
+    name: "Annals of Oncology",
+    publisher: "Elsevier / ESMO",
+    impactFactor: 50.5,
+    discipline: "Oncology",
+    acceptanceRate: "12-15%",
+    reviewSpeed: "4-6 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes clinical and translational oncology research on innovative systemic therapies, targeted drugs, and cancer epidemiology.",
+    deskRejectHazards: [
+      "Small sample size lacking multivariable Cox regression control",
+      "Lack of biomarker correlation with targeted therapy response"
+    ],
+    keyExpectations: [
+      "High clinical translational value and robust cohort sizes",
+      "Detailed patient stratification by molecular subtype"
+    ]
+  },
+  {
+    name: "British Journal of Cancer",
+    publisher: "Springer Nature",
+    impactFactor: 8.8,
+    discipline: "Oncology",
+    acceptanceRate: "22-26%",
+    reviewSpeed: "5-7 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes clinical, translational, and epidemiological cancer studies bridging laboratory discovery with patient care.",
+    deskRejectHazards: [
+      "Overly descriptive expression surveys without functional knockdown",
+      "Inadequate patient follow-up duration"
+    ],
+    keyExpectations: [
+      "Sound translational hypotheses with functional cellular validation",
+      "Well-characterized clinical specimens and statistical power"
+    ]
+  },
+  {
+    name: "International Journal of Cancer",
+    publisher: "Wiley / UICC",
+    impactFactor: 7.3,
+    discipline: "Oncology",
+    acceptanceRate: "25-28%",
+    reviewSpeed: "4-6 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes experimental and clinical cancer research focusing on cancer etiology, mechanisms, and novel prevention strategies.",
+    deskRejectHazards: [
+      "Inconclusive mechanistic data or small animal cohorts",
+      "Failure to test in multiple independent tumor cell lines"
+    ],
+    keyExpectations: [
+      "Strong epidemiological or functional cancer biology evidence",
+      "Clear rationale for tumor subtype specificity"
+    ]
+  },
+  {
+    name: "European Journal of Cancer",
+    publisher: "Elsevier",
+    impactFactor: 8.4,
+    discipline: "Oncology",
+    acceptanceRate: "18-22%",
+    reviewSpeed: "4-6 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes experimental, clinical, and policy research on systemic oncology, surgical oncology, and radiation oncology.",
+    deskRejectHazards: [
+      "Uncontrolled confounding factors in retrospective clinical analyses",
+      "Failure to address therapy resistance mechanisms"
+    ],
+    keyExpectations: [
+      "Multi-modal oncology approaches with clear translational value",
+      "Adherence to CONSORT/STROBE reporting guidelines"
+    ]
+  },
+  {
+    name: "Breast Cancer Research and Treatment",
+    publisher: "Springer",
+    impactFactor: 4.8,
+    discipline: "Oncology",
+    acceptanceRate: "30-35%",
+    reviewSpeed: "5-7 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes focused basic, translational, and clinical studies specifically addressing mammary gland tumorigenesis and therapeutics.",
+    deskRejectHazards: [
+      "Failure to stratify by receptor status (ER/PR/HER2/TNBC)",
+      "Unreplicated in vitro cytotoxicity assays"
+    ],
+    keyExpectations: [
+      "Clear relevance to breast cancer biology or clinical management",
+      "Rigorous controls and receptor subtype annotation"
+    ]
+  },
+
+  // --- Additional Biomedicine & Genetics Journals ---
+  {
+    name: "Nature Biotechnology",
+    publisher: "Springer Nature",
+    impactFactor: 46.9,
+    discipline: "Biomedicine",
+    acceptanceRate: "6-8%",
+    reviewSpeed: "4-5 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes foundational biotechnology discoveries, genomic engineering tools, synthetic biology, and molecular medicine platforms.",
+    deskRejectHazards: [
+      "Incremental optimization of existing molecular protocols",
+      "Lack of side-by-side benchmark comparison against gold-standard tools",
+      "Failure to demonstrate in vivo efficacy and safety"
+    ],
+    keyExpectations: [
+      "Disruptive technology platform with broad applicability across life sciences",
+      "Exhaustive quantitative benchmark comparison against state-of-the-art"
+    ]
+  },
+  {
+    name: "Cell Metabolism",
+    publisher: "Cell Press / Elsevier",
+    impactFactor: 27.7,
+    discipline: "Biomedicine",
+    acceptanceRate: "8-10%",
+    reviewSpeed: "4-6 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes premier mechanistic physiology research covering metabolic homeostasis, mitochondrial biology, diabetes, and immunometabolism.",
+    deskRejectHazards: [
+      "In vitro metabolic assays lacking in vivo systemic flux validation",
+      "Failure to control for circadian or nutritional feeding cycles"
+    ],
+    keyExpectations: [
+      "Definitive genetic mouse models coupled with metabolic flux analysis",
+      "Identification of critical metabolic checkpoints and signaling nodes"
+    ]
+  },
+  {
+    name: "Genome Biology",
+    publisher: "BioMed Central / Springer Nature",
+    impactFactor: 12.3,
+    discipline: "Biomedicine",
+    acceptanceRate: "14-16%",
+    reviewSpeed: "5-7 weeks to first decision",
+    openAccess: "Gold OA",
+    aimsAndScope: "Publishes functional genomics, computational biology, spatial transcriptomics, and epigenetics with broad biological insights.",
+    deskRejectHazards: [
+      "Computational pipelines without experimental orthogonal validation",
+      "Inadequate sequencing depth or missing biological replicates"
+    ],
+    keyExpectations: [
+      "Novel genomic discoveries or high-performance computational algorithms",
+      "Full public release of raw sequencing reads and open reproducible pipelines"
+    ]
+  },
+  {
+    name: "eLife",
+    publisher: "eLife Sciences Publications",
+    impactFactor: 7.7,
+    discipline: "Biomedicine",
+    acceptanceRate: "30-35%",
+    reviewSpeed: "4-6 weeks to first decision",
+    openAccess: "Gold OA",
+    aimsAndScope: "Publishes outstanding research across the biological and biomedical sciences through a consultative open peer-review model.",
+    deskRejectHazards: [
+      "Underpowered statistics or missing negative control conditions",
+      "Overclaimed conclusions exceeding experimental evidence"
+    ],
+    keyExpectations: [
+      "High scientific rigor, detailed methodology, and open data sharing",
+      "Constructive engagement with public peer-review assessments"
+    ]
+  },
+  {
+    name: "Nucleic Acids Research",
+    publisher: "Oxford University Press",
+    impactFactor: 14.9,
+    discipline: "Biomedicine",
+    acceptanceRate: "18-22%",
+    reviewSpeed: "4-6 weeks to first decision",
+    openAccess: "Gold OA",
+    aimsAndScope: "Publishes leading physical, chemical, biochemical, and biological studies of nucleic acids and their associated proteins.",
+    deskRejectHazards: [
+      "Correlative binding data lacking atomic or biochemical mutagenesis proof",
+      "Databases without long-term maintenance commitments"
+    ],
+    keyExpectations: [
+      "High-resolution structural, biochemical, or mechanistic insight",
+      "Rigorous kinetic and binding characterization"
+    ]
+  },
+  {
+    name: "FASEB Journal",
+    publisher: "Wiley",
+    impactFactor: 4.8,
+    discipline: "Biomedicine",
+    acceptanceRate: "32-38%",
+    reviewSpeed: "4-6 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes multi-disciplinary research in experimental biology, biochemistry, and molecular physiology.",
+    deskRejectHazards: [
+      "Small sample sizes without normality testing",
+      "Incomplete antibody validation for immunoblotting"
+    ],
+    keyExpectations: [
+      "Sound physiological hypothesis and clear molecular assays",
+      "Properly controlled experimental conditions and replicates"
+    ]
+  },
+  {
+    name: "Molecular Systems Biology",
+    publisher: "EMBO Press / Springer Nature",
+    impactFactor: 8.9,
+    discipline: "Biomedicine",
+    acceptanceRate: "16-20%",
+    reviewSpeed: "5-7 weeks to first decision",
+    openAccess: "Gold OA",
+    aimsAndScope: "Publishes integrative systems biology, quantitative proteomics, synthetic circuits, and network medicine.",
+    deskRejectHazards: [
+      "Mathematical models without quantitative experimental perturbation validation",
+      "Overfitted parameter spaces"
+    ],
+    keyExpectations: [
+      "Seamless integration of quantitative modeling and experimental biology",
+      "Open code and standardized model format (SBML) deposition"
+    ]
+  },
+  {
+    name: "Journal of Molecular Biology",
+    publisher: "Elsevier",
+    impactFactor: 5.6,
+    discipline: "Biomedicine",
+    acceptanceRate: "25-30%",
+    reviewSpeed: "4-6 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes comprehensive studies on molecular mechanisms of cellular processes, macromolecular structures, and biophysics.",
+    deskRejectHazards: [
+      "Descriptive structural models without functional assay validation",
+      "Incomplete biophysical characterization"
+    ],
+    keyExpectations: [
+      "Atomic-resolution structural insights linked to biological function",
+      "Rigorous biochemical validation assays"
+    ]
+  },
+
+  // --- Additional Clinical Medicine Journals ---
+  {
+    name: "Circulation",
+    publisher: "American Heart Association / Wolters Kluwer",
+    impactFactor: 37.8,
+    discipline: "Clinical",
+    acceptanceRate: "10-12%",
+    reviewSpeed: "3-5 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes premier clinical and translational cardiovascular medicine, interventional clinical trials, and epidemiological studies.",
+    deskRejectHazards: [
+      "Underpowered clinical patient cohorts without multi-center replication",
+      "Omission of multivariate adjustment for established cardiac risk factors",
+      "Inadequate prospective safety follow-up"
+    ],
+    keyExpectations: [
+      "Definitive clinical trial or prospective cohort findings with cardiac outcome data",
+      "Adherence to CONSORT/STROBE guidelines and clinical trial preregistration"
+    ]
+  },
+  {
+    name: "The Lancet Infectious Diseases",
+    publisher: "Elsevier",
+    impactFactor: 56.3,
+    discipline: "Clinical",
+    acceptanceRate: "8-10%",
+    reviewSpeed: "3-5 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes practice-changing infectious disease clinical trials, global antimicrobial resistance tracking, and vaccine efficacy studies.",
+    deskRejectHazards: [
+      "In vitro pathogen resistance without clinical patient outcome correlation",
+      "Single-center observational reports with high confounding bias"
+    ],
+    keyExpectations: [
+      "Major international impact on antimicrobial policy, vaccine regimens, or pathogen management",
+      "Rigorous prospective cohort or randomized trial design"
+    ]
+  },
+  {
+    name: "Journal of the American College of Cardiology",
+    publisher: "Elsevier",
+    impactFactor: 24.0,
+    discipline: "Clinical",
+    acceptanceRate: "12-15%",
+    reviewSpeed: "3-5 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes peer-reviewed clinical research on heart failure, structural heart interventions, imaging, and preventive cardiology.",
+    deskRejectHazards: [
+      "Lack of hard clinical endpoints (mortality, rehospitalization)",
+      "Unblinded diagnostic assessment without independent core lab review"
+    ],
+    keyExpectations: [
+      "Direct relevance to clinical cardiology decision-making",
+      "Large prospective cohorts or randomized trial designs"
+    ]
+  },
+  {
+    name: "Gastroenterology",
+    publisher: "American Gastroenterological Association / Elsevier",
+    impactFactor: 29.4,
+    discipline: "Clinical",
+    acceptanceRate: "11-14%",
+    reviewSpeed: "4-5 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Official journal of the AGA publishing authoritative clinical trials and translational research in digestive diseases and hepatology.",
+    deskRejectHazards: [
+      "Incomplete endoscopic or histological biopsy validation",
+      "Failure to address microbiome confounding variables"
+    ],
+    keyExpectations: [
+      "Major therapeutic or mechanistic advances in gastrointestinal medicine",
+      "Rigorous human patient tissue or trial data"
+    ]
+  },
+  {
+    name: "Gut",
+    publisher: "BMJ Publishing Group",
+    impactFactor: 24.5,
+    discipline: "Clinical",
+    acceptanceRate: "12-15%",
+    reviewSpeed: "4-6 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes first-class clinical and translational research across gastroenterology, hepatology, and endoscopy.",
+    deskRejectHazards: [
+      "Small sample sizes lacking power for biomarker discovery",
+      "Lack of longitudinal clinical follow-up"
+    ],
+    keyExpectations: [
+      "Strong mechanistic foundation bridging laboratory and bedside",
+      "High clinical diagnostic or therapeutic relevance"
+    ]
+  },
+  {
+    name: "The Lancet Public Health",
+    publisher: "Elsevier",
+    impactFactor: 50.0,
+    discipline: "Clinical",
+    acceptanceRate: "7-9%",
+    reviewSpeed: "4-6 weeks to first decision",
+    openAccess: "Gold OA",
+    aimsAndScope: "Publishes public health research, epidemiological policy evaluations, and social determinant interventions of global consequence.",
+    deskRejectHazards: [
+      "Localized surveys lacking broader policy implications",
+      "Failure to account for health equity and demographic disparities"
+    ],
+    keyExpectations: [
+      "Robust population-level epidemiological datasets with rigorous causal inference",
+      "Clear, actionable public health policy recommendations"
+    ]
+  },
+  {
+    name: "Journal of Internal Medicine",
+    publisher: "Wiley",
+    impactFactor: 11.1,
+    discipline: "Clinical",
+    acceptanceRate: "18-22%",
+    reviewSpeed: "4-6 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes original clinical medicine research spanning cardiometabolic diseases, oncology, immunology, and infectious diseases.",
+    deskRejectHazards: [
+      "Lack of multivariable regression adjustment for confounding comorbidities",
+      "Unclear patient recruitment criteria"
+    ],
+    keyExpectations: [
+      "Well-characterized clinical patient cohorts and clear diagnostic criteria",
+      "Adherence to observational STROBE reporting standards"
+    ]
+  },
+  {
+    name: "BMC Infectious Diseases",
+    publisher: "BioMed Central / Springer Nature",
+    impactFactor: 3.7,
+    discipline: "Clinical",
+    acceptanceRate: "38-42%",
+    reviewSpeed: "5-7 weeks to first decision",
+    openAccess: "Gold OA",
+    aimsAndScope: "Publishes research on the prevention, diagnosis, and management of infectious diseases in humans.",
+    deskRejectHazards: [
+      "Missing ethical approval numbers or informed consent statements",
+      "Descriptive case series without analytical statistical testing"
+    ],
+    keyExpectations: [
+      "Sound epidemiological and clinical methodology",
+      "Clear documentation of microbiological diagnostic assays"
+    ]
+  },
+
+  // --- Additional Computer Science & AI Journals ---
+  {
+    name: "IEEE Transactions on Knowledge and Data Engineering (TKDE)",
+    publisher: "IEEE",
+    impactFactor: 8.9,
+    discipline: "Computer Science",
+    acceptanceRate: "15-18%",
+    reviewSpeed: "6-8 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes foundational database systems, graph analytics, data mining algorithms, and large-scale knowledge management frameworks.",
+    deskRejectHazards: [
+      "Lack of empirical benchmarking on standardized public datasets",
+      "Absence of asymptotic computational complexity proofs",
+      "Algorithms evaluated only on synthetic toy graphs"
+    ],
+    keyExpectations: [
+      "Rigorous algorithmic complexity analysis and exhaustive experimental validation",
+      "Reproducible open-source implementations tested on billion-scale graphs"
+    ]
+  },
+  {
+    name: "IEEE Transactions on Neural Networks and Learning Systems (TNNLS)",
+    publisher: "IEEE",
+    impactFactor: 10.4,
+    discipline: "Computer Science",
+    acceptanceRate: "12-15%",
+    reviewSpeed: "6-8 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes mathematical theory, novel architectures, and hardware implementations of neural networks and learning systems.",
+    deskRejectHazards: [
+      "Heuristic architectures without theoretical stability or convergence proofs",
+      "Comparison only against outdated baselines"
+    ],
+    keyExpectations: [
+      "Rigorous mathematical formulation with Lyapunov stability or convergence guarantees",
+      "State-of-the-art empirical performance across standard benchmarks"
+    ]
+  },
+  {
+    name: "IEEE Transactions on Software Engineering (TSE)",
+    publisher: "IEEE",
+    impactFactor: 7.4,
+    discipline: "Computer Science",
+    acceptanceRate: "14-17%",
+    reviewSpeed: "6-9 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Premier journal for software engineering research, formal methods, empirical software analysis, and automated testing.",
+    deskRejectHazards: [
+      "Software tools tested only on small synthetic programs without real open-source projects",
+      "Threats to validity section omitted or superficial"
+    ],
+    keyExpectations: [
+      "Extensive empirical software engineering methodology with rigorous statistical tests",
+      "Open replication packages with code, data, and scripts"
+    ]
+  },
+  {
+    name: "Pattern Recognition",
+    publisher: "Elsevier",
+    impactFactor: 7.5,
+    discipline: "Computer Science",
+    acceptanceRate: "18-22%",
+    reviewSpeed: "6-8 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes computer vision, pattern analysis, feature extraction, and statistical machine learning algorithms.",
+    deskRejectHazards: [
+      "Evaluation on single dataset without ablation study",
+      "Missing error bars and statistical significance testing"
+    ],
+    keyExpectations: [
+      "Clear mathematical formulation and comprehensive ablation experiments",
+      "Benchmarking against competitive contemporary methods"
+    ]
+  },
+  {
+    name: "Neural Networks",
+    publisher: "Elsevier",
+    impactFactor: 6.0,
+    discipline: "Computer Science",
+    acceptanceRate: "20-25%",
+    reviewSpeed: "5-7 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Official journal of INNS, ENNS, and JNNS, publishing basic and applied neural network research, neuroscience connections, and deep learning.",
+    deskRejectHazards: [
+      "Purely heuristic hyperparameter tuning without principled justification",
+      "Failure to demonstrate generalization across out-of-distribution data"
+    ],
+    keyExpectations: [
+      "Solid architectural or algorithmic innovation with robust benchmarking",
+      "Clear connection between network design and theoretical rationale"
+    ]
+  },
+  {
+    name: "Knowledge-Based Systems",
+    publisher: "Elsevier",
+    impactFactor: 7.2,
+    discipline: "Computer Science",
+    acceptanceRate: "19-23%",
+    reviewSpeed: "5-7 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes systems and applications of knowledge-based artificial intelligence, ontology reasoning, and decision-support systems.",
+    deskRejectHazards: [
+      "Incremental rule adaptations without formal evaluation",
+      "Lack of baseline comparisons against modern transformer or graph models"
+    ],
+    keyExpectations: [
+      "Demonstrable system efficiency and knowledge representation rigor",
+      "Evaluation on diverse real-world domain datasets"
+    ]
+  },
+  {
+    name: "Journal of Artificial Intelligence Research (JAIR)",
+    publisher: "AI Access Foundation",
+    impactFactor: 4.5,
+    discipline: "Computer Science",
+    acceptanceRate: "20-24%",
+    reviewSpeed: "6-8 weeks to first decision",
+    openAccess: "Gold OA",
+    aimsAndScope: "Publishes comprehensive, high-impact research articles across all areas of artificial intelligence.",
+    deskRejectHazards: [
+      "Short conference-style papers without thorough experimental or theoretical depth",
+      "Missing source code or benchmark reproducibility instructions"
+    ],
+    keyExpectations: [
+      "Thorough and definitive treatment of an AI research problem",
+      "Complete theoretical proofs and exhaustive experimental sections"
+    ]
+  },
+  {
+    name: "Information Systems",
+    publisher: "Elsevier",
+    impactFactor: 3.0,
+    discipline: "Computer Science",
+    acceptanceRate: "28-32%",
+    reviewSpeed: "5-8 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes database architectures, data streams, information retrieval, and query processing.",
+    deskRejectHazards: [
+      "Theoretical algorithms lacking implementation and benchmark throughput metrics",
+      "Narrow scope lacking applicability to modern distributed data systems"
+    ],
+    keyExpectations: [
+      "Sound data architecture and empirical performance evaluations",
+      "Clear query optimization benchmarks"
+    ]
+  },
+
+  // --- Additional Neuroscience Journals ---
+  {
+    name: "The Journal of Neuroscience",
+    publisher: "Society for Neuroscience (SfN)",
+    impactFactor: 5.3,
+    discipline: "Neuroscience",
+    acceptanceRate: "22-25%",
+    reviewSpeed: "4-6 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Official journal of the Society for Neuroscience, publishing rigorous empirical research across cellular, molecular, systems, and behavioral neuroscience.",
+    deskRejectHazards: [
+      "Underpowered animal cohorts lacking blind scoring protocols",
+      "Failure to verify optogenetic/chemogenetic expression selectivity with histological controls"
+    ],
+    keyExpectations: [
+      "High technical standards in electrophysiology, imaging, and behavioral tracking",
+      "Robust statistical power and detailed neuroanatomical verification"
+    ]
+  },
+  {
+    name: "NeuroImage",
+    publisher: "Elsevier",
+    impactFactor: 5.7,
+    discipline: "Neuroscience",
+    acceptanceRate: "28-32%",
+    reviewSpeed: "5-7 weeks to first decision",
+    openAccess: "Gold OA",
+    aimsAndScope: "Publishes macroscopic and mesoscopic brain imaging, fMRI, MEG, EEG, and computational neuroimaging methods.",
+    deskRejectHazards: [
+      "Failure to correct for multiple spatial comparisons (family-wise error rate)",
+      "Uncontrolled head motion artifacts in neuroimaging data",
+      "Lack of independent test-set replication"
+    ],
+    keyExpectations: [
+      "Rigorous neuroimaging preprocessing and strict multiple-testing correction",
+      "Adherence to BIDS data standards and open sharing of MRI/EEG maps"
+    ]
+  },
+  {
+    name: "Cerebral Cortex",
+    publisher: "Oxford University Press",
+    impactFactor: 4.8,
+    discipline: "Neuroscience",
+    acceptanceRate: "25-30%",
+    reviewSpeed: "4-6 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes research on the development, organization, plasticity, and cognitive function of the cerebral cortex.",
+    deskRejectHazards: [
+      "Descriptive cortical mapping without functional perturbation assays",
+      "Inadequate histological verification of cortical lamina boundaries"
+    ],
+    keyExpectations: [
+      "Deep anatomical and functional characterization of cortical microcircuits",
+      "Integrative approaches combining electrophysiology and behavioral paradigms"
+    ]
+  },
+  {
+    name: "Glia",
+    publisher: "Wiley",
+    impactFactor: 6.2,
+    discipline: "Neuroscience",
+    acceptanceRate: "22-26%",
+    reviewSpeed: "4-6 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Dedicated to the study of glial cells: astrocytes, microglia, oligodendrocytes, and their interactions with neurons.",
+    deskRejectHazards: [
+      "Failure to verify cell-type-specific promoter expression in glial models",
+      "Conflating neuroinflammation with primary microglial activation states"
+    ],
+    keyExpectations: [
+      "Rigorous glial cell isolation, state profiling, and functional perturbation",
+      "Clear mechanistic role in neurodevelopment or neurodegenerative disease"
+    ]
+  },
+  {
+    name: "Molecular Neurobiology",
+    publisher: "Springer",
+    impactFactor: 5.1,
+    discipline: "Neuroscience",
+    acceptanceRate: "26-30%",
+    reviewSpeed: "4-6 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes molecular mechanisms of neuronal function, signal transduction, synaptic plasticity, and neuropathology.",
+    deskRejectHazards: [
+      "Over-reliance on cell lines without primary neuron or slice confirmation",
+      "Uncorrected western blot quantification lacking total protein controls"
+    ],
+    keyExpectations: [
+      "Sound molecular assays linking signaling cascades to neural phenotypes",
+      "Appropriate negative and positive experimental controls"
+    ]
+  },
+  {
+    name: "Frontiers in Neuroscience",
+    publisher: "Frontiers",
+    impactFactor: 4.3,
+    discipline: "Neuroscience",
+    acceptanceRate: "42-48%",
+    reviewSpeed: "5-7 weeks to first decision",
+    openAccess: "Gold OA",
+    aimsAndScope: "Publishes wide-ranging peer-reviewed research across all branches of the neurosciences.",
+    deskRejectHazards: [
+      "Statistical errors without normality testing or post-hoc corrections",
+      "Missing institutional animal care and use committee (IACUC) approval statements"
+    ],
+    keyExpectations: [
+      "Sound scientific execution and well-documented protocols",
+      "Transparent reporting of all experimental parameters"
+    ]
+  },
+  {
+    name: "European Journal of Neuroscience",
+    publisher: "Wiley / FENS",
+    impactFactor: 3.4,
+    discipline: "Neuroscience",
+    acceptanceRate: "35-40%",
+    reviewSpeed: "4-6 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Official journal of FENS publishing fundamental and translational neuroscience.",
+    deskRejectHazards: [
+      "Small sample cohorts without power calculations",
+      "Omission of animal sex as a biological variable"
+    ],
+    keyExpectations: [
+      "Thorough experimental methodology and rigorous data presentation",
+      "Clear contribution to neurobiology"
+    ]
+  },
+  {
+    name: "Journal of Neurochemistry",
+    publisher: "Wiley / ISN",
+    impactFactor: 4.2,
+    discipline: "Neuroscience",
+    acceptanceRate: "30-35%",
+    reviewSpeed: "4-6 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes neurochemical, cellular, and molecular aspects of the nervous system.",
+    deskRejectHazards: [
+      "Inadequate antibody validation for immunohistochemistry",
+      "Failure to quantify neurotransmitter receptor binding kinetics"
+    ],
+    keyExpectations: [
+      "High chemical and biochemical rigor in neurobiology assays",
+      "Complete validation of reagents and antibodies"
+    ]
+  },
+  {
+    name: "Molecular Psychiatry",
+    publisher: "Springer Nature",
+    impactFactor: 11.0,
+    discipline: "Neuroscience",
+    acceptanceRate: "12-15%",
+    reviewSpeed: "4-6 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes breakthrough discoveries in biological psychiatry, neural circuits of behavior, and psychiatric genetics.",
+    deskRejectHazards: [
+      "Candidate gene association studies without genome-wide significance",
+      "Lack of functional validation for nominated psychiatric risk loci"
+    ],
+    keyExpectations: [
+      "Direct mechanistic link between molecular/circuit perturbation and behavioral endophenotypes",
+      "Large, well-replicated clinical or preclinical cohorts"
+    ]
+  },
+  {
+    name: "Neuroscience Letters",
+    publisher: "Elsevier",
+    impactFactor: 2.8,
+    discipline: "Neuroscience",
+    acceptanceRate: "38-44%",
+    reviewSpeed: "4-5 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Rapid publication of short, complete research reports on all aspects of the neuroscience field.",
+    deskRejectHazards: [
+      "Preliminary findings without adequate control groups",
+      "Overinterpreted conclusions from single assays"
+    ],
+    keyExpectations: [
+      "Clear, focused hypothesis with concise and definitive experimental evidence",
+      "Sound statistical analysis"
+    ]
+  },
+
+  // --- Additional Operations Research & Management Journals ---
+  {
+    name: "Omega - The International Journal of Management Science",
+    publisher: "Elsevier",
+    impactFactor: 6.9,
+    discipline: "Operations Research & Management",
+    acceptanceRate: "14-18%",
+    reviewSpeed: "5-7 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes high-impact management science models, operational decision theory, and empirical industrial engineering applications.",
+    deskRejectHazards: [
+      "Mathematical models without managerial insights or practical decision relevance",
+      "Failure to benchmark algorithmic runtimes on standard industrial instances"
+    ],
+    keyExpectations: [
+      "Novel mathematical formulations coupled with demonstrable managerial implications",
+      "Thorough numerical experiments on realistic benchmark datasets"
+    ]
+  },
+  {
+    name: "International Journal of Production Economics",
+    publisher: "Elsevier",
+    impactFactor: 12.0,
+    discipline: "Operations Research & Management",
+    acceptanceRate: "12-16%",
+    reviewSpeed: "6-8 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes research at the interface of engineering and economics in production, supply chains, and manufacturing systems.",
+    deskRejectHazards: [
+      "Economic models disconnected from operational reality",
+      "Lack of sensitivity analysis for key operational cost parameters"
+    ],
+    keyExpectations: [
+      "Rigorous economic-operational models with strong analytical proofs",
+      "Extensive sensitivity analyses examining robust decision boundaries"
+    ]
+  },
+  {
+    name: "Computers & Operations Research",
+    publisher: "Elsevier",
+    impactFactor: 4.6,
+    discipline: "Operations Research & Management",
+    acceptanceRate: "20-24%",
+    reviewSpeed: "6-8 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes computational methodology, metaheuristics, mathematical programming, and algorithmic optimization in operations research.",
+    deskRejectHazards: [
+      "Metaheuristics without statistical comparison against exact solvers or established heuristics",
+      "Unreplicated computation times or ambiguous hardware specifications"
+    ],
+    keyExpectations: [
+      "Clear algorithmic pseudo-code, convergence proofs, and computational runtime comparisons",
+      "Public availability of benchmark problem instances"
+    ]
+  },
+  {
+    name: "Annals of Operations Research",
+    publisher: "Springer",
+    impactFactor: 4.4,
+    discipline: "Operations Research & Management",
+    acceptanceRate: "22-26%",
+    reviewSpeed: "6-8 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes foundational theory, computational algorithms, and applied decision modeling in operations research.",
+    deskRejectHazards: [
+      "Superficial mathematical novelty without theoretical depth",
+      "Lack of comparative computational performance metrics"
+    ],
+    keyExpectations: [
+      "Sound theoretical foundations and well-designed numerical testing",
+      "Clear articulation of operational advance"
+    ]
+  },
+  {
+    name: "Decision Sciences",
+    publisher: "Wiley",
+    impactFactor: 4.5,
+    discipline: "Operations Research & Management",
+    acceptanceRate: "15-20%",
+    reviewSpeed: "6-8 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes theoretical and empirical research in decision-making, supply chain management, and operations strategy.",
+    deskRejectHazards: [
+      "Purely conceptual frameworks without empirical or mathematical verification",
+      "Common method bias in survey instruments"
+    ],
+    keyExpectations: [
+      "Rigorous behavioral or mathematical modeling of organizational decisions",
+      "Clear relevance to executive decision-makers"
+    ]
+  },
+  {
+    name: "Journal of the Operational Research Society",
+    publisher: "Taylor & Francis",
+    impactFactor: 3.3,
+    discipline: "Operations Research & Management",
+    acceptanceRate: "22-26%",
+    reviewSpeed: "6-8 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes operational research methodologies applied to real problems in business, healthcare, and government.",
+    deskRejectHazards: [
+      "Abstract models without evidence of real-world implementation feasibility",
+      "Incomplete sensitivity analysis"
+    ],
+    keyExpectations: [
+      "Practical operational utility supported by sound mathematical formulation",
+      "Clear implementation roadmap for practitioners"
+    ]
+  },
+  {
+    name: "Networks",
+    publisher: "Wiley",
+    impactFactor: 2.1,
+    discipline: "Operations Research & Management",
+    acceptanceRate: "28-34%",
+    reviewSpeed: "5-8 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Dedicated to graph theory, network design, routing algorithms, and network flow optimization.",
+    deskRejectHazards: [
+      "Algorithms lacking formal complexity bounds",
+      "Evaluation on trivial networks lacking topological complexity"
+    ],
+    keyExpectations: [
+      "Formal combinatorial proofs and efficient network algorithms",
+      "Testing on complex large-scale network topologies"
+    ]
+  },
+
+  // --- Additional Environmental Science & Sustainability Journals ---
+  {
+    name: "Science of The Total Environment",
+    publisher: "Elsevier",
+    impactFactor: 9.8,
+    discipline: "Environmental Science & Sustainability",
+    acceptanceRate: "24-28%",
+    reviewSpeed: "4-5 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes multi-compartment environmental research interfacing the atmosphere, hydrosphere, lithosphere, and anthroposphere.",
+    deskRejectHazards: [
+      "Routine pollutant monitoring data without novel environmental or geochemical insights",
+      "Single-point field sampling without spatial replication or meteorological co-variate control"
+    ],
+    keyExpectations: [
+      "Comprehensive multi-compartment environmental assessment with robust spatial-temporal replication",
+      "Definitive mechanistic or mass-balance quantification of pollutant transport"
+    ]
+  },
+  {
+    name: "Environmental Research Letters",
+    publisher: "IOP Publishing",
+    impactFactor: 6.7,
+    discipline: "Environmental Science & Sustainability",
+    acceptanceRate: "28-32%",
+    reviewSpeed: "4-6 weeks to first decision",
+    openAccess: "Gold OA",
+    aimsAndScope: "Publishes high-impact letters covering all environmental science, climate dynamics, energy transitions, and sustainability policy.",
+    deskRejectHazards: [
+      "Localized case studies lacking broader planetary or regional significance",
+      "Under-quantified climate model uncertainty bounds"
+    ],
+    keyExpectations: [
+      "Concise, timely discoveries of major significance to global environmental policy",
+      "Transparent reporting of climate and Earth system model assumptions"
+    ]
+  },
+  {
+    name: "Waste Management",
+    publisher: "Elsevier",
+    impactFactor: 8.1,
+    discipline: "Environmental Science & Sustainability",
+    acceptanceRate: "20-25%",
+    reviewSpeed: "5-7 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Premier journal for waste characterization, recycling, electronic waste (WEEE), circular economy, and hazardous waste treatment.",
+    deskRejectHazards: [
+      "Theoretical life-cycle models without empirical material flow validation",
+      "Failure to quantify leaching toxicity under standard regulatory protocols (TCLP/EN)"
+    ],
+    keyExpectations: [
+      "Definitive mass-balance quantification and empirical recycling kinetics",
+      "Rigorous environmental and economic feasibility assessments"
+    ]
+  },
+  {
+    name: "Environmental Pollution",
+    publisher: "Elsevier",
+    impactFactor: 8.9,
+    discipline: "Environmental Science & Sustainability",
+    acceptanceRate: "22-26%",
+    reviewSpeed: "4-6 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes high-quality research on environmental contaminants, ecotoxicology, microplastics, and biological monitoring.",
+    deskRejectHazards: [
+      "Ecotoxicity testing using unrealistic environmental contaminant concentrations",
+      "Omission of chemical purity or analytical recovery quality controls"
+    ],
+    keyExpectations: [
+      "Environmentally realistic exposure concentrations and toxicological endpoints",
+      "Detailed analytical QA/QC data with certified reference materials"
+    ]
+  },
+  {
+    name: "Journal of Environmental Management",
+    publisher: "Elsevier",
+    impactFactor: 8.7,
+    discipline: "Environmental Science & Sustainability",
+    acceptanceRate: "22-26%",
+    reviewSpeed: "4-6 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes original research on environmental system management, watershed planning, life-cycle assessments, and ecosystem conservation.",
+    deskRejectHazards: [
+      "Management frameworks lacking empirical or quantitative field validation",
+      "Inadequate life-cycle inventory data transparency"
+    ],
+    keyExpectations: [
+      "Direct integration of environmental science and management decision frameworks",
+      "Rigorous ISO-compliant Life Cycle Assessment (LCA) methodology"
+    ]
+  },
+  {
+    name: "Ecological Economics",
+    publisher: "Elsevier",
+    impactFactor: 7.0,
+    discipline: "Environmental Science & Sustainability",
+    acceptanceRate: "18-22%",
+    reviewSpeed: "6-8 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Official journal of the ISEE, integrating ecology, economics, and policy for planetary sustainability.",
+    deskRejectHazards: [
+      "Neoclassical economics models ignoring ecological biophysical limits",
+      "Unvalidated willingness-to-pay surveys without robustness checks"
+    ],
+    keyExpectations: [
+      "Integration of biophysical constraints and macroeconomic modeling",
+      "Clear sustainability policy implications"
+    ]
+  },
+  {
+    name: "Chemosphere",
+    publisher: "Elsevier",
+    impactFactor: 8.8,
+    discipline: "Environmental Science & Sustainability",
+    acceptanceRate: "25-30%",
+    reviewSpeed: "4-6 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes environmental chemistry, persistent organic pollutants, environmental remediation, and toxicology.",
+    deskRejectHazards: [
+      "Remediation catalysts tested without endurance or reuse cycles",
+      "Missing reaction byproduct or secondary toxicity analysis"
+    ],
+    keyExpectations: [
+      "Comprehensive chemical pathway elucidation and reaction kinetics",
+      "Demonstration of catalyst reusability and operational stability"
+    ]
+  },
+  {
+    name: "Applied Energy",
+    publisher: "Elsevier",
+    impactFactor: 11.2,
+    discipline: "Environmental Science & Sustainability",
+    acceptanceRate: "16-20%",
+    reviewSpeed: "5-7 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes research on energy conversion, renewable systems, carbon mitigation, and sustainable energy infrastructure.",
+    deskRejectHazards: [
+      "Energy models lacking dynamic hourly grid integration simulations",
+      "Failure to include techno-economic sensitivity analyses"
+    ],
+    keyExpectations: [
+      "System-level energy optimization with validated thermodynamic or economic models",
+      "Significant contribution to carbon emissions reduction"
+    ]
+  }
 ];
 
 /**
@@ -947,6 +2105,11 @@ export function parseAcceptanceRate(rateStr: string): number {
   return parseFloat(m[1]);
 }
 
+export interface MatchedJournalItem {
+  journal: JournalEntry;
+  matchScore: number;
+}
+
 export function findMatchingJournals(
   title: string,
   abstract: string,
@@ -956,7 +2119,8 @@ export function findMatchingJournals(
   realistic: JournalEntry;
   fallback: JournalEntry;
   detectedDiscipline: JournalEntry['discipline'];
-  allMatches: { journal: JournalEntry; matchScore: number }[];
+  allMatches: MatchedJournalItem[];
+  otherMatches: MatchedJournalItem[];
   crossDisciplinary?: JournalEntry[];
 } {
   const discipline = detectDiscipline(title, abstract, targetJournal);
@@ -1016,10 +2180,49 @@ export function findMatchingJournals(
     ? multiJournals.map(j => ({ ...j, isCrossDisciplinary: true }))
     : [];
 
-  const allScored = [
+  const allScored: MatchedJournalItem[] = [
     ...domainJournals.map(j => ({ journal: j, matchScore: 90 })),
     ...crossDisciplinary.map(j => ({ journal: j, matchScore: 75 })),
   ];
+
+  // Candidates for "other journals" (list view - guarantees at least 10+ journals)
+  const primaryNames = new Set([reach.name, realistic.name, fallback.name]);
+
+  // Remaining domain journals
+  const remainingDomain: MatchedJournalItem[] = domainJournals
+    .filter(j => !primaryNames.has(j.name))
+    .map(j => ({
+      journal: j,
+      matchScore: Math.min(94, Math.max(78, Math.round(90 - Math.abs(j.impactFactor - realistic.impactFactor) * 0.8))),
+    }));
+
+  // Cross-disciplinary / multidisciplinary journals
+  const remainingMulti: MatchedJournalItem[] = multiJournals
+    .filter(j => !primaryNames.has(j.name))
+    .map(j => ({
+      journal: { ...j, isCrossDisciplinary: discipline !== 'Multidisciplinary' },
+      matchScore: discipline === 'Multidisciplinary' ? 84 : 76,
+    }));
+
+  const otherMatches: MatchedJournalItem[] = [...remainingDomain];
+  for (const m of remainingMulti) {
+    if (!otherMatches.some(x => x.journal.name === m.journal.name)) {
+      otherMatches.push(m);
+    }
+  }
+
+  // If still under 10 (fallback safeguard), pull related journals from broader catalog
+  if (otherMatches.length < 10) {
+    for (const j of JOURNAL_CATALOG) {
+      if (!primaryNames.has(j.name) && !otherMatches.some(x => x.journal.name === j.name)) {
+        otherMatches.push({
+          journal: { ...j, isCrossDisciplinary: true },
+          matchScore: 72,
+        });
+      }
+      if (otherMatches.length >= 12) break;
+    }
+  }
 
   return {
     reach,
@@ -1027,6 +2230,7 @@ export function findMatchingJournals(
     fallback,
     detectedDiscipline: discipline,
     allMatches: allScored,
+    otherMatches,
     crossDisciplinary: crossDisciplinary.length > 0 ? crossDisciplinary : undefined,
   };
 }
