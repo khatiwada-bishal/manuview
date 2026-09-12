@@ -7,6 +7,12 @@ import { cleanAndRepairJson } from "./json-repair";
 import { detectPublishedArticle } from "./publication-detector";
 import { auditReportingGuidelines } from "./guidelines";
 import { searchJournalInOpenAlex, evaluateOpenAlexScopeFit, OpenAlexSource } from "./openalex";
+import {
+  validateDimensions,
+  validatePriorityIssues,
+  validateReviewerPersonas,
+  validateJournalRecommendations,
+} from "./schemas";
 
 function generateReportId(prefix = "rev_"): string {
   try {
@@ -539,44 +545,81 @@ Please return your analysis as a JSON object matching this schema:
   );
 
   const isLLMAvailable = Boolean(parsedLLM);
-  const executionMode: "llm_synthesized" | "heuristic_offline" = isLLMAvailable ? "llm_synthesized" : "heuristic_offline";
 
-  // Merge genuine LLM results if valid, otherwise use high-fidelity synthesis
-  const finalOverallScore =
-    typeof parsedLLM?.overallScore === "number" && parsedLLM.overallScore > 0
-      ? parsedLLM.overallScore
-      : domainSynthesis.overallScore;
+  // 5. Section validation and field sources (REQ-EN-05)
+  const dimValidation = validateDimensions(parsedLLM?.dimensions);
+  const issueValidation = validatePriorityIssues(parsedLLM?.priorityIssues);
+  const personaValidation = validateReviewerPersonas(parsedLLM?.reviewerPersonas);
+  const recsValidation = validateJournalRecommendations(parsedLLM?.journalRecommendations);
+
+  const dimensionSource = dimValidation.isValid ? "llm" : "heuristic";
+  const issueSource = issueValidation.isValid ? "llm" : "heuristic";
+  const personaSource = personaValidation.isValid ? "llm" : "heuristic";
+
+  // REQ-EN-03: Derive executionMode from actual field sources
+  const usedLlm = [dimensionSource, issueSource, personaSource].filter((s) => s === "llm").length;
+  const executionMode: "llm_synthesized" | "partial_llm" | "heuristic_offline" =
+    !isLLMAvailable || usedLlm === 0
+      ? "heuristic_offline"
+      : usedLlm === 3
+      ? "llm_synthesized"
+      : "partial_llm";
+
+  // REQ-EN-06: In heuristic_offline mode, suppress reviewer personas and overall score entirely
+  let finalOverallScore: number | undefined = undefined;
+  if (executionMode !== "heuristic_offline") {
+    if (typeof parsedLLM?.overallScore === "number" && !isNaN(parsedLLM.overallScore)) {
+      finalOverallScore = Math.min(100, Math.max(0, Math.round(parsedLLM.overallScore)));
+    } else {
+      finalOverallScore = domainSynthesis.overallScore;
+    }
+  }
 
   const finalSummary =
-    typeof parsedLLM?.summary === "string" && parsedLLM.summary.length > 50
+    executionMode === "heuristic_offline"
+      ? (llmCallError
+          ? `AI review unavailable (${llmCallError}) — connect a provider for the reviewer panel and dimension scoring. The checks below are deterministic.`
+          : "AI review unavailable — connect a provider for the reviewer panel and dimension scoring. The checks below are deterministic.")
+      : typeof parsedLLM?.summary === "string" && parsedLLM.summary.length > 50
       ? parsedLLM.summary
       : domainSynthesis.summary;
 
-  const rawDims =
-    parsedLLM?.dimensions && Object.keys(parsedLLM.dimensions).length >= 5
-      ? parsedLLM.dimensions
-      : domainSynthesis.dimensions;
-  const dimensionSource = parsedLLM?.dimensions && Object.keys(parsedLLM.dimensions).length >= 5 ? "llm" : "heuristic";
-
-  const finalDimensions: Record<ScoreDimension, DimensionScore> = {} as any;
-  for (const [key, dim] of Object.entries(rawDims) as [ScoreDimension, DimensionScore][]) {
-    finalDimensions[key] = {
-      ...dim,
-      source: dim.source || dimensionSource,
-    };
+  let finalDimensions: Record<ScoreDimension, DimensionScore> | undefined = undefined;
+  if (executionMode !== "heuristic_offline") {
+    const dims: Record<ScoreDimension, DimensionScore> = {} as any;
+    if (dimValidation.isValid && dimValidation.data) {
+      for (const [key, dim] of Object.entries(dimValidation.data) as [ScoreDimension, DimensionScore][]) {
+        dims[key] = {
+          ...dim,
+          source: "llm",
+        };
+      }
+    } else {
+      for (const [key, dim] of Object.entries(domainSynthesis.dimensions) as [ScoreDimension, DimensionScore][]) {
+        dims[key] = {
+          ...dim,
+          source: "heuristic",
+        };
+      }
+    }
+    finalDimensions = dims;
   }
 
-  const rawIssues =
-    Array.isArray(parsedLLM?.priorityIssues) && parsedLLM.priorityIssues.length >= 2
-      ? parsedLLM.priorityIssues
-      : domainSynthesis.priorityIssues;
-  const issueSource = Array.isArray(parsedLLM?.priorityIssues) && parsedLLM.priorityIssues.length >= 2 ? "llm" : "heuristic";
-
-  let finalPriorityIssues: PriorityIssue[] = rawIssues.map((iss: any) => ({
-    ...iss,
-    priority: (iss.priority || "B").toUpperCase(),
-    source: iss.source || issueSource,
-  }));
+  let finalPriorityIssues: PriorityIssue[] = [];
+  if (issueValidation.isValid && issueValidation.data) {
+    finalPriorityIssues = issueValidation.data.map((iss) => ({
+      ...iss,
+      priority: iss.priority,
+      source: "llm" as const,
+    }));
+  } else {
+    // In heuristic mode, emit deterministic issues without invented reviewer quotes (REQ-EN-06)
+    finalPriorityIssues = domainSynthesis.priorityIssues.map((iss) => ({
+      ...iss,
+      reviewerQuote: executionMode === "heuristic_offline" ? "" : iss.reviewerQuote,
+      source: "heuristic" as const,
+    }));
+  }
 
   // Ensure Crossref integrity issues are always included if detected, with highest priority
   const additionalIssues: PriorityIssue[] = [];
@@ -589,7 +632,9 @@ Please return your analysis as a JSON object matching this schema:
       description:
         "One or more references in the bibliography have been formally retracted by publishers. Citing retracted work can trigger immediate editorial desk rejection.",
       reviewerQuote:
-        "'The authors cite a retracted publication as foundation for their claims. This raises severe academic integrity concerns.'",
+        executionMode === "heuristic_offline"
+          ? ""
+          : "'The authors cite a retracted publication as foundation for their claims. This raises severe academic integrity concerns.'",
       actionableFix: "Remove or replace the retracted citation with updated verified peer-reviewed literature.",
       source: "crossref",
     });
@@ -604,7 +649,9 @@ Please return your analysis as a JSON object matching this schema:
       description:
         "DOIs in the reference list failed resolution against the Crossref registry. This pattern is commonly flagged by editors as an AI-hallucinated reference.",
       reviewerQuote:
-        "'Several cited DOIs return 404 in Crossref. Are these valid citations or hallucinated citations?'",
+        executionMode === "heuristic_offline"
+          ? ""
+          : "'Several cited DOIs return 404 in Crossref. Are these valid citations or hallucinated citations?'",
       actionableFix: "Verify each cited paper's official DOI directly on the publisher's journal website.",
       source: "crossref",
     });
@@ -612,23 +659,27 @@ Please return your analysis as a JSON object matching this schema:
 
   finalPriorityIssues = [...additionalIssues, ...finalPriorityIssues];
 
-  const rawPersonas =
-    Array.isArray(parsedLLM?.reviewerPersonas) && parsedLLM.reviewerPersonas.length >= 3
-      ? parsedLLM.reviewerPersonas
-      : domainSynthesis.personas;
-  const personaSource = Array.isArray(parsedLLM?.reviewerPersonas) && parsedLLM.reviewerPersonas.length >= 3 ? "llm" : "heuristic";
-
-  const finalPersonas: ReviewerPersonaFeedback[] = rawPersonas.map((p: any) => ({
-    ...p,
-    source: p.source || personaSource,
-  }));
+  // Reviewer Personas (Zero personas in heuristic_offline mode - REQ-EN-06)
+  let finalPersonas: ReviewerPersonaFeedback[] = [];
+  if (executionMode !== "heuristic_offline") {
+    if (personaValidation.isValid && personaValidation.data) {
+      finalPersonas = personaValidation.data.map((p) => ({
+        ...p,
+        source: "llm" as const,
+      }));
+    } else {
+      finalPersonas = domainSynthesis.personas.map((p) => ({
+        ...p,
+        source: "heuristic" as const,
+      }));
+    }
+  }
 
   // Journal Recommendations (Prioritize genuine LLM recommendations, fall back to discipline catalog)
-  const rawLLMRecs = Array.isArray(parsedLLM?.journalRecommendations) ? parsedLLM.journalRecommendations : [];
-  const validLLMRecs = rawLLMRecs.filter((r: any) => r && r.journalName && r.tier && r.scopeRationale);
-
   const finalRecommendations: JournalRecommendation[] =
-    validLLMRecs.length >= 3 ? validLLMRecs.slice(0, 3) : domainSynthesis.journalRecommendations;
+    recsValidation.isValid && recsValidation.data
+      ? recsValidation.data
+      : domainSynthesis.journalRecommendations;
 
   return {
     mode: "full",

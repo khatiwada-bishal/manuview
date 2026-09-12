@@ -221,7 +221,7 @@ export interface FullReviewReport {
   journalRecommendations: JournalRecommendation[];
   citationIntegrity: CitationIntegritySummary;
   reportingGuideline?: ReportingGuidelineCheck;
-  executionMode?: 'llm_synthesized' | 'heuristic_offline';
+  executionMode?: 'llm_synthesized' | 'partial_llm' | 'heuristic_offline';
   llmCallError?: string;
 }
 

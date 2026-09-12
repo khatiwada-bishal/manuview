@@ -206,15 +206,18 @@ export function exportBibTeX(report: ReviewReport) {
 // -----------------------------------------------------------------------------
 // 1. FULL REPORT - STANDALONE INTERACTIVE HTML GENERATOR
 // -----------------------------------------------------------------------------
-function generateFullReportHtml(r: FullReviewReport): string {
+export function generateFullReportHtml(r: FullReviewReport): string {
   const title = escapeHtml(r.title);
   const targetJournal = escapeHtml(r.targetJournal || "General High Impact Journal");
-  const overallScore =
+  const hasNumericScore = typeof r.overallScore === "number";
+  const scoreLabel =
     r.isEligibleForReview === false
       ? r.ineligibilityReason === "already_published"
         ? "PUB"
         : "N/A"
-      : r.overallScore || 70;
+      : hasNumericScore
+      ? `${r.overallScore}`
+      : "Not Assessed";
   const dateStr = new Date().toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
 
   return `<!DOCTYPE html>
@@ -466,10 +469,17 @@ function generateFullReportHtml(r: FullReviewReport): string {
       <h1>${title}</h1>
       <p style="color: var(--text-muted); font-size: 13px;">Generated on ${dateStr} • Peer-Review Calibrated Pre-Submission Diagnostic</p>
 
-      <div class="score-banner">
+      ${r.executionMode === "heuristic_offline" ? `
+      <div style="background-color: #FEF3C7; border: 1px solid #F59E0B; padding: 12px 16px; border-radius: 8px; margin-top: 16px; color: #92400E; font-size: 13px;">
+        <strong>Notice:</strong> AI review unavailable — connect a provider for the reviewer panel and dimension scoring. The checks below are deterministic.
+        ${r.llmCallError ? `<div style="font-family: monospace; font-size: 11px; margin-top: 4px; color: #B45309;">Provider error: ${escapeHtml(r.llmCallError)}</div>` : ""}
+      </div>
+      ` : ""}
+
+      <div class="score-banner" style="${!hasNumericScore ? "background: #1E293B;" : ""}">
         <div class="score-meter">
-          <span class="score-number">${overallScore}</span>
-          <span class="score-label">/ 100 Overall Acceptance Potential</span>
+          <span class="score-number" style="${!hasNumericScore ? "font-size: 26px; color: #94A3B8;" : ""}">${scoreLabel}</span>
+          <span class="score-label">${hasNumericScore ? "/ 100 Overall Acceptance Potential" : (r.executionMode === "heuristic_offline" ? "AI scoring offline" : "Acceptance potential bypassed")}</span>
         </div>
         <button class="btn-print" onclick="window.print()">
           <span>🖨️ Print / Save as PDF</span>
@@ -480,8 +490,12 @@ function generateFullReportHtml(r: FullReviewReport): string {
     <!-- Interactive Navigation Tabs -->
     <div class="tabs-nav">
       <button class="tab-btn active" onclick="switchTab('overview')">Executive Overview</button>
-      <button class="tab-btn" onclick="switchTab('reviewers')">${(r.reviewerPersonas || []).length || 5} Reviewer Personas</button>
+      ${(r.reviewerPersonas && r.reviewerPersonas.length > 0) ? `
+      <button class="tab-btn" onclick="switchTab('reviewers')">${r.reviewerPersonas.length} Reviewer Personas</button>
+      ` : ""}
+      ${r.dimensions ? `
       <button class="tab-btn" onclick="switchTab('dimensions')">6 Scoring Dimensions</button>
+      ` : ""}
       <button class="tab-btn" onclick="switchTab('issues')">Priority Action Items (${(r.priorityIssues || []).length})</button>
       <button class="tab-btn" onclick="switchTab('journals')">Target Journals</button>
     </div>
@@ -532,6 +546,7 @@ function generateFullReportHtml(r: FullReviewReport): string {
       ` : ""}
     </div>
 
+    ${(r.reviewerPersonas && r.reviewerPersonas.length > 0) ? `
     <!-- Tab 2: Reviewer Personas -->
     <div id="tab-reviewers" class="tab-content">
       <div class="card">
@@ -593,7 +608,9 @@ function generateFullReportHtml(r: FullReviewReport): string {
         `).join("")}
       </div>
     </div>
+    ` : ""}
 
+    ${r.dimensions ? `
     <!-- Tab 3: Dimensions -->
     <div id="tab-dimensions" class="tab-content">
       <div class="dimension-grid">
@@ -620,6 +637,7 @@ function generateFullReportHtml(r: FullReviewReport): string {
         `).join("")}
       </div>
     </div>
+    ` : ""}
 
     <!-- Tab 4: Priority Issues -->
     <div id="tab-issues" class="tab-content">
@@ -804,10 +822,15 @@ function generateBriefReportHtml(r: BriefJournalFitReport): string {
 // -----------------------------------------------------------------------------
 // 3. FULL REPORT - MICROSOFT WORD (.DOC/.DOCX) EXPORT GENERATOR
 // -----------------------------------------------------------------------------
-function generateFullReportWord(r: FullReviewReport): string {
+export function generateFullReportWord(r: FullReviewReport): string {
   const title = escapeHtml(r.title);
   const targetJournal = escapeHtml(r.targetJournal || "General High Impact Journal");
-  const overallScore = r.overallScore || 70;
+  const hasNumericScore = typeof r.overallScore === "number";
+  const scoreLabel = r.isEligibleForReview === false
+    ? (r.ineligibilityReason === "already_published" ? "Status: Already Published Article" : "Status: Ineligible (Non-Article)")
+    : hasNumericScore
+    ? `Overall Potential Score: ${r.overallScore} / 100`
+    : (r.executionMode === "heuristic_offline" ? "Overall Potential Score: Not Assessed (AI provider offline)" : "Overall Potential Score: Not Assessed");
   const dateStr = new Date().toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
 
   return `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
@@ -855,11 +878,20 @@ function generateFullReportWord(r: FullReviewReport): string {
   <h1>${title}</h1>
   <p style="font-size: 10pt; color: #64748B;">Target Journal: <strong>${targetJournal}</strong> | Evaluation Date: ${dateStr}</p>
   
+  ${r.executionMode === "heuristic_offline" ? `
+  <div class="callout" style="background-color: #FEF3C7; border-left: 4pt solid #F59E0B; margin-bottom: 12pt;">
+    <p style="font-size: 11pt; font-weight: bold; margin: 0; color: #92400E;">Notice: AI Review Unavailable</p>
+    <p style="font-size: 10pt; margin-top: 4pt; margin-bottom: 0; color: #92400E;">Connect an AI provider to enable reviewer personas and dimensional scoring. Deterministic checks (citations, guidelines, structure) are reported below.</p>
+    ${r.llmCallError ? `<p style="font-family: monospace; font-size: 9pt; margin-top: 4pt; color: #B45309;">Provider error: ${escapeHtml(r.llmCallError)}</p>` : ""}
+  </div>
+  ` : ""}
+
   <div class="callout" style="background-color: #EFF6FF; border-left: 4pt solid #2563EB;">
-    <p style="font-size: 16pt; font-weight: bold; margin: 0; color: #1E40AF;">${r.isEligibleForReview === false ? (r.ineligibilityReason === "already_published" ? "Status: Already Published Article" : "Status: Ineligible (Non-Article)") : `Overall Potential Score: ${overallScore} / 100`}</p>
+    <p style="font-size: 16pt; font-weight: bold; margin: 0; color: #1E40AF;">${scoreLabel}</p>
     <p style="font-size: 10pt; margin-top: 4pt; margin-bottom: 0;">${escapeHtml(r.summary)}</p>
   </div>
 
+  ${r.dimensions ? `
   <h2>1. 6-Dimension Scholarly Scoring Rubric</h2>
   <table>
     <tr>
@@ -879,9 +911,11 @@ function generateFullReportWord(r: FullReviewReport): string {
       </tr>
     `).join("")}
   </table>
+  ` : ""}
 
-  <h2>2. Simulated ${(r.reviewerPersonas || []).length || 5}-Persona Peer Review (Adversarial Panel)</h2>
-  ${(r.reviewerPersonas || []).map(p => `
+  ${(r.reviewerPersonas && r.reviewerPersonas.length > 0) ? `
+  <h2>2. Simulated ${r.reviewerPersonas.length}-Persona Peer Review (Adversarial Panel)</h2>
+  ${r.reviewerPersonas.map(p => `
     <h3>${p.persona === "devils_advocate" ? "⚡ [Adversarial Stress-Test] " : ""}${escapeHtml(p.name)} — ${escapeHtml(p.roleDescription)}</h3>
     <p style="font-size: 9.5pt; color: #64748B; margin-bottom: 4pt;">${escapeHtml(p.title)} • ${escapeHtml(p.affiliation)}</p>
     <p><strong>Recommendation:</strong> ${escapeHtml(p.decisionRecommendation)} | <strong>Key Challenge:</strong> ${escapeHtml(p.keyChallenge)}</p>
@@ -907,6 +941,7 @@ function generateFullReportWord(r: FullReviewReport): string {
       </ul>
     ` : ""}
   `).join("")}
+  ` : ""}
 
   <h2>3. Actionable Priority Issues & Rebuttal Strategies</h2>
   <table>

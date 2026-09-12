@@ -1269,19 +1269,33 @@ export default function ScanPage() {
                     <div className="text-[11px] font-semibold uppercase tracking-wider text-[#787774] mb-1">
                       Readiness Score
                     </div>
-                    <div className="flex items-baseline gap-1 my-1">
-                      <span className="text-4xl font-bold font-serif text-[#2F3437]">{report.overallScore ?? 0}</span>
-                      <span className="text-[#9B9A97] text-sm font-serif">/100</span>
-                    </div>
-                    <div className={`mt-1 px-2.5 py-0.5 rounded text-[11px] font-medium border ${
-                      (report.overallScore ?? 0) >= 80 ? "bg-[#EDF6EE] text-[#1E5A2A] border-[#CBE7CE]" :
-                      (report.overallScore ?? 0) >= 65 ? "bg-[#FBF3DB] text-[#78510E] border-[#F4E2B6]" :
-                      "bg-[#FDF0EF] text-[#7C2D2B] border-[#F7CECC]"
-                    }`}>
-                      {(report.overallScore ?? 0) >= 80 ? "Submission Ready" :
-                       (report.overallScore ?? 0) >= 65 ? "Revision Prioritized" :
-                       "Substantive Hazards"}
-                    </div>
+                    {typeof report.overallScore === "number" ? (
+                      <>
+                        <div className="flex items-baseline gap-1 my-1">
+                          <span className="text-4xl font-bold font-serif text-[#2F3437]">{report.overallScore}</span>
+                          <span className="text-[#9B9A97] text-sm font-serif">/100</span>
+                        </div>
+                        <div className={`mt-1 px-2.5 py-0.5 rounded text-[11px] font-medium border ${
+                          report.overallScore >= 80 ? "bg-[#EDF6EE] text-[#1E5A2A] border-[#CBE7CE]" :
+                          report.overallScore >= 65 ? "bg-[#FBF3DB] text-[#78510E] border-[#F4E2B6]" :
+                          "bg-[#FDF0EF] text-[#7C2D2B] border-[#F7CECC]"
+                        }`}>
+                          {report.overallScore >= 80 ? "Submission Ready" :
+                           report.overallScore >= 65 ? "Revision Prioritized" :
+                           "Substantive Hazards"}
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex items-baseline gap-1 my-1">
+                          <span className="text-3xl font-bold font-serif text-[#787774]">—</span>
+                          <span className="text-[#9B9A97] text-xs font-serif">/100</span>
+                        </div>
+                        <div className="mt-1 px-2.5 py-0.5 rounded text-[11px] font-medium border bg-[#FBF3DB] text-[#78510E] border-[#F4E2B6]">
+                          {report.executionMode === "heuristic_offline" ? "AI Provider Required" : "Not Assessed"}
+                        </div>
+                      </>
+                    )}
                   </div>
 
                   {/* Editorial Summary Callout */}
@@ -1407,78 +1421,85 @@ export default function ScanPage() {
                 )}
 
                 {/* The 6 Evaluation Dimensions */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-[#2F3437]">
-                      <BarChart3 className="w-4 h-4 text-[#787774]" />
-                      <span>The 6 Evaluation Dimensions (1–5 Scale)</span>
-                    </div>
-                    <span className="text-[11px] text-[#787774]">Calibrated against top-tier standards</span>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {Object.entries(report.dimensions || {}).map(([key, dim]) => (
-                      <div key={key} className="p-4 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] flex flex-col justify-between hover:border-[#d0d0d0] hover:shadow-2xs transition space-y-3">
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-xs font-semibold text-[#2F3437]">{dim.label}</span>
-                              {dim.source && (
-                                <span className={`text-[9px] px-1 py-0.2 rounded font-medium border ${
-                                  dim.source === "llm"
-                                    ? "bg-[#EDF6EE] text-[#1E5A2A] border-[#CBE7CE]"
-                                    : "bg-[#F7F7F5] text-[#9B9A97] border-[#EBEBEA]"
-                                }`}>
-                                  {dim.source === "llm" ? "AI" : "Heuristic"}
-                                </span>
-                              )}
-                            </div>
-                            <span className={`px-2 py-0.5 rounded font-mono text-xs font-semibold border ${
-                              dim.score >= 4 ? "bg-[#EDF6EE] text-[#1E5A2A] border-[#CBE7CE]" :
-                              dim.score === 3 ? "bg-[#FBF3DB] text-[#78510E] border-[#F4E2B6]" :
-                              "bg-[#FDF0EF] text-[#7C2D2B] border-[#F7CECC]"
-                            }`}>
-                              {dim.score} / 5
-                            </span>
-                          </div>
-                          <p className="text-xs text-[#787774] leading-relaxed font-light">
-                            {dim.verdict}
-                          </p>
-                        </div>
-
-                        <div className="space-y-2 pt-2 border-t border-[#EBEBEA] text-xs">
-                          {dim.strengths && dim.strengths.length > 0 && (
-                            <div className="space-y-1">
-                              <span className="text-[10px] font-semibold text-[#1E5A2A] uppercase tracking-wider block">Strengths:</span>
-                              <ul className="space-y-1 text-[#1E5A2A] text-[11px]">
-                                {dim.strengths.map((s, i) => (
-                                  <li key={i} className="flex items-start gap-1">
-                                    <span className="font-bold">&bull;</span>
-                                    <span>{s}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-
-                          {dim.vulnerabilities && dim.vulnerabilities.length > 0 && (
-                            <div className="space-y-1">
-                              <span className="text-[10px] font-semibold text-[#7C2D2B] uppercase tracking-wider block">Vulnerabilities:</span>
-                              <ul className="space-y-1 text-[#7C2D2B] text-[11px]">
-                                {dim.vulnerabilities.map((v, i) => (
-                                  <li key={i} className="flex items-start gap-1">
-                                    <AlertTriangle className="w-3 h-3 flex-shrink-0 mt-0.5" />
-                                    <span>{v}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                        </div>
+                {report.dimensions ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-sm font-semibold text-[#2F3437]">
+                        <BarChart3 className="w-4 h-4 text-[#787774]" />
+                        <span>The 6 Evaluation Dimensions (1–5 Scale)</span>
                       </div>
-                    ))}
+                      <span className="text-[11px] text-[#787774]">Calibrated against top-tier standards</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {Object.entries(report.dimensions || {}).map(([key, dim]) => (
+                        <div key={key} className="p-4 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] flex flex-col justify-between hover:border-[#d0d0d0] hover:shadow-2xs transition space-y-3">
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-xs font-semibold text-[#2F3437]">{dim.label}</span>
+                                {dim.source && (
+                                  <span className={`text-[9px] px-1 py-0.2 rounded font-medium border ${
+                                    dim.source === "llm"
+                                      ? "bg-[#EDF6EE] text-[#1E5A2A] border-[#CBE7CE]"
+                                      : "bg-[#F7F7F5] text-[#9B9A97] border-[#EBEBEA]"
+                                  }`}>
+                                    {dim.source === "llm" ? "AI" : "Heuristic"}
+                                  </span>
+                                )}
+                              </div>
+                              <span className={`px-2 py-0.5 rounded font-mono text-xs font-semibold border ${
+                                dim.score >= 4 ? "bg-[#EDF6EE] text-[#1E5A2A] border-[#CBE7CE]" :
+                                dim.score === 3 ? "bg-[#FBF3DB] text-[#78510E] border-[#F4E2B6]" :
+                                "bg-[#FDF0EF] text-[#7C2D2B] border-[#F7CECC]"
+                              }`}>
+                                {dim.score} / 5
+                              </span>
+                            </div>
+                            <p className="text-xs text-[#787774] leading-relaxed font-light">
+                              {dim.verdict}
+                            </p>
+                          </div>
+
+                          <div className="space-y-2 pt-2 border-t border-[#EBEBEA] text-xs">
+                            {dim.strengths && dim.strengths.length > 0 && (
+                              <div className="space-y-1">
+                                <span className="text-[10px] font-semibold text-[#1E5A2A] uppercase tracking-wider block">Strengths:</span>
+                                <ul className="space-y-1 text-[#1E5A2A] text-[11px]">
+                                  {dim.strengths.map((s, i) => (
+                                    <li key={i} className="flex items-start gap-1">
+                                      <span className="font-bold">&bull;</span>
+                                      <span>{s}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+
+                            {dim.vulnerabilities && dim.vulnerabilities.length > 0 && (
+                              <div className="space-y-1">
+                                <span className="text-[10px] font-semibold text-[#7C2D2B] uppercase tracking-wider block">Vulnerabilities:</span>
+                                <ul className="space-y-1 text-[#7C2D2B] text-[11px]">
+                                  {dim.vulnerabilities.map((v, i) => (
+                                    <li key={i} className="flex items-start gap-1">
+                                      <AlertTriangle className="w-3 h-3 flex-shrink-0 mt-0.5" />
+                                      <span>{v}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="p-4 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] flex items-center gap-2.5 text-xs text-[#787774]">
+                    <BarChart3 className="w-4 h-4 text-[#9B9A97]" />
+                    <span>Dimensional scoring is unavailable in offline mode. Connect an AI provider to evaluate the 6 scholarly dimensions.</span>
+                  </div>
+                )}
 
                 {/* Prioritized Action Plan */}
                 <div className="space-y-3">
@@ -1627,6 +1648,7 @@ export default function ScanPage() {
                 </div>
 
                 {/* 5-Persona Peer-Review Simulation (Adversarial Panel) */}
+                {report.reviewerPersonas && report.reviewerPersonas.length > 0 ? (
                 <div className="space-y-3">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                     <div className="flex items-center gap-2 text-sm font-semibold text-[#2F3437]">
@@ -1864,6 +1886,12 @@ export default function ScanPage() {
                     );
                   })()}
                 </div>
+                ) : (
+                  <div className="p-4 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] flex items-center gap-2.5 text-xs text-[#787774]">
+                    <Users className="w-4 h-4 text-[#9B9A97]" />
+                    <span>Reviewer persona simulation is unavailable in offline mode. Connect an AI provider to enable multi-persona peer review.</span>
+                  </div>
+                )}
 
                 {/* Citation & Reference Integrity Audit */}
                 <div className="space-y-3">
@@ -2074,21 +2102,25 @@ export default function ScanPage() {
               <div className="flex items-center justify-between border-b border-[#E5E5E5] pb-2">
                 <div className="flex items-center gap-3">
                   <div className="px-3 py-1.5 rounded-lg bg-[#111111] text-white font-mono font-bold text-sm">
-                    {report.overallScore ?? 0} / 100
+                    {typeof report.overallScore === "number" ? `${report.overallScore} / 100` : "Not Assessed"}
                   </div>
                   <div>
                     <div className="text-[10px] uppercase tracking-wider text-[#666666] font-semibold">
                       Submission Readiness Verdict
                     </div>
                     <div className="text-xs font-bold text-[#111111]">
-                      {(report.overallScore ?? 0) >= 80 ? "Conditionally Ready with Minor Revisions" :
-                       (report.overallScore ?? 0) >= 60 ? "Major Revisions Prior to Submission Recommended" :
-                       "High Desk-Rejection Vulnerability — Substantial Re-Framing Required"}
+                      {typeof report.overallScore === "number" ? (
+                        report.overallScore >= 80 ? "Conditionally Ready with Minor Revisions" :
+                        report.overallScore >= 60 ? "Major Revisions Prior to Submission Recommended" :
+                        "High Desk-Rejection Vulnerability — Substantial Re-Framing Required"
+                      ) : (
+                        report.executionMode === "heuristic_offline" ? "AI Evaluation Offline — Connect Provider" : "Not Assessed"
+                      )}
                     </div>
                   </div>
                 </div>
                 <div className="text-[10px] font-semibold px-2 py-0.5 rounded border border-[#CBE7CE] bg-[#EDF6EE] text-[#1E5A2A]">
-                  Verified Peer-Review Rubric
+                  {typeof report.overallScore === "number" ? "Verified Peer-Review Rubric" : "Deterministic Checks Only"}
                 </div>
               </div>
               <p className="text-[11px] leading-relaxed text-[#2F3437] italic">
@@ -2097,6 +2129,7 @@ export default function ScanPage() {
             </div>
 
             {/* 3. The 6 Evaluation Dimensions Matrix */}
+            {report.dimensions && Object.keys(report.dimensions).length > 0 && (
             <div className="avoid-break space-y-2">
               <h2 className="text-xs font-bold uppercase tracking-wider text-[#111111] border-b border-[#E5E5E5] pb-1">
                 1. The 6 Evaluation Dimensions (1–5 Scholarly Scale)
@@ -2129,6 +2162,7 @@ export default function ScanPage() {
                 </tbody>
               </table>
             </div>
+            )}
 
             {/* 4. Priority Issues & Fatal Rejection Flaws */}
             {report.priorityIssues && report.priorityIssues.length > 0 && (
@@ -2163,12 +2197,13 @@ export default function ScanPage() {
             )}
 
             {/* 5. ALL 5-PERSONA REVIEWERS (PRINTED IN FULL SEQUENTIALLY) */}
+            {report.reviewerPersonas && report.reviewerPersonas.length > 0 && (
             <div className="space-y-3">
               <h2 className="text-xs font-bold uppercase tracking-wider text-[#111111] border-b border-[#E5E5E5] pb-1">
-                3. 5-Persona Peer-Review Simulation (Full Referee Critiques)
+                3. Simulated Reviewer Critiques
               </h2>
               <div className="space-y-3.5">
-                {(report.reviewerPersonas || []).map((persona, idx) => (
+                {report.reviewerPersonas.map((persona, idx) => (
                   <div key={idx} className="avoid-break p-3.5 rounded-xl border border-[#D0D0D0] bg-[#FFFFFF] space-y-2 text-[10.5px]">
                     <div className="flex items-center justify-between border-b border-[#E5E5E5] pb-1.5">
                       <div>
@@ -2227,6 +2262,7 @@ export default function ScanPage() {
                 ))}
               </div>
             </div>
+            )}
 
             {/* 6. Citation & Reference Integrity Audit */}
             <div className="avoid-break space-y-2">
