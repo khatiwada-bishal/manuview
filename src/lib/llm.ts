@@ -9,8 +9,11 @@ export function getEnv(key: string): string {
   try {
     const g = (typeof window !== "undefined" ? window : globalThis) as any;
     if (g?.process?.env?.[key]) return String(g.process.env[key]).trim();
-    if (typeof import.meta !== "undefined" && (import.meta as any)?.env) {
-      const meta = (import.meta as any).env;
+    let meta: any = undefined;
+    try {
+      meta = new Function("try { return import.meta.env; } catch (e) { return undefined; }")();
+    } catch {}
+    if (meta) {
       if (meta[key]) return String(meta[key]).trim();
       if (meta[`VITE_${key}`]) return String(meta[`VITE_${key}`]).trim();
     }

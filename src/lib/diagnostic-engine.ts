@@ -610,6 +610,7 @@ Please return your analysis as a JSON object matching this schema:
     finalPriorityIssues = issueValidation.data.map((iss) => ({
       ...iss,
       priority: iss.priority,
+      category: iss.category || ("Methodology" as const),
       source: "llm" as const,
     }));
   } else {
@@ -665,6 +666,8 @@ Please return your analysis as a JSON object matching this schema:
     if (personaValidation.isValid && personaValidation.data) {
       finalPersonas = personaValidation.data.map((p) => ({
         ...p,
+        persona: p.persona || ("domain_expert" as const),
+        decisionRecommendation: p.decisionRecommendation || ("Major Revision" as const),
         source: "llm" as const,
       }));
     } else {
@@ -798,7 +801,7 @@ export async function runBriefJournalFitAnalysis(input: {
     ? openAlexScopeFit.scopeConfidence
     : 0;
   if (catalogEntry?.impactFactor && catalogEntry.impactFactor > 30) {
-    heuristicScore = Math.max(68, heuristicScore - 8);
+    heuristicScore = Math.max(0, heuristicScore - 8);
   }
 
   // 1. Auto-resolve provider config from localStorage if not explicitly supplied
@@ -929,8 +932,8 @@ Respond with ONLY a valid JSON object matching this schema:
     : openAlexProfile
     ? openAlexScopeFit?.summary || `Evaluated against OpenAlex subject indexing for ${openAlexProfile.displayName}.`
     : scopeAssessment.reason
-    ? `Scope could not be assessed because live registry data for "${targetJournal}" was unavailable (${scopeAssessment.reason}). Detailed scope data is available for 36 curated journals; "${targetJournal}" is not among them.`
-    : `Detailed scope data is available for 36 curated journals; "${targetJournal}" was not found in the curated catalog or live registries. Authors should consult the official journal aims and author guidelines directly prior to submission.`;
+    ? `Scope could not be assessed because live registry data for "${targetJournal}" was unavailable (${scopeAssessment.reason}). Detailed scope data is available for ${JOURNAL_CATALOG.length} curated journals; "${targetJournal}" is not among them.`
+    : `Detailed scope data is available for ${JOURNAL_CATALOG.length} curated journals; "${targetJournal}" was not found in the curated catalog or live registries. Authors should consult the official journal aims and author guidelines directly prior to submission.`;
 
   const defaultHighlights = isScopeAssessed
     ? [
@@ -1074,7 +1077,7 @@ Respond with ONLY a valid JSON object matching this schema:
  * High-Fidelity Domain-Adaptive Scientific Review Synthesizer
  * Generates publication-grade, authentic peer review evaluations grounded in the manuscript.
  */
-function synthesizeGroundedAcademicReview(
+export function synthesizeGroundedAcademicReview(
   manuscript: ParsedManuscript,
   citationIntegrity: CitationIntegritySummary,
   targetJournalName?: string,
@@ -1155,17 +1158,30 @@ function synthesizeGroundedAcademicReview(
     dynamicScore -= 4;
   }
 
-  if (manuscript.sections.methods && manuscript.sections.methods.length > 150) {
+  const isMethodsMissing = Boolean(manuscript.sectionProvenance?.methodsMissing) || (!manuscript.sections.methods || manuscript.sections.methods.length < 50);
+  const isMethodsInferred = Boolean(manuscript.sectionProvenance?.methodsInferred);
+  const isResultsInferred = Boolean(manuscript.sectionProvenance?.resultsInferred);
+  const isDiscussionInferred = Boolean(manuscript.sectionProvenance?.discussionInferred);
+
+  if (!isMethodsMissing && !isMethodsInferred && manuscript.sections.methods && manuscript.sections.methods.length > 150) {
     dynamicScore += 3;
-  } else {
+  } else if (isMethodsInferred) {
+    // REQ-EN-02: Inferred section penalty instead of bonus
     dynamicScore -= 2;
+  } else {
+    dynamicScore -= 4;
   }
 
   if (manuscript.sections.results && manuscript.sections.results.length > 150) {
-    dynamicScore += 3;
+    dynamicScore += isResultsInferred ? -1 : 3;
+  } else if (!manuscript.sections.results || manuscript.sections.results.length < 50) {
+    dynamicScore -= 3;
   }
+
   if (manuscript.sections.discussion && manuscript.sections.discussion.length > 150) {
-    dynamicScore += 2;
+    dynamicScore += isDiscussionInferred ? -1 : 2;
+  } else if (!manuscript.sections.discussion || manuscript.sections.discussion.length < 50) {
+    dynamicScore -= 2;
   }
 
   if (sampleCount > 0) dynamicScore += 2;
@@ -1201,7 +1217,7 @@ function synthesizeGroundedAcademicReview(
     dynamicScore -= 2;
   }
 
-  dynamicScore = Math.max(54, Math.min(93, dynamicScore));
+  dynamicScore = Math.max(0, Math.min(100, dynamicScore));
 
   // 5. Dynamic Grounded Editorial Synthesis Summary
   const empiricalParts: string[] = [];
@@ -1237,8 +1253,6 @@ function synthesizeGroundedAcademicReview(
   // 6. Dynamic 6-Dimension Scores & Authentic Feedback
   const origScore = abstractCore.length > 40 && cleanTitle.length > 25 ? 4 : 3;
   const broadScore = manuscript.wordCount >= 2800 ? 4 : 3;
-  const isMethodsMissing = Boolean(manuscript.sectionProvenance?.methodsMissing);
-  const isMethodsInferred = Boolean(manuscript.sectionProvenance?.methodsInferred);
 
   const methScore = isMethodsMissing
     ? 1
@@ -1609,6 +1623,38 @@ function synthesizeGroundedAcademicReview(
         expertise: "Culture-adaptation artifacts, off-target toxicity, and clinical translation failure",
       },
     },
+    "Environmental Science & Sustainability": {
+      methods: {
+        name: "Lead Methods Referee (Environmental Systems & Modeling)",
+        title: "Senior Referee in Ecological Modeling & Environmental Measurement",
+        affiliation: "Institute for Environmental Science & Technology",
+        expertise: "Life cycle assessment, carbon accounting, environmental flux modeling, and analytical measurement quality",
+      },
+      domain: {
+        name: "Domain Specialist (Ecosystems & Sustainability)",
+        title: "Senior Referee in Planetary Boundaries & Sustainability Science",
+        affiliation: "Centre for Climate & Sustainability Studies",
+        expertise: "Climate impact attribution, circular economy, biodiversity indicators, and socio-ecological systems",
+      },
+      editor: {
+        name: "Executive Handling Editor (Environmental Science)",
+        title: "Senior Executive Editor in Environmental & Sustainability Research",
+        affiliation: "Editorial Board, Environmental & Sustainability Letters",
+        expertise: "Environmental scope triage, high-impact interdisciplinary relevance, and policy actionability",
+      },
+      statistician: {
+        name: "Environmental Biostatistician & Spatial Auditor",
+        title: "Senior Referee in Spatial Statistics & Uncertainty Quantification",
+        affiliation: "Department of Environmental Biostatistics & Geospatial Analysis",
+        expertise: "Spatial-temporal autocorrelation, uncertainty quantification, and environmental sensor calibration",
+      },
+      devilsAdvocate: {
+        name: "Adversarial Stress-Testing Referee (Ecological Rigor)",
+        title: "Ecological Validity & Industrial Environmental Auditor",
+        affiliation: "Environmental Systems Verification & Skepticism Group",
+        expertise: "Confounding environmental variables, scale extrapolation hazards, and lifecycle boundary omissions",
+      },
+    },
   };
 
   const defaultProfile: PersonaProfile = {
@@ -1822,7 +1868,7 @@ function synthesizeGroundedAcademicReview(
       journalName: reachJournal.name,
       impactFactor: reachJournal.impactFactor,
       publisher: reachJournal.publisher,
-      fitScore: Math.min(95, Math.max(65, dynamicScore - 3)),
+      fitScore: Math.min(95, Math.max(0, dynamicScore - 3)),
       scopeRationale: `Premier high-impact venue for transformative research in ${discipline}. Highly aligned if novel contributions are emphasized.`,
       rejectionRisks: reachJournal.deskRejectHazards,
       requiredRevisionsForFit: reachJournal.keyExpectations,
@@ -1832,7 +1878,7 @@ function synthesizeGroundedAcademicReview(
       journalName: realisticJournal.name,
       impactFactor: realisticJournal.impactFactor,
       publisher: realisticJournal.publisher,
-      fitScore: Math.min(94, Math.max(68, dynamicScore)),
+      fitScore: Math.min(94, Math.max(0, dynamicScore)),
       scopeRationale: `Strong domain authority and balanced acceptance alignment for empirical studies in ${discipline}.`,
       rejectionRisks: realisticJournal.deskRejectHazards,
       requiredRevisionsForFit: realisticJournal.keyExpectations,
@@ -1842,7 +1888,7 @@ function synthesizeGroundedAcademicReview(
       journalName: fallbackJournal.name,
       impactFactor: fallbackJournal.impactFactor,
       publisher: fallbackJournal.publisher,
-      fitScore: Math.min(90, Math.max(70, dynamicScore + 5)),
+      fitScore: Math.min(90, Math.max(0, dynamicScore + 5)),
       scopeRationale: `Reliable publication venue emphasizing sound scientific execution, reproducibility, and open data in ${discipline}.`,
       rejectionRisks: fallbackJournal.deskRejectHazards,
       requiredRevisionsForFit: fallbackJournal.keyExpectations,

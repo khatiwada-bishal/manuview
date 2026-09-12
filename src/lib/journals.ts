@@ -1,8 +1,18 @@
+export type Discipline =
+  | 'Oncology'
+  | 'Biomedicine'
+  | 'Computer Science'
+  | 'Clinical'
+  | 'Neuroscience'
+  | 'Operations Research & Management'
+  | 'Environmental Science & Sustainability'
+  | 'Multidisciplinary';
+
 export interface JournalEntry {
   name: string;
   publisher: string;
   impactFactor: number;
-  discipline: 'Oncology' | 'Biomedicine' | 'Computer Science' | 'Clinical' | 'Neuroscience' | 'Operations Research & Management' | 'Multidisciplinary';
+  discipline: Discipline;
   acceptanceRate: string;
   reviewSpeed: string;
   openAccess: 'Hybrid' | 'Gold OA' | 'Subscription';
@@ -710,22 +720,156 @@ export const JOURNAL_CATALOG: JournalEntry[] = [
       "Numerical validation across multiple item instances and regulatory scenarios",
       "Clear decision-support applicability for modern automated supply chains"
     ]
+  },
+
+  // ==========================================
+  // ENVIRONMENTAL SCIENCE & SUSTAINABILITY
+  // ==========================================
+  {
+    name: "Nature Climate Change",
+    publisher: "Springer Nature",
+    impactFactor: 29.6,
+    discipline: "Environmental Science & Sustainability",
+    acceptanceRate: "8-10%",
+    reviewSpeed: "5-7 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Dedicated to publishing the most significant and cutting-edge research on the nature, underlying causes, and impacts of global climate change and its implications for the economy, policy, and the world at large.",
+    deskRejectHazards: [
+      "Local observational case study without global conceptual or mechanistic implications",
+      "Insufficient climate model ensemble resolution or unquantified projection uncertainty",
+      "Policy assertions disconnected from empirical carbon flux or socioeconomic modeling data"
+    ],
+    keyExpectations: [
+      "Rigorous climate attribution or systemic ecological impact quantification",
+      "Interdisciplinary resonance spanning physical, ecological, or socioeconomic dimensions",
+      "Complete documentation of climate data sources, code pipelines, and scenario bounds"
+    ]
+  },
+  {
+    name: "Nature Sustainability",
+    publisher: "Springer Nature",
+    impactFactor: 25.7,
+    discipline: "Environmental Science & Sustainability",
+    acceptanceRate: "7-9%",
+    reviewSpeed: "4-6 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Publishes significant research about sustainability, from natural sciences, social sciences, and engineering, addressing environmental degradation, sustainable development, and planetary boundaries.",
+    deskRejectHazards: [
+      "Technological assessments ignoring life-cycle environmental feedback or resource constraints",
+      "Narrow disciplinary scope failing to address systemic sustainability trade-offs",
+      "Unverified assumptions regarding adoption scale or policy implementation"
+    ],
+    keyExpectations: [
+      "Integrative framework bridging environmental boundaries and human well-being",
+      "Holistic life cycle impact assessment (LCA) and resource footprint analysis",
+      "Robust sensitivity analysis across policy and behavioral adoption trajectories"
+    ]
+  },
+  {
+    name: "Environmental Science & Technology",
+    publisher: "ACS Publications",
+    impactFactor: 10.8,
+    discipline: "Environmental Science & Sustainability",
+    acceptanceRate: "18-22%",
+    reviewSpeed: "4-6 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "An authoritative source of information for professionals in a wide range of environmental disciplines, publishing rigorous, high-impact research on complex environmental phenomena.",
+    deskRejectHazards: [
+      "Incomplete analytical characterization of chemical/environmental pathways",
+      "Missing QA/QC controls, field blanks, or spike-recovery validation",
+      "Lack of mechanistic environmental fate or transport modeling"
+    ],
+    keyExpectations: [
+      "Exemplary analytical chemistry and environmental data quality assurance",
+      "Clear delineation of biogeochemical mechanisms or pollutant mitigation efficiency",
+      "Full deposition of raw spectroscopic, chromatographic, or environmental measurement data"
+    ]
+  },
+  {
+    name: "Journal of Cleaner Production",
+    publisher: "Elsevier",
+    impactFactor: 9.7,
+    discipline: "Environmental Science & Sustainability",
+    acceptanceRate: "20-25%",
+    reviewSpeed: "6-8 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "Focuses on cleaner production, environmental, and sustainability research and practice, facilitating the transition toward sustainable societies.",
+    deskRejectHazards: [
+      "Generic sustainability claims without quantitative life-cycle metrics (e.g. ISO 14040/44)",
+      "Failure to model circular economy material flows with empirical baseline comparison",
+      "Superficial discussion of technological or economic feasibility"
+    ],
+    keyExpectations: [
+      "Quantitative life-cycle assessment (LCA) or material flow analysis (MFA)",
+      "Explicit technological and environmental trade-off evaluation",
+      "Actionable recommendations for industrial or environmental policy adoption"
+    ]
+  },
+  {
+    name: "Environmental Research Letters",
+    publisher: "IOP Publishing",
+    impactFactor: 5.8,
+    discipline: "Environmental Science & Sustainability",
+    acceptanceRate: "25-30%",
+    reviewSpeed: "4-6 weeks to first decision",
+    openAccess: "Gold OA",
+    aimsAndScope: "An open access journal covering environmental science, providing a forum for rapid publication of high-impact research across the full environmental science agenda.",
+    deskRejectHazards: [
+      "Excessive length exceeding letters format without succinct focus",
+      "Uncalibrated remote sensing or spatial extrapolations without ground-truth validation",
+      "Failure to address uncertainty intervals in ecological or emission estimates"
+    ],
+    keyExpectations: [
+      "Concise, high-impact presentation of urgent environmental findings",
+      "Defensible spatial-temporal validation with quantified uncertainty bounds",
+      "Open access data and reproducible analysis code"
+    ]
+  },
+  {
+    name: "Science of The Total Environment",
+    publisher: "Elsevier",
+    impactFactor: 8.2,
+    discipline: "Environmental Science & Sustainability",
+    acceptanceRate: "24-28%",
+    reviewSpeed: "5-7 weeks to first decision",
+    openAccess: "Hybrid",
+    aimsAndScope: "International journal for scientific research into the total environment, which interfaces the atmosphere, lithosphere, hydrosphere, biosphere, and anthroposphere.",
+    deskRejectHazards: [
+      "Routine monitoring data without novel environmental or geochemical insights",
+      "Single-location field sampling without temporal or regional replication",
+      "Omission of multivariate statistical significance and co-variate control"
+    ],
+    keyExpectations: [
+      "Comprehensive multi-compartment environmental assessment",
+      "Rigorous spatial and temporal sampling replication with robust statistics",
+      "Clear explanation of environmental implications for ecosystems or public health"
+    ]
   }
 ];
 
 /**
  * Intelligent domain classifier to detect manuscript discipline
  */
-function detectDiscipline(title: string, abstract: string, targetJournal?: string): JournalEntry['discipline'] {
+export function detectDiscipline(title: string, abstract: string, targetJournal?: string): JournalEntry['discipline'] {
   const text = `${title} ${abstract} ${targetJournal || ''}`.toLowerCase();
 
-  // Operations Research, Supply Chain & Environmental Management
+  // Environmental Science & Sustainability
+  const envTerms = [
+    'climate change', 'sustainability', 'carbon footprint', 'greenhouse gas', 'biodiversity',
+    'ecosystem', 'deforestation', 'renewable energy', 'life cycle assessment', 'lifecycle assessment',
+    'environmental policy', 'water quality', 'ecological', 'conservation', 'carbon sequestration',
+    'microplastics', 'pollution', 'sustainable development', 'planetary boundaries', 'circular economy',
+    'carbon emissions', 'emissions reduction', 'air quality', 'soil degradation', 'environmental science'
+  ];
+  const envScore = envTerms.filter(t => text.includes(t)).length;
+
+  // Operations Research, Supply Chain & Industrial Engineering
   const orTerms = [
-    'supply chain', 'e-waste', 'carbon tax', 'cap-and-trade', 'inventory model', 'reverse logistics',
-    'green investment', 'remanufacturing', 'operations research', 'opsearch', 'eoq', 'holding cost',
-    'decision variable', 'nonlinear optimization', 'sensitivity analysis', 'replenishment',
-    'carbon policy', 'refurbishment', 'circular economy', 'production planning', 'remodeling',
-    'carbon emissions', 'emissions reduction', 'industrial emissions'
+    'supply chain', 'inventory model', 'reverse logistics', 'remanufacturing',
+    'operations research', 'opsearch', 'eoq', 'holding cost', 'decision variable',
+    'nonlinear optimization', 'sensitivity analysis', 'replenishment', 'refurbishment',
+    'production planning', 'queueing', 'stochastic programming', 'vehicle routing',
+    'facility location', 'integer programming', 'linear programming'
   ];
   const orScore = orTerms.filter(t => text.includes(t)).length;
 
@@ -770,6 +914,7 @@ function detectDiscipline(title: string, abstract: string, targetJournal?: strin
   // Evaluate scores with priority weighting
   // Require at least 2 distinct domain terms or weighted score > 2.5 to avoid false positives on single incidental words
   const scores = [
+    { discipline: 'Environmental Science & Sustainability' as const, score: envScore >= 2 ? envScore * 2.2 : 0 },
     { discipline: 'Operations Research & Management' as const, score: orScore >= 2 ? orScore * 2.2 : 0 },
     { discipline: 'Computer Science' as const, score: csScore >= 2 ? csScore * 2.0 : 0 },
     { discipline: 'Oncology' as const, score: oncoScore >= 2 ? oncoScore * 2.2 : 0 },
