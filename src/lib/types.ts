@@ -166,6 +166,8 @@ export interface ReportingGuidelineItem {
   description?: string;
   status: 'evidenced' | 'partial' | 'absent';
   evidenceExcerpt?: string;
+  evidenceSection?: string;
+  evidenceOffset?: number;
   recommendation?: string;
 }
 
@@ -175,6 +177,12 @@ export interface ReportingGuidelineCheck {
   scorePercent: number; // 0 - 100
   totalItems?: number;
   evidencedCount?: number;
+  partialCount?: number;
+  absentCount?: number;
+  itemSetScope?: 'full' | 'core_subset';
+  itemSetSize?: number;
+  standardVersion?: string;
+  standardUrl?: string;
   items?: ReportingGuidelineItem[];
   compliantItems: string[];
   missingOrPartialItems: string[];

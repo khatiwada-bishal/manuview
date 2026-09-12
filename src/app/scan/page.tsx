@@ -1309,12 +1309,27 @@ export default function ScanPage() {
                         </div>
                         <p className="text-xs text-[#787774] mt-0.5">
                           Standard: {report.reportingGuideline.standardType}
+                          {report.reportingGuideline.standardUrl && (
+                            <>
+                              {" "}&bull;{" "}
+                              <a
+                                href={report.reportingGuideline.standardUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="underline hover:text-[#111111] text-[#2F3437]"
+                              >
+                                Official Checklist &amp; Guidelines &rarr;
+                              </a>
+                            </>
+                          )}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-medium text-[#787774]">Audit Score:</span>
                         <span className="text-xs font-bold text-[#1E5A2A] bg-[#EDF6EE] px-2.5 py-0.5 rounded-full border border-[#CBE7CE]">
-                          {report.reportingGuideline.evidencedCount !== undefined && report.reportingGuideline.totalItems !== undefined
+                          {report.reportingGuideline.itemSetScope === "core_subset"
+                            ? `${report.reportingGuideline.evidencedCount}/${report.reportingGuideline.totalItems} core items evidenced (${report.reportingGuideline.itemSetSize} in full standard; ${report.reportingGuideline.scorePercent}%)`
+                            : report.reportingGuideline.evidencedCount !== undefined && report.reportingGuideline.totalItems !== undefined
                             ? `${report.reportingGuideline.evidencedCount}/${report.reportingGuideline.totalItems} Evidenced (${report.reportingGuideline.scorePercent}%)`
                             : `${report.reportingGuideline.scorePercent}%`}
                         </span>
@@ -1371,6 +1386,22 @@ export default function ScanPage() {
                           })}
                         </ul>
                       </div>
+
+                      {report.reportingGuideline.additionalReviewerObservations && report.reportingGuideline.additionalReviewerObservations.length > 0 && (
+                        <div className="p-3.5 rounded-lg bg-white border border-[#EBEBEA] space-y-2 text-xs md:col-span-2">
+                          <span className="font-semibold text-[#555555] uppercase tracking-wider text-[10px] block">
+                            Additional Reviewer Observations:
+                          </span>
+                          <ul className="space-y-1 text-[#555555]">
+                            {report.reportingGuideline.additionalReviewerObservations.map((obs, idx) => (
+                              <li key={idx} className="flex items-start gap-1.5">
+                                <span className="text-gray-400">&bull;</span>
+                                <span>{obs}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}

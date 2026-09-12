@@ -1,31 +1,79 @@
 import { ParsedManuscript, ReportingGuidelineCheck, ReportingGuidelineItem } from "./types";
 
+interface GuidelineDetectorResult {
+  matched: boolean;
+  excerpt?: string;
+  partial?: boolean;
+  evidenceSection?: string;
+  evidenceOffset?: number;
+}
+
 interface GuidelineDefinitionItem {
   itemNumber: number;
   name: string;
   section: string;
   description: string;
-  detector: (text: string, manuscript: ParsedManuscript) => { matched: boolean; excerpt?: string; partial?: boolean };
+  detector: (bodyText: string, manuscript: ParsedManuscript) => GuidelineDetectorResult;
   recommendationIfAbsent: string;
 }
 
 /**
- * Extracts a concise, clean sentence containing the matched keyword or regex
+ * Extracts the exact sentence spanning the matched keyword or regex (REQ-GL-03)
  */
-function extractSentenceExcerpt(text: string, matchIndex: number, matchLength: number): string {
-  const windowStart = Math.max(0, matchIndex - 120);
-  const windowEnd = Math.min(text.length, matchIndex + matchLength + 120);
-  const snippet = text.slice(windowStart, windowEnd);
+export function extractSentenceExcerpt(text: string, matchIndex: number, matchLength: number): string {
+  if (!text || matchIndex < 0 || matchIndex >= text.length) return "";
+  const matchedText = text.slice(matchIndex, matchIndex + matchLength).trim();
+  if (!matchedText) return "";
 
-  // Split near sentence boundaries or return trimmed snippet
-  const sentences = snippet.split(/(?<=[.?!])\s+/);
-  const bestSentence = sentences.find((s) => s.length > 20) || snippet;
-  return bestSentence.replace(/\s+/g, " ").trim().slice(0, 180);
+  // Locate the sentence that spans matchIndex by searching backwards to previous sentence terminator
+  let start = 0;
+  for (let i = matchIndex - 1; i >= 0; i--) {
+    if (/[.?!]/.test(text[i]) && (i + 1 === text.length || /\s/.test(text[i + 1]))) {
+      start = i + 1;
+      break;
+    }
+  }
+
+  // Search forwards to next sentence terminator
+  let end = text.length;
+  for (let i = matchIndex + matchLength; i < text.length; i++) {
+    if (/[.?!]/.test(text[i]) && (i + 1 === text.length || /\s/.test(text[i + 1]))) {
+      end = i + 1;
+      break;
+    }
+  }
+
+  let sentence = text.slice(start, end).replace(/\s+/g, " ").trim();
+  if (sentence.length > 220) {
+    const localStart = Math.max(0, matchIndex - start - 80);
+    const localEnd = Math.min(sentence.length, matchIndex - start + matchLength + 80);
+    sentence = sentence.slice(localStart, localEnd).trim();
+  }
+
+  // REQ-GL-03: Assert the returned excerpt contains the matched substring; if not, return empty string
+  if (!sentence.toLowerCase().includes(matchedText.toLowerCase())) {
+    return "";
+  }
+
+  return sentence;
+}
+
+/**
+ * Strips bibliography / references section from raw text (REQ-GL-04)
+ */
+export function stripReferences(rawText: string): string {
+  if (!rawText) return "";
+  const refIndex = rawText.search(/\n\s*(?:references|bibliography|works cited)\b/i);
+  if (refIndex !== -1 && refIndex > rawText.length * 0.3) {
+    return rawText.slice(0, refIndex);
+  }
+  return rawText;
 }
 
 function regexMatcher(pattern: RegExp, preferredSection?: string) {
-  return (fullText: string, manuscript: ParsedManuscript) => {
-    let targetText = fullText;
+  return (bodyText: string, manuscript: ParsedManuscript): GuidelineDetectorResult => {
+    let targetText: string | undefined = undefined;
+
     if (preferredSection === "abstract" && manuscript.abstract) {
       targetText = manuscript.abstract;
     } else if (
@@ -36,11 +84,47 @@ function regexMatcher(pattern: RegExp, preferredSection?: string) {
       targetText = manuscript.sections[preferredSection as keyof typeof manuscript.sections]!;
     }
 
-    const match = targetText.match(pattern);
+    if (targetText) {
+      const match = targetText.match(pattern);
+      if (match && typeof match.index === "number") {
+        const excerpt = extractSentenceExcerpt(targetText, match.index, match[0].length);
+        return {
+          matched: true,
+          partial: false,
+          excerpt,
+          evidenceSection: preferredSection,
+          evidenceOffset: match.index,
+        };
+      }
+    }
+
+    // REQ-GL-04: If preferredSection was specified and not found/matched in that section:
+    // Search bodyText (with references stripped). If matched outside preferred section, mark partial!
+    if (preferredSection) {
+      const bodyMatch = bodyText.match(pattern);
+      if (bodyMatch && typeof bodyMatch.index === "number") {
+        const excerpt = extractSentenceExcerpt(bodyText, bodyMatch.index, bodyMatch[0].length);
+        return {
+          matched: true,
+          partial: true,
+          excerpt,
+          evidenceSection: "document-wide",
+          evidenceOffset: bodyMatch.index,
+        };
+      }
+      return { matched: false };
+    }
+
+    // No preferred section: search bodyText
+    const match = bodyText.match(pattern);
     if (match && typeof match.index === "number") {
+      const excerpt = extractSentenceExcerpt(bodyText, match.index, match[0].length);
       return {
         matched: true,
-        excerpt: extractSentenceExcerpt(targetText, match.index, match[0].length),
+        partial: false,
+        excerpt,
+        evidenceSection: "body",
+        evidenceOffset: match.index,
       };
     }
     return { matched: false };
@@ -402,7 +486,109 @@ const ARRIVE_ITEMS: GuidelineDefinitionItem[] = [
 ];
 
 // ----------------------------------------------------------------------
-// 4. ML / Reproducibility Checklist (CS & Operations Research)
+// 4. PRISMA (Core Selection of 12 Key Items for Systematic Reviews - PRISMA 2020)
+// ----------------------------------------------------------------------
+const PRISMA_ITEMS: GuidelineDefinitionItem[] = [
+  {
+    itemNumber: 1,
+    name: "Title Identification",
+    section: "Title/Abstract",
+    description: "Identify the report as a systematic review or meta-analysis in title or abstract",
+    detector: regexMatcher(/\b(systematic review|meta-analysis|systematic literature review)\b/i, "abstract"),
+    recommendationIfAbsent: "Identify the report explicitly as a systematic review or meta-analysis in title or abstract.",
+  },
+  {
+    itemNumber: 2,
+    name: "Structured Abstract",
+    section: "Abstract",
+    description: "Provide a structured abstract covering background, methods, results, and discussion",
+    detector: regexMatcher(/\b(background|objective|methods|results|conclusions?)\b/i, "abstract"),
+    recommendationIfAbsent: "Structure the abstract explicitly into Background, Methods, Results, and Conclusions.",
+  },
+  {
+    itemNumber: 3,
+    name: "Rationale",
+    section: "Introduction",
+    description: "Describe the rationale for the review in the context of what is already known",
+    detector: regexMatcher(/\b(rationale|prior systematic review|need for this review|unresolved questions|knowledge gap)\b/i, "introduction"),
+    recommendationIfAbsent: "Describe the scientific rationale for this review in the context of current literature.",
+  },
+  {
+    itemNumber: 4,
+    name: "Objectives & Framework",
+    section: "Introduction",
+    description: "Provide an explicit statement of the question(s) being addressed using PICO or similar framework",
+    detector: regexMatcher(/\b(objective|research question|pico|aim of this review|we systematically evaluated)\b/i, "introduction"),
+    recommendationIfAbsent: "State explicit review questions using the PICO framework (population, intervention, comparator, outcome).",
+  },
+  {
+    itemNumber: 5,
+    name: "Eligibility Criteria",
+    section: "Methods",
+    description: "Specify the inclusion and exclusion criteria for the review and how studies were grouped",
+    detector: regexMatcher(/\b(inclusion criteria|exclusion criteria|eligibility criteria|studies were eligible)\b/i, "methods"),
+    recommendationIfAbsent: "Itemize explicit study eligibility criteria (inclusion and exclusion rules).",
+  },
+  {
+    itemNumber: 6,
+    name: "Information Sources & Search Dates",
+    section: "Methods",
+    description: "Specify all databases, registers, websites, and date ranges searched",
+    detector: regexMatcher(/\b(pubmed|medline|embase|web of science|scopus|cochrane|searched from|search date)\b/i, "methods"),
+    recommendationIfAbsent: "Detail all bibliographic databases searched along with search date coverage limits.",
+  },
+  {
+    itemNumber: 7,
+    name: "Full Search Strategy",
+    section: "Methods",
+    description: "Present the full search strategy for at least one database, including filters applied",
+    detector: regexMatcher(/\b(search terms|search strategy|boolean operators|mesh terms|keywords used)\b/i, "methods"),
+    recommendationIfAbsent: "Provide the complete search string with Boolean operators for at least one major database.",
+  },
+  {
+    itemNumber: 8,
+    name: "Selection & Screening Process",
+    section: "Methods",
+    description: "Specify the methods used to decide whether a study met inclusion criteria (e.g., dual screening)",
+    detector: regexMatcher(/\b(screened independently|two reviewers|dual screening|disagreements were resolved|title and abstract screening)\b/i, "methods"),
+    recommendationIfAbsent: "State whether screening was conducted independently by two or more reviewers.",
+  },
+  {
+    itemNumber: 9,
+    name: "Data Collection Process",
+    section: "Methods",
+    description: "Describe data extraction methods, pilot forms, and verification processes",
+    detector: regexMatcher(/\b(data extraction|extracted independently|standardized form|data abstraction)\b/i, "methods"),
+    recommendationIfAbsent: "Detail the data extraction process and whether independent extraction was employed.",
+  },
+  {
+    itemNumber: 11,
+    name: "Risk of Bias in Included Studies",
+    section: "Methods",
+    description: "Specify methods used to assess risk of bias in the included studies (RoB 2, ROBINS-I, Newcastle-Ottawa)",
+    detector: regexMatcher(/\b(risk of bias|cochrane risk of bias|robins-i|quality assessment|jadad scale|newcastle-ottawa)\b/i, "methods"),
+    recommendationIfAbsent: "Specify the validated assessment tool used to evaluate risk of bias in included studies.",
+  },
+  {
+    itemNumber: 13,
+    name: "Synthesis Methods & Statistical Models",
+    section: "Methods",
+    description: "Describe processes used to decide which studies were eligible for synthesis, models, and heterogeneity metrics",
+    detector: regexMatcher(/\b(random-effects model|fixed-effect|meta-analysis|forest plot|heterogeneity|i2 statistic|pooled risk ratio|pooled odds ratio)\b/i, "methods"),
+    recommendationIfAbsent: "Describe quantitative synthesis models, statistical software, and heterogeneity metrics (e.g. I^2).",
+  },
+  {
+    itemNumber: 23,
+    name: "Discussion & Review Limitations",
+    section: "Discussion",
+    description: "Discuss limitations of the included evidence and review processes",
+    detector: regexMatcher(/\b(limitations of this review|publication bias|heterogeneity among studies|risk of bias across studies)\b/i, "discussion"),
+    recommendationIfAbsent: "Discuss methodological limitations of the review process and evidence quality.",
+  },
+];
+
+// ----------------------------------------------------------------------
+// 5. ML / Reproducibility Checklist (CS & Operations Research)
 // ----------------------------------------------------------------------
 const ML_REPRODUCIBILITY_ITEMS: GuidelineDefinitionItem[] = [
   {
@@ -462,32 +648,64 @@ export function auditReportingGuidelines(
   let guidelineItems: GuidelineDefinitionItem[] = STROBE_ITEMS;
   let guidelineName = "STROBE (22-Item Observational Epidemiological Checklist)";
   let standardType = "Observational & Cohort Quantitative Research";
+  let itemSetScope: "full" | "core_subset" = "full";
+  let itemSetSize = 22;
+  let standardVersion = "STROBE Statement v4";
+  let standardUrl = "https://www.strobe-statement.org/";
 
-  const isClinicalTrial = /\b(randomized controlled trial|clinical trial|rct|double-blind trial)\b/i.test(
-    abstract + " " + methods
-  );
+  const bodyText = stripReferences(fullText);
+
+  // REQ-GL-04: Scope guideline routing strictly to abstract + methods, never fullText!
+  const routingContext = `${abstract} ${methods}`;
+
+  const isSystematicReview = /\b(systematic review|meta-analysis|prisma|search strategy|scoping review)\b/i.test(routingContext);
+  const isClinicalTrial = /\b(randomized controlled trial|clinical trial|rct|double-blind trial)\b/i.test(routingContext);
   const isAnimalStudy = /\b(mice|rats|murine|c57bl\/6|in vivo animal|iacuc)\b/i.test(methods);
   const isComputerScienceOrOR =
     discipline === "Computer Science" ||
     discipline === "Operations Research & Management" ||
-    /\b(neural network|reinforcement learning|benchmark dataset|loss function|mixed-integer)\b/i.test(fullText);
+    /\b(neural network|reinforcement learning|benchmark dataset|loss function|mixed-integer)\b/i.test(routingContext);
 
-  if (isClinicalTrial) {
+  if (isSystematicReview) {
+    guidelineItems = PRISMA_ITEMS;
+    guidelineName = "PRISMA 2020 — 12 of 27 core items screened";
+    standardType = "Systematic Reviews & Meta-Analyses";
+    itemSetScope = "core_subset";
+    itemSetSize = 27;
+    standardVersion = "PRISMA 2020";
+    standardUrl = "http://www.prisma-statement.org/";
+  } else if (isClinicalTrial) {
     guidelineItems = CONSORT_ITEMS;
-    guidelineName = "CONSORT (Clinical Trials Reporting Checklist)";
+    guidelineName = "CONSORT 2010 — 15 of 25 core items screened";
     standardType = "Randomized Controlled Trials & Interventions";
+    itemSetScope = "core_subset";
+    itemSetSize = 25;
+    standardVersion = "CONSORT 2010";
+    standardUrl = "https://www.consort-statement.org/";
   } else if (isAnimalStudy) {
     guidelineItems = ARRIVE_ITEMS;
-    guidelineName = "ARRIVE (Laboratory In Vivo Animal Research Guidelines)";
+    guidelineName = "ARRIVE 2.0 — 5 of 21 core items screened";
     standardType = "Preclinical Experimental Physiology & In Vivo Assays";
+    itemSetScope = "core_subset";
+    itemSetSize = 21;
+    standardVersion = "ARRIVE 2.0";
+    standardUrl = "https://arriveguidelines.org/";
   } else if (isComputerScienceOrOR) {
     guidelineItems = ML_REPRODUCIBILITY_ITEMS;
-    guidelineName = "NeurIPS / ACM Reproducibility Checklist";
+    guidelineName = "NeurIPS / ACM Reproducibility — 6 of 10 core items screened";
     standardType = "Computational, Algorithmic & Optimization Benchmarks";
-  } else if (discipline === "Clinical" || discipline === "Epidemiology") {
+    itemSetScope = "core_subset";
+    itemSetSize = 10;
+    standardVersion = "NeurIPS 2020 ML Reproducibility";
+    standardUrl = "https://neurips.cc/public/guides/PaperChecklist";
+  } else {
     guidelineItems = STROBE_ITEMS;
     guidelineName = "STROBE (22-Item Observational Epidemiological Checklist)";
     standardType = "Observational Cohort, Case-Control & Cross-Sectional Studies";
+    itemSetScope = "full";
+    itemSetSize = 22;
+    standardVersion = "STROBE Statement v4";
+    standardUrl = "https://www.strobe-statement.org/";
   }
 
   // 2. Audit each item
@@ -496,11 +714,13 @@ export function auditReportingGuidelines(
   const missingOrPartialItems: string[] = [];
 
   let evidencedCount = 0;
+  let partialCount = 0;
+  let absentCount = 0;
 
   for (const item of guidelineItems) {
-    const check = item.detector(fullText, manuscript);
+    const check = item.detector(bodyText, manuscript);
 
-    if (check.matched) {
+    if (check.matched && !check.partial) {
       evidencedCount++;
       structuredItems.push({
         itemNumber: item.itemNumber,
@@ -509,13 +729,34 @@ export function auditReportingGuidelines(
         description: item.description,
         status: "evidenced",
         evidenceExcerpt: check.excerpt,
+        evidenceSection: check.evidenceSection,
+        evidenceOffset: check.evidenceOffset,
       });
 
       const label = `Item ${item.itemNumber} (${item.name}): Evidenced${
         check.excerpt ? ` — "${check.excerpt}"` : ""
       }`;
       compliantItems.push(label);
+    } else if (check.matched && check.partial) {
+      partialCount++;
+      structuredItems.push({
+        itemNumber: item.itemNumber,
+        name: item.name,
+        section: item.section,
+        description: item.description,
+        status: "partial",
+        evidenceExcerpt: check.excerpt,
+        evidenceSection: check.evidenceSection || "document-wide",
+        evidenceOffset: check.evidenceOffset,
+        recommendation: `Mentioned in ${check.evidenceSection || "text"}, but recommended in formal ${item.section} section.`,
+      });
+
+      const label = `Item ${item.itemNumber} (${item.name}): Partial — found in ${check.evidenceSection || "text"}${
+        check.excerpt ? `: "${check.excerpt}"` : ""
+      }`;
+      missingOrPartialItems.push(label);
     } else {
+      absentCount++;
       structuredItems.push({
         itemNumber: item.itemNumber,
         name: item.name,
@@ -531,7 +772,10 @@ export function auditReportingGuidelines(
   }
 
   const totalItems = guidelineItems.length;
-  const scorePercent = totalItems > 0 ? Math.round((evidencedCount / totalItems) * 100) : 0;
+  const scorePercent =
+    totalItems > 0
+      ? Math.round(((evidencedCount + 0.5 * partialCount) / totalItems) * 100)
+      : 0;
 
   return {
     guidelineName,
@@ -539,6 +783,12 @@ export function auditReportingGuidelines(
     scorePercent,
     totalItems,
     evidencedCount,
+    partialCount,
+    absentCount,
+    itemSetScope,
+    itemSetSize,
+    standardVersion,
+    standardUrl,
     items: structuredItems,
     compliantItems,
     missingOrPartialItems,
