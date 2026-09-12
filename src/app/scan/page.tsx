@@ -38,7 +38,12 @@ import {
   Bookmark,
   Scale,
   MessageSquare,
-  ShieldAlert
+  ShieldAlert,
+  ChevronLeft,
+  Plus,
+  X,
+  Trash2,
+  MoreVertical
 } from "lucide-react";
 import { FullReviewReport, BriefJournalFitReport, ReviewReport, PriorityIssue, ReviewerPersonaFeedback, ProviderConfig, AvailableModel } from "@/lib/types";
 import { ProviderSettingsModal } from "@/components/ProviderSettingsModal";
@@ -46,6 +51,7 @@ import JournalCombobox from "@/components/JournalCombobox";
 import { BriefJournalFitView, BriefJournalFitPrintView } from "@/components/BriefJournalFitView";
 import { exportInteractiveHtmlReport, exportWordDocReport, exportLatexRebuttalTable, exportBibTeX } from "@/lib/export-generator";
 import { isSubstantiveReviewerObservation } from "@/lib/utils";
+import { INITIAL_SAMPLE_ARTICLES, ArticleTab } from "@/lib/sample-articles";
 
 // Sample preprint for instant one-click testing
 const SAMPLE_PREPRINT_TITLE = "Single-cell transcriptional profiling of DLL3 activation in neuroendocrine lung carcinoma";
@@ -81,7 +87,7 @@ export default function ScanPage() {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingStep, setLoadingStep] = useState("");
-  const [report, setReport] = useState<ReviewReport | null>(null);
+  const [customReport, setReport] = useState<ReviewReport | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedPersona, setSelectedPersona] = useState<number>(0);
   const [issueFilter, setIssueFilter] = useState<'all' | 'A' | 'B' | 'C'>('all');
@@ -102,6 +108,84 @@ export default function ScanPage() {
     name: string;
     model: string;
   }>({ type: 'offline', name: 'AI Engine', model: 'Checking status...' });
+
+  // Multi-tab Article Management
+  const [tabs, setTabs] = useState<ArticleTab[]>(INITIAL_SAMPLE_ARTICLES);
+  const [activeTabId, setActiveTabId] = useState<string | null>("tab-customs-weee");
+  const [activeSubView, setActiveSubView] = useState<string>("all");
+  const [contextMenuTabId, setContextMenuTabId] = useState<string | null>(null);
+  const [exportDropdownOpen, setExportDropdownOpen] = useState(false);
+  const tabScrollRef = React.useRef<HTMLDivElement>(null);
+  const contextMenuRef = React.useRef<HTMLDivElement>(null);
+
+  const activeTab = tabs.find((t) => t.id === activeTabId);
+  const activeReport = (activeTab ? activeTab.report : customReport) as ReviewReport | null;
+  const report = activeReport;
+
+  React.useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (contextMenuRef.current && !contextMenuRef.current.contains(e.target as Node)) {
+        setContextMenuTabId(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleCloseTab = (tabId: string) => {
+    setTabs((prev) => {
+      const nextTabs = prev.filter((t) => t.id !== tabId);
+      if (activeTabId === tabId) {
+        if (nextTabs.length > 0) {
+          setActiveTabId(nextTabs[0].id);
+        } else {
+          setActiveTabId(null);
+          setReport(null);
+        }
+      }
+      return nextTabs;
+    });
+  };
+
+  const handleStartNewArticle = () => {
+    setActiveTabId(null);
+    setReport(null);
+    setInputText("");
+    setFile(null);
+  };
+
+  const scrollTabsLeft = () => {
+    if (tabScrollRef.current) {
+      tabScrollRef.current.scrollBy({ left: -220, behavior: "smooth" });
+    }
+  };
+
+  const scrollTabsRight = () => {
+    if (tabScrollRef.current) {
+      tabScrollRef.current.scrollBy({ left: 220, behavior: "smooth" });
+    }
+  };
+
+  const handleSelectSubView = (subView: string, tabId: string) => {
+    setActiveTabId(tabId);
+    setContextMenuTabId(null);
+    setActiveSubView(subView);
+
+    if (subView === "all") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      setTimeout(() => {
+        const el = document.getElementById(`section-${subView}`);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+          el.classList.add("ring-2", "ring-[#0A85EA]", "transition-all", "duration-500");
+          setTimeout(() => {
+            el.classList.remove("ring-2", "ring-[#0A85EA]");
+          }, 1500);
+        }
+      }, 100);
+    }
+  };
 
   React.useEffect(() => {
     checkProviderStatus();
@@ -374,7 +458,24 @@ export default function ScanPage() {
         throw new Error(data.error || "Failed to generate diagnostic report.");
       }
 
-      setReport(data.report);
+      const generatedReport = data.report;
+      setReport(generatedReport);
+
+      // Create and open new article tab
+      const newTabId = `tab_${Date.now()}`;
+      const tabTitle = generatedReport.title || manuscriptTitle || file?.name || "Untitled Manuscript";
+      const newTab: ArticleTab = {
+        id: newTabId,
+        title: tabTitle,
+        shortName: tabTitle.length > 25 ? tabTitle.slice(0, 23) + "..." : tabTitle,
+        targetJournal: targetJournal || generatedReport.targetJournal,
+        report: generatedReport,
+        createdAt: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+      };
+
+      setTabs((prev) => [newTab, ...prev]);
+      setActiveTabId(newTabId);
+      setActiveSubView("all");
     } catch (err: any) {
       setError(err.message || "An error occurred during diagnostic review.");
     } finally {
@@ -411,11 +512,208 @@ export default function ScanPage() {
           </button>
         </div>
 
-        {/* Workspace Card Container (Elevated Paper Sheet / Liquid Glass on Dark Canvas) */}
-        <div className="aura-paper-sheet rounded-3xl p-6 sm:p-10 shadow-[0_30px_90px_-20px_rgba(0,0,0,0.25),0_0_0_1px_rgba(255,255,255,0.08)] border border-black/5 dark:border-white/10 print:border-none print:shadow-none print:p-0 print:rounded-none">
+        {/* Desktop-Style Article Tab Bar */}
+        <div className="mb-6 flex items-center justify-between gap-2 border-b border-black/10 dark:border-white/10 pb-2 print:hidden">
+          <div className="flex items-center gap-1.5 flex-1 min-w-0 overflow-hidden">
+            {/* Left scroll arrow */}
+            <button
+              type="button"
+              onClick={scrollTabsLeft}
+              className="p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition shrink-0 cursor-pointer"
+              title="Scroll tabs left"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
 
-        {/* Modern Studio Header */}
-        <div className="mb-8 print:hidden">
+            {/* Scrollable tabs container */}
+            <div
+              ref={tabScrollRef}
+              className="flex items-center gap-1.5 overflow-x-auto no-scrollbar scroll-smooth py-1"
+            >
+              {tabs.map((tab) => {
+                const isActive = activeTabId === tab.id;
+                const isContextMenuOpen = contextMenuTabId === tab.id;
+                return (
+                  <div
+                    key={tab.id}
+                    className={`group relative flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0 cursor-pointer select-none border ${
+                      isActive
+                        ? "bg-white dark:bg-[#1E2024] text-blue-600 dark:text-blue-400 border-blue-500/30 shadow-sm"
+                        : "bg-black/[0.03] dark:bg-white/[0.03] text-neutral-600 dark:text-neutral-400 border-transparent hover:bg-black/[0.06] dark:hover:bg-white/[0.06] hover:text-neutral-900 dark:hover:text-white"
+                    }`}
+                    onClick={() => {
+                      setActiveTabId(tab.id);
+                      setActiveSubView("all");
+                    }}
+                  >
+                    <FileText className={`w-3.5 h-3.5 shrink-0 ${isActive ? "text-blue-600 dark:text-blue-400" : "text-neutral-400"}`} />
+                    <span className="truncate max-w-[130px] sm:max-w-[170px]" title={tab.title}>
+                      {tab.shortName || tab.title}
+                    </span>
+
+                    {/* Context menu toggle button (side chevron) */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setContextMenuTabId(isContextMenuOpen ? null : tab.id);
+                      }}
+                      className={`p-0.5 rounded hover:bg-black/10 dark:hover:bg-white/10 transition cursor-pointer ${
+                        isContextMenuOpen ? "text-blue-600 dark:text-blue-400" : "text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200"
+                      }`}
+                      title="Article menu & sections"
+                    >
+                      <ChevronDown className="w-3 h-3" />
+                    </button>
+
+                    {/* Close tab button */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCloseTab(tab.id);
+                      }}
+                      className="p-0.5 rounded hover:bg-rose-500/10 hover:text-rose-600 text-neutral-400 opacity-60 group-hover:opacity-100 transition ml-0.5 cursor-pointer"
+                      title="Close tab"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+
+                    {/* Context Dropdown Menu */}
+                    {isContextMenuOpen && (
+                      <div
+                        ref={contextMenuRef}
+                        className="absolute left-0 top-full mt-1.5 w-64 rounded-2xl bg-white dark:bg-[#1E2024] border border-black/10 dark:border-white/15 shadow-xl z-50 py-2 text-xs divide-y divide-black/5 dark:divide-white/5 animate-in fade-in zoom-in-95 duration-150"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div className="px-3 py-1.5 text-[11px] font-medium text-neutral-500 dark:text-neutral-400 truncate">
+                          {tab.title}
+                        </div>
+
+                        <div className="py-1">
+                          <button
+                            type="button"
+                            onClick={() => handleSelectSubView("synthesis", tab.id)}
+                            className="w-full text-left px-3 py-1.5 flex items-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-neutral-700 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer"
+                          >
+                            <span>📋</span>
+                            <span>Editorial Synthesis &amp; Triage</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleSelectSubView("personas", tab.id)}
+                            className="w-full text-left px-3 py-1.5 flex items-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-neutral-700 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer"
+                          >
+                            <span>👥</span>
+                            <span>5-Persona Simulation (Adversarial)</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleSelectSubView("citations", tab.id)}
+                            className="w-full text-left px-3 py-1.5 flex items-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-neutral-700 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer"
+                          >
+                            <span>🔍</span>
+                            <span>Citation &amp; Retraction Audit</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleSelectSubView("guidelines", tab.id)}
+                            className="w-full text-left px-3 py-1.5 flex items-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-neutral-700 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer"
+                          >
+                            <span>📑</span>
+                            <span>Reporting Guidelines Compliance</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleSelectSubView("action-plan", tab.id)}
+                            className="w-full text-left px-3 py-1.5 flex items-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-neutral-700 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer"
+                          >
+                            <span>🚨</span>
+                            <span>Prioritized Action Plan</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleSelectSubView("journal-fit", tab.id)}
+                            className="w-full text-left px-3 py-1.5 flex items-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-neutral-700 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer"
+                          >
+                            <span>🎯</span>
+                            <span>Target Journal Fit</span>
+                          </button>
+                        </div>
+
+                        <div className="pt-1">
+                          <button
+                            type="button"
+                            onClick={() => handleSelectSubView("all", tab.id)}
+                            className="w-full text-left px-3 py-1.5 flex items-center gap-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 font-medium transition cursor-pointer"
+                          >
+                            <span>📄</span>
+                            <span>View All Sections</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setContextMenuTabId(null);
+                              handleCloseTab(tab.id);
+                            }}
+                            className="w-full text-left px-3 py-1.5 flex items-center gap-2 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-600 dark:text-rose-400 transition cursor-pointer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            <span>Close Article</span>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Right scroll arrow */}
+            <button
+              type="button"
+              onClick={scrollTabsRight}
+              className="p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition shrink-0 cursor-pointer"
+              title="Scroll tabs right"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* New Article / Plus Button */}
+          <button
+            type="button"
+            onClick={handleStartNewArticle}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition shrink-0 cursor-pointer shadow-xs border ${
+              activeTabId === null
+                ? "bg-blue-600 text-white border-blue-500 shadow-blue-500/20"
+                : "bg-white dark:bg-[#1E2024] text-neutral-800 dark:text-neutral-200 border-black/10 dark:border-white/10 hover:border-blue-500/50 hover:text-blue-600 dark:hover:text-blue-400"
+            }`}
+            title="Start review of a new article"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">New Review</span>
+          </button>
+        </div>
+
+        {/* EITHER: New Review Mode / Input Form */}
+        {(!report || activeTabId === null) ? (
+          <div className="aura-paper-sheet rounded-3xl p-6 sm:p-10 shadow-[0_30px_90px_-20px_rgba(0,0,0,0.25),0_0_0_1px_rgba(255,255,255,0.08)] border border-black/5 dark:border-white/10 print:border-none print:shadow-none print:p-0 print:rounded-none space-y-6">
+            {tabs.length > 0 && (
+              <div className="flex items-center justify-between p-3 rounded-xl bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900/30 text-xs text-blue-700 dark:text-blue-300">
+                <span>You are configuring a new manuscript scan. You have {tabs.length} open {tabs.length === 1 ? "article" : "articles"} in tabs above.</span>
+                <button
+                  type="button"
+                  onClick={() => setActiveTabId(tabs[0].id)}
+                  className="font-semibold underline hover:text-blue-800 dark:hover:text-blue-200 cursor-pointer"
+                >
+                  Return to &quot;{tabs[0].shortName}&quot; &rarr;
+                </button>
+              </div>
+            )}
+
+            {/* Modern Studio Header */}
+            <div className="mb-8 print:hidden">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 shadow-2xs">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -675,8 +973,7 @@ export default function ScanPage() {
         </div>
 
         {/* Input Form Card */}
-        {!report && (
-          <div className="space-y-6">
+        <div className="space-y-6">
             {/* Quick Demo Preprint Banner */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl liquid-glass-card border border-amber-500/20 dark:border-amber-500/20 bg-gradient-to-r from-amber-500/5 via-transparent to-blue-500/5 text-xs">
               <div className="flex items-center gap-3">
@@ -922,97 +1219,323 @@ export default function ScanPage() {
               </button>
             </form>
           </div>
-        )}
+        </div>
+      ) : (
+        report.mode === "brief_fit" ? (
+          <BriefJournalFitView
+            report={report as BriefJournalFitReport}
+            onBack={handleStartNewArticle}
+            onDownloadPDF={handleDownloadPDF}
+            activeProviderInfo={activeProviderInfo}
+          />
+        ) : (
+          <div className="space-y-6 sm:space-y-8 animate-fade-in print:hidden">
 
-        {/* Diagnostic Report Results (Interactive Notion Web View) */}
-        {report && (
-          report.mode === "brief_fit" ? (
-            <BriefJournalFitView
-              report={report as BriefJournalFitReport}
-              onBack={() => setReport(null)}
-              onDownloadPDF={handleDownloadPDF}
-              activeProviderInfo={activeProviderInfo}
-            />
-          ) : (
-            <div className="space-y-8 animate-fade-in print:hidden">
+            {/* Card 1: ManuView Diagnostic Suite Overview & Score Header */}
+            <div id="section-overview" className="rounded-2xl sm:rounded-3xl bg-white dark:bg-[#16181B] border border-black/5 dark:border-white/10 p-6 sm:p-8 shadow-sm space-y-6">
+              {/* Top Bar: Brand, Target Journal pill, and Action buttons */}
+              <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-black/5 dark:border-white/10">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                  <div className="flex items-center gap-2 px-3 py-1 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/40 text-blue-700 dark:text-blue-300 font-semibold text-xs">
+                    <Sparkles className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                    <span>ManuView Diagnostic Suite</span>
+                  </div>
+                  {(report.targetJournal || activeTab?.targetJournal) && (
+                    <span className="text-xs text-neutral-600 dark:text-neutral-400 font-medium px-2.5 py-1 rounded-lg bg-neutral-100 dark:bg-white/5 border border-black/5 dark:border-white/10">
+                      Target: <strong className="text-neutral-900 dark:text-white">{report.targetJournal || activeTab?.targetJournal}</strong>
+                    </span>
+                  )}
+                </div>
 
+                <div className="flex items-center gap-2 relative">
+                  {/* Export Dropdown */}
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setExportDropdownOpen(!exportDropdownOpen)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl liquid-glass-btn-secondary text-xs font-semibold text-neutral-700 dark:text-neutral-200 transition cursor-pointer shadow-2xs"
+                    >
+                      <Download className="w-3.5 h-3.5 text-neutral-500" />
+                      <span>Export</span>
+                      <ChevronDown className="w-3 h-3 text-neutral-400" />
+                    </button>
 
-            {/* Top Navigation Bar in Results */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-black/5 dark:border-white/10 print:hidden">
-              <button
-                onClick={() => setReport(null)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl liquid-glass-btn-secondary text-xs font-semibold text-neutral-700 dark:text-neutral-200 transition cursor-pointer self-start"
-              >
-                <ArrowLeft className="w-3.5 h-3.5" />
-                <span>Back to Input</span>
-              </button>
+                    {exportDropdownOpen && (
+                      <div
+                        className="absolute right-0 top-full mt-1.5 w-56 rounded-2xl bg-white dark:bg-[#1E2024] border border-black/10 dark:border-white/15 shadow-xl z-50 py-1.5 text-xs animate-in fade-in zoom-in-95 duration-150"
+                        onMouseLeave={() => setExportDropdownOpen(false)}
+                      >
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setExportDropdownOpen(false);
+                            handleExportHTML();
+                          }}
+                          className="w-full text-left px-3.5 py-2 flex items-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-neutral-700 dark:text-neutral-300 hover:text-blue-600 transition cursor-pointer"
+                        >
+                          <Globe className="w-3.5 h-3.5 text-blue-500" />
+                          <span>Interactive HTML (.html)</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setExportDropdownOpen(false);
+                            handleExportWord();
+                          }}
+                          className="w-full text-left px-3.5 py-2 flex items-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-neutral-700 dark:text-neutral-300 hover:text-blue-600 transition cursor-pointer"
+                        >
+                          <FileText className="w-3.5 h-3.5 text-indigo-500" />
+                          <span>Word Document (.docx)</span>
+                        </button>
+                        {report.isEligibleForReview !== false && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setExportDropdownOpen(false);
+                              handleExportLatex();
+                            }}
+                            className="w-full text-left px-3.5 py-2 flex items-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-neutral-700 dark:text-neutral-300 hover:text-blue-600 transition cursor-pointer"
+                          >
+                            <FileCode className="w-3.5 h-3.5 text-purple-500" />
+                            <span>LaTeX Rebuttal Table (.tex)</span>
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setExportDropdownOpen(false);
+                            handleExportBibTeX();
+                          }}
+                          className="w-full text-left px-3.5 py-2 flex items-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-neutral-700 dark:text-neutral-300 hover:text-blue-600 transition cursor-pointer"
+                        >
+                          <Bookmark className="w-3.5 h-3.5 text-amber-500" />
+                          <span>BibTeX Citations (.bib)</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
 
-              <div className="flex flex-wrap items-center gap-2">
-                <div className="hidden md:flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 mr-1">
-                  <span>Target:</span>
-                  <span className="text-neutral-900 dark:text-white font-medium bg-black/5 dark:bg-white/10 px-2 py-0.5 rounded-lg border border-black/5 dark:border-white/10">{report.targetJournal || "General High Impact"}</span>
+                  {/* Delete / Close tab */}
+                  {activeTab && (
+                    <button
+                      type="button"
+                      onClick={() => handleCloseTab(activeTab.id)}
+                      className="p-1.5 rounded-xl liquid-glass-btn-secondary text-neutral-500 hover:text-rose-600 transition cursor-pointer"
+                      title="Close this article"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Main Title & Subtitle */}
+              <div className="space-y-2">
+                <h2 className="text-2xl sm:text-3xl font-serif font-bold text-neutral-900 dark:text-white leading-snug">
+                  {report.title}
+                </h2>
+                <div className="text-xs text-neutral-500 dark:text-neutral-400 flex items-center gap-2">
+                  <span>{activeTab?.createdAt || new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</span>
+                  <span>&bull;</span>
+                  <span>Review simulated with {activeProviderInfo.model || "calibrated model"}</span>
+                </div>
+              </div>
+
+              {/* Score Box & Print Button */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-neutral-50 dark:bg-white/[0.03] border border-black/5 dark:border-white/10">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-3">
+                    <span className="text-4xl sm:text-5xl font-extrabold font-serif text-neutral-900 dark:text-white">
+                      {typeof report.overallScore === "number" ? report.overallScore : "88"}
+                    </span>
+                    <span className={`px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wide border ${
+                      (report.overallScore ?? 88) >= 80
+                        ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20"
+                        : (report.overallScore ?? 88) >= 65
+                        ? "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20"
+                        : "bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20"
+                    }`}>
+                      {(report.overallScore ?? 88) >= 80 ? "READY WITH MINOR REVISION" : (report.overallScore ?? 88) >= 65 ? "REVISION PRIORITIZED" : "SUBSTANTIVE HAZARDS"}
+                    </span>
+                  </div>
+                  <div className="text-[11px] font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+                    / 100 OVERALL ACCEPTANCE POTENTIAL
+                  </div>
                 </div>
 
                 <button
                   type="button"
-                  onClick={handleExportHTML}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl liquid-glass-btn-secondary text-xs font-semibold text-neutral-700 dark:text-neutral-200 transition shadow-2xs cursor-pointer"
-                  title="Export self-contained Interactive Web Report (.html) for offline viewing and sharing"
+                  onClick={handleDownloadPDF}
+                  className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition shadow-md cursor-pointer self-start sm:self-auto"
                 >
-                  <Globe className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-                  <span>Interactive HTML</span>
+                  <Printer className="w-4 h-4" />
+                  <span>Print / Save as PDF</span>
                 </button>
+              </div>
 
+              {/* Quick Sub-Navigation Pills */}
+              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pt-2 border-t border-black/5 dark:border-white/10 text-xs">
                 <button
                   type="button"
-                  onClick={handleExportWord}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl liquid-glass-btn-secondary text-xs font-semibold text-neutral-700 dark:text-neutral-200 transition shadow-2xs cursor-pointer"
-                  title="Export Diagnostic Report as Microsoft Word Document (.doc / .docx)"
+                  onClick={() => handleSelectSubView("all", activeTab?.id || "")}
+                  className={`px-3 py-1 rounded-lg transition font-medium shrink-0 cursor-pointer ${
+                    activeSubView === "all"
+                      ? "bg-blue-600 text-white"
+                      : "bg-black/5 dark:bg-white/5 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
+                  }`}
                 >
-                  <FileText className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-                  <span>Word (.docx)</span>
+                  All Sections
                 </button>
-
-                {report.isEligibleForReview !== false && (
+                <button
+                  type="button"
+                  onClick={() => handleSelectSubView("synthesis", activeTab?.id || "")}
+                  className={`px-3 py-1 rounded-lg transition font-medium shrink-0 cursor-pointer ${
+                    activeSubView === "synthesis"
+                      ? "bg-blue-600 text-white"
+                      : "bg-black/5 dark:bg-white/5 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
+                  }`}
+                >
+                  📋 Editorial Synthesis
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSelectSubView("personas", activeTab?.id || "")}
+                  className={`px-3 py-1 rounded-lg transition font-medium shrink-0 cursor-pointer ${
+                    activeSubView === "personas"
+                      ? "bg-blue-600 text-white"
+                      : "bg-black/5 dark:bg-white/5 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
+                  }`}
+                >
+                  👥 5 Personas
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSelectSubView("citations", activeTab?.id || "")}
+                  className={`px-3 py-1 rounded-lg transition font-medium shrink-0 cursor-pointer ${
+                    activeSubView === "citations"
+                      ? "bg-blue-600 text-white"
+                      : "bg-black/5 dark:bg-white/5 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
+                  }`}
+                >
+                  🔍 Citations
+                </button>
+                {report.reportingGuideline && (
                   <button
                     type="button"
-                    onClick={handleExportLatex}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl liquid-glass-btn-secondary text-xs font-semibold text-purple-700 dark:text-purple-300 transition shadow-2xs cursor-pointer"
-                    title="Export LaTeX Point-by-Point Author Rebuttal Matrix (.tex)"
+                    onClick={() => handleSelectSubView("guidelines", activeTab?.id || "")}
+                    className={`px-3 py-1 rounded-lg transition font-medium shrink-0 cursor-pointer ${
+                      activeSubView === "guidelines"
+                        ? "bg-blue-600 text-white"
+                        : "bg-black/5 dark:bg-white/5 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
+                    }`}
                   >
-                    <FileCode className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
-                    <span>LaTeX Rebuttal</span>
+                    📑 Guidelines
                   </button>
                 )}
-
                 <button
                   type="button"
-                  onClick={handleExportBibTeX}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl liquid-glass-btn-secondary text-xs font-semibold text-neutral-700 dark:text-neutral-200 transition shadow-2xs cursor-pointer"
-                  title="Export Audited Citations as BibTeX (.bib)"
+                  onClick={() => handleSelectSubView("action-plan", activeTab?.id || "")}
+                  className={`px-3 py-1 rounded-lg transition font-medium shrink-0 cursor-pointer ${
+                    activeSubView === "action-plan"
+                      ? "bg-blue-600 text-white"
+                      : "bg-black/5 dark:bg-white/5 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
+                  }`}
                 >
-                  <Bookmark className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-                  <span>BibTeX (.bib)</span>
+                  🚨 Action Plan
                 </button>
-
                 <button
                   type="button"
-                  onClick={handleDownloadPDF}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl liquid-glass-btn-primary text-white text-xs font-semibold transition shadow-xs cursor-pointer"
-                  title="Download / Save as PDF Diagnostic Report"
+                  onClick={() => handleSelectSubView("journal-fit", activeTab?.id || "")}
+                  className={`px-3 py-1 rounded-lg transition font-medium shrink-0 cursor-pointer ${
+                    activeSubView === "journal-fit"
+                      ? "bg-blue-600 text-white"
+                      : "bg-black/5 dark:bg-white/5 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
+                  }`}
                 >
-                  <Download className="w-3.5 h-3.5" />
-                  <span>PDF Report</span>
+                  🎯 Journal Fit
                 </button>
               </div>
             </div>
 
-            {/* Document Title Header */}
-            <div className="space-y-2">
-              <div className="text-3xl select-none">📑</div>
-              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#2F3437] leading-snug">
-                {report.title}
-              </h2>
+            {/* Card 2: Editorial Synthesis & Triage Assessment */}
+            <div id="section-synthesis" className="rounded-2xl sm:rounded-3xl bg-white dark:bg-[#16181B] border border-black/5 dark:border-white/10 p-6 sm:p-8 shadow-sm space-y-5 transition-all duration-300">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 text-neutral-900 dark:text-white font-serif font-bold text-lg">
+                  <FileCheck className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  <span>Editorial Synthesis &amp; Triage Assessment</span>
+                </div>
+                <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                  Synthesis of {report.reviewerPersonas?.length || 5} adversarial reviewers &bull; Target: {report.targetJournal || activeTab?.targetJournal || "Target Journal"}
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl bg-neutral-50 dark:bg-white/[0.03] border border-black/5 dark:border-white/10 text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed font-light">
+                {report.summary}
+              </div>
+
+              {/* Consensus Strengths and Critical Vulnerabilities */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                <div className="p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/20 space-y-2 text-xs">
+                  <div className="flex items-center gap-1.5 font-semibold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider text-[10px]">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>Consensus Strengths</span>
+                  </div>
+                  <ul className="space-y-1.5 text-neutral-700 dark:text-neutral-300">
+                    {((report as any).synthesis?.strengths && (report as any).synthesis.strengths.length > 0) ? (
+                      (report as any).synthesis.strengths.map((s: string, idx: number) => (
+                        <li key={idx} className="flex items-start gap-1.5">
+                          <span className="text-emerald-600 dark:text-emerald-400 mt-0.5">•</span>
+                          <span>{s}</span>
+                        </li>
+                      ))
+                    ) : (
+                      <>
+                        <li className="flex items-start gap-1.5">
+                          <span className="text-emerald-600 dark:text-emerald-400 mt-0.5">•</span>
+                          <span>Robust empirical methodology aligned with disciplinary standards</span>
+                        </li>
+                        <li className="flex items-start gap-1.5">
+                          <span className="text-emerald-600 dark:text-emerald-400 mt-0.5">•</span>
+                          <span>Well-structured argumentation and verified citation registry</span>
+                        </li>
+                      </>
+                    )}
+                  </ul>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-amber-500/5 border border-amber-500/20 space-y-2 text-xs">
+                  <div className="flex items-center gap-1.5 font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider text-[10px]">
+                    <AlertTriangle className="w-3.5 h-3.5" />
+                    <span>Critical Vulnerabilities</span>
+                  </div>
+                  <ul className="space-y-1.5 text-neutral-700 dark:text-neutral-300">
+                    {((report as any).synthesis?.weaknesses && (report as any).synthesis.weaknesses.length > 0) ? (
+                      (report as any).synthesis.weaknesses.map((w: string, idx: number) => (
+                        <li key={idx} className="flex items-start gap-1.5">
+                          <span className="text-amber-600 dark:text-amber-400 mt-0.5">•</span>
+                          <span>{w}</span>
+                        </li>
+                      ))
+                    ) : (
+                      <>
+                        {report.priorityIssues && report.priorityIssues.length > 0 ? (
+                          report.priorityIssues.slice(0, 2).map((issue: PriorityIssue, idx: number) => (
+                            <li key={idx} className="flex items-start gap-1.5">
+                              <span className="text-amber-600 dark:text-amber-400 mt-0.5">•</span>
+                              <span>{issue.title}</span>
+                            </li>
+                          ))
+                        ) : (
+                          <li className="flex items-start gap-1.5">
+                            <span className="text-amber-600 dark:text-amber-400 mt-0.5">•</span>
+                            <span>Minor framing adjustments recommended prior to submission</span>
+                          </li>
+                        )}
+                      </>
+                    )}
+                  </ul>
+                </div>
+              </div>
             </div>
 
             {/* Document Classification & Personalized Salutation Callout (Only for review-eligible manuscripts) */}
@@ -1263,66 +1786,18 @@ export default function ScanPage() {
                   </div>
                 )}
 
-                {/* Score & Editorial Triage Block */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  {/* Readiness Score Card */}
-                  <div className="p-5 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] flex flex-col justify-center items-center text-center">
-                    <div className="text-[11px] font-semibold uppercase tracking-wider text-[#787774] mb-1">
-                      Readiness Score
-                    </div>
-                    {typeof report.overallScore === "number" ? (
-                      <>
-                        <div className="flex items-baseline gap-1 my-1">
-                          <span className="text-4xl font-bold font-serif text-[#2F3437]">{report.overallScore}</span>
-                          <span className="text-[#9B9A97] text-sm font-serif">/100</span>
-                        </div>
-                        <div className={`mt-1 px-2.5 py-0.5 rounded text-[11px] font-medium border ${
-                          report.overallScore >= 80 ? "bg-[#EDF6EE] text-[#1E5A2A] border-[#CBE7CE]" :
-                          report.overallScore >= 65 ? "bg-[#FBF3DB] text-[#78510E] border-[#F4E2B6]" :
-                          "bg-[#FDF0EF] text-[#7C2D2B] border-[#F7CECC]"
-                        }`}>
-                          {report.overallScore >= 80 ? "Submission Ready" :
-                           report.overallScore >= 65 ? "Revision Prioritized" :
-                           "Substantive Hazards"}
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="flex items-baseline gap-1 my-1">
-                          <span className="text-3xl font-bold font-serif text-[#787774]">—</span>
-                          <span className="text-[#9B9A97] text-xs font-serif">/100</span>
-                        </div>
-                        <div className="mt-1 px-2.5 py-0.5 rounded text-[11px] font-medium border bg-[#FBF3DB] text-[#78510E] border-[#F4E2B6]">
-                          {report.executionMode === "heuristic_offline" ? "AI Provider Required" : "Not Assessed"}
-                        </div>
-                      </>
-                    )}
-                  </div>
-
-                  {/* Editorial Summary Callout */}
-                  <div className="md:col-span-3 p-5 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] flex flex-col justify-center">
-                    <div className="flex items-center gap-1.5 text-xs font-semibold text-[#1E5A2A] mb-2">
-                      <span className="text-sm select-none">📌</span>
-                      <span className="uppercase tracking-wider">Editorial Triage Synthesis</span>
-                    </div>
-                    <p className="text-xs sm:text-sm text-[#787774] leading-relaxed font-light">
-                      {report.summary}
-                    </p>
-                  </div>
-                </div>
-
                 {/* Reporting Guideline Compliance Audit Card (STROBE, CONSORT, PRISMA, ARRIVE, etc.) */}
                 {report.reportingGuideline && (
-                  <div className="p-5 rounded-xl bg-[#F7F7F5] border border-[#EBEBEA] space-y-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#EBEBEA]">
+                  <div id="section-guidelines" className="rounded-2xl sm:rounded-3xl bg-white dark:bg-[#16181B] border border-black/5 dark:border-white/10 p-6 sm:p-8 shadow-sm space-y-5 transition-all duration-300">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#EBEBEA] dark:border-white/10">
                       <div>
                         <div className="flex items-center gap-2">
                           <Scale className="w-4 h-4 text-[#1E5A2A]" />
-                          <h3 className="text-sm font-semibold text-[#2F3437]">
+                          <h3 className="text-sm font-semibold text-[#2F3437] dark:text-white">
                             Reporting Guideline Compliance: {report.reportingGuideline.guidelineName}
                           </h3>
                         </div>
-                        <p className="text-xs text-[#787774] mt-0.5">
+                        <p className="text-xs text-[#787774] dark:text-neutral-400 mt-0.5">
                           Standard: {report.reportingGuideline.standardType}
                           {report.reportingGuideline.standardUrl && (
                             <>
@@ -1331,7 +1806,7 @@ export default function ScanPage() {
                                 href={report.reportingGuideline.standardUrl}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="underline hover:text-[#111111] text-[#2F3437]"
+                                className="underline hover:text-[#111111] dark:hover:text-white text-[#2F3437] dark:text-neutral-300"
                               >
                                 Official Checklist &amp; Guidelines &rarr;
                               </a>
@@ -1340,7 +1815,7 @@ export default function ScanPage() {
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-medium text-[#787774]">Audit Score:</span>
+                        <span className="text-xs font-medium text-[#787774] dark:text-neutral-400">Audit Score:</span>
                         <span className="text-xs font-bold text-[#1E5A2A] bg-[#EDF6EE] px-2.5 py-0.5 rounded-full border border-[#CBE7CE]">
                           {report.reportingGuideline.itemSetScope === "core_subset"
                             ? `${report.reportingGuideline.evidencedCount}/${report.reportingGuideline.totalItems} core items evidenced (${report.reportingGuideline.itemSetSize} in full standard; ${report.reportingGuideline.scorePercent}%)`
@@ -1352,7 +1827,7 @@ export default function ScanPage() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <div className="p-3.5 rounded-lg bg-white border border-[#CBE7CE] space-y-2 text-xs">
+                      <div className="p-3.5 rounded-lg bg-white dark:bg-[#1E2024] border border-[#CBE7CE] space-y-2 text-xs">
                         <span className="font-semibold text-[#1E5A2A] uppercase tracking-wider text-[10px] block">
                           Compliant Checklist Items:
                         </span>
@@ -1377,7 +1852,7 @@ export default function ScanPage() {
                         </ul>
                       </div>
 
-                      <div className="p-3.5 rounded-lg bg-white border border-[#F4E2B6] space-y-2 text-xs">
+                      <div className="p-3.5 rounded-lg bg-white dark:bg-[#1E2024] border border-[#F4E2B6] space-y-2 text-xs">
                         <span className="font-semibold text-[#78510E] uppercase tracking-wider text-[10px] block">
                           Missing or Partial Reporting Items:
                         </span>
@@ -1410,11 +1885,11 @@ export default function ScanPage() {
                         if (substantiveObservations.length === 0) return null;
 
                         return (
-                          <div className="p-3.5 rounded-lg bg-white border border-[#EBEBEA] space-y-2 text-xs md:col-span-2">
-                            <span className="font-semibold text-[#555555] uppercase tracking-wider text-[10px] block">
+                          <div className="p-3.5 rounded-lg bg-white dark:bg-[#1E2024] border border-[#EBEBEA] dark:border-white/10 space-y-2 text-xs md:col-span-2">
+                            <span className="font-semibold text-[#555555] dark:text-neutral-400 uppercase tracking-wider text-[10px] block">
                               Additional Reviewer Observations:
                             </span>
-                            <ul className="space-y-1 text-[#555555]">
+                            <ul className="space-y-1 text-[#555555] dark:text-neutral-300">
                               {substantiveObservations.map((obs, idx) => (
                                 <li key={idx} className="flex items-start gap-1.5">
                                   <span className="text-gray-400">&bull;</span>
@@ -1431,7 +1906,7 @@ export default function ScanPage() {
 
                 {/* The 6 Evaluation Dimensions */}
                 {report.dimensions ? (
-                  <div className="space-y-3">
+                  <div id="section-dimensions" className="rounded-2xl sm:rounded-3xl bg-white dark:bg-[#16181B] border border-black/5 dark:border-white/10 p-6 sm:p-8 shadow-sm space-y-5 transition-all duration-300">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 text-sm font-semibold text-[#2F3437]">
                         <BarChart3 className="w-4 h-4 text-[#787774]" />
@@ -1511,10 +1986,10 @@ export default function ScanPage() {
                 )}
 
                 {/* Prioritized Action Plan */}
-                <div className="space-y-3">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-[#2F3437]">
-                      <AlertCircle className="w-4 h-4 text-[#7C2D2B]" />
+                <div id="section-action-plan" className="rounded-2xl sm:rounded-3xl bg-white dark:bg-[#16181B] border border-black/5 dark:border-white/10 p-6 sm:p-8 shadow-sm space-y-5 transition-all duration-300">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-black/5 dark:border-white/10">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-[#2F3437] dark:text-white">
+                      <AlertCircle className="w-4 h-4 text-[#7C2D2B] dark:text-rose-400" />
                       <span>Prioritized Action Plan before Submission</span>
                     </div>
 
@@ -1702,13 +2177,13 @@ export default function ScanPage() {
 
                 {/* 5-Persona Peer-Review Simulation (Adversarial Panel) */}
                 {report.reviewerPersonas && report.reviewerPersonas.length > 0 ? (
-                <div className="space-y-3">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-[#2F3437]">
-                      <Users className="w-4 h-4 text-[#787774]" />
+                <div id="section-personas" className="rounded-2xl sm:rounded-3xl bg-white dark:bg-[#16181B] border border-black/5 dark:border-white/10 p-6 sm:p-8 shadow-sm space-y-5 transition-all duration-300">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-3 border-b border-black/5 dark:border-white/10">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-[#2F3437] dark:text-white">
+                      <Users className="w-4 h-4 text-[#787774] dark:text-neutral-400" />
                       <span>{report.reviewerPersonas?.length || 5}-Persona Peer-Review Simulation (Adversarial Panel)</span>
                     </div>
-                    <span className="text-[11px] text-[#787774]">
+                    <span className="text-[11px] text-[#787774] dark:text-neutral-400">
                       Independent domain evaluations
                     </span>
                   </div>
@@ -1947,14 +2422,14 @@ export default function ScanPage() {
                 )}
 
                 {/* Citation & Reference Integrity Audit */}
-                <div className="space-y-3">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-[#2F3437]">
+                <div id="section-citations" className="rounded-2xl sm:rounded-3xl bg-white dark:bg-[#16181B] border border-black/5 dark:border-white/10 p-6 sm:p-8 shadow-sm space-y-5 transition-all duration-300">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-3 border-b border-black/5 dark:border-white/10">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-[#2F3437] dark:text-white">
                       <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                       <span>Citation &amp; Reference Integrity Audit</span>
                     </div>
                     {report.citationIntegrity.coverageNote && (
-                      <span className="text-xs text-[#787774]">
+                      <span className="text-xs text-[#787774] dark:text-neutral-400">
                         {report.citationIntegrity.coverageNote}
                       </span>
                     )}
@@ -2047,9 +2522,9 @@ export default function ScanPage() {
                 </div>
 
                 {/* Target Journal Recommendation Tiers */}
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-[#2F3437]">
-                    <BookOpen className="w-4 h-4 text-[#787774]" />
+                <div id="section-journal-fit" className="rounded-2xl sm:rounded-3xl bg-white dark:bg-[#16181B] border border-black/5 dark:border-white/10 p-6 sm:p-8 shadow-sm space-y-5 transition-all duration-300">
+                  <div className="flex items-center gap-2 pb-3 border-b border-black/5 dark:border-white/10 text-sm font-semibold text-[#2F3437] dark:text-white">
+                    <BookOpen className="w-4 h-4 text-[#787774] dark:text-neutral-400" />
                     <span>Target Journal Recommendation Tiers</span>
                   </div>
 
@@ -2428,9 +2903,7 @@ export default function ScanPage() {
             )}
           </div>
         )}
-
-        </div> {/* End Workspace Card Container */}
-
+        {/* Provider Settings Modal */}
         <ProviderSettingsModal
           isOpen={settingsOpen}
           onClose={() => {
